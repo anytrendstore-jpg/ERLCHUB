@@ -1,0 +1,281 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {
+  ArrowRight, Check, Loader2,
+  MessageCircle, Users, Bell, AlertCircle,
+  CheckCircle, ExternalLink, LogOut
+} from "lucide-react";
+import ParticlesBackground from "@/components/ParticlesBackground";
+import WhitelistStepper from "@/components/WhitelistStepper";
+import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
+import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+
+const DISCORD_INVITE = "https://discord.gg/xKJqNX7uC3";
+
+export default function DiscordVerificationPage() {
+  const router = useRouter();
+  const { application, loading, run } = useWhitelistApplication(["discord"]);
+
+  const [busyRequirement, setBusyRequirement] = useState<"server" | "rules" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const discord = application?.discord;
+  const allRequirementsMet = Boolean(discord?.joinedServer && discord?.acceptedRules);
+
+  const handleRequirement = async (requirement: "server" | "rules") => {
+    setBusyRequirement(requirement);
+    setError(null);
+    try {
+      if (requirement === "server") {
+        window.open(DISCORD_INVITE, "_blank", "noopener,noreferrer");
+      }
+      await run("discord_requirement", { requirement });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo guardar el requisito");
+    } finally {
+      setBusyRequirement(null);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch("/api/whitelist/auth/logout", { method: "POST" });
+    router.replace("/whitelist");
+  };
+
+  if (loading || !discord) {
+    return (
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
+      <ParticlesBackground />
+      <WhitelistBetaPanel currentPhase="discord" />
+
+      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
+            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <span className="hidden sm:inline text-xs text-gray-500 font-mono">
+              {application?.applicationId}
+            </span>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Salir</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <WhitelistStepper currentPhase="discord" />
+          </div>
+
+          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-[#1e1e2e]">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-[#5865F2]/20 flex items-center justify-center">
+                  <MessageCircle className="h-7 w-7 text-[#5865F2]" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">Verificación de Discord</h1>
+                  <p className="text-gray-400">Únete al servidor y acepta las reglas</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {!allRequirementsMet ? (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 p-4 bg-[#5865F2]/10 border border-[#5865F2]/30 rounded-xl">
+                    <div className="relative">
+                      {discord.avatar ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={discord.avatar} alt={discord.username} className="w-12 h-12 rounded-full" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-[#5865F2]/30 flex items-center justify-center text-white font-bold text-lg">
+                          {discord.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#22c55e] rounded-full border-2 border-[#12121c] flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white">{discord.globalName || discord.username}</div>
+                      <div className="text-sm text-[#5865F2]">@{discord.username}</div>
+                      {discord.source === "dev" && (
+                        <div className="text-xs text-yellow-400 mt-0.5">Sesión de prueba local</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                      Completa los requisitos
+                    </h3>
+
+                    <div className="flex items-center justify-between p-4 rounded-xl border bg-[#22c55e]/10 border-[#22c55e]/30">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#22c55e]">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-white">Cuenta de Discord verificada</span>
+                      </div>
+                      <CheckCircle className="w-5 h-5 text-[#22c55e]" />
+                    </div>
+
+                    <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                      discord.joinedServer
+                        ? "bg-[#22c55e]/10 border-[#22c55e]/30"
+                        : "bg-[#0a0a12] border-[#1e1e2e]"
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          discord.joinedServer ? "bg-[#22c55e]" : "bg-[#1a1a28]"
+                        }`}>
+                          {discord.joinedServer ? (
+                            <Check className="w-4 h-4 text-white" />
+                          ) : (
+                            <Users className="w-4 h-4 text-gray-500" />
+                          )}
+                        </div>
+                        <span className={discord.joinedServer ? "text-white" : "text-gray-400"}>
+                          Unirse al servidor de ERLC HUB
+                        </span>
+                      </div>
+                      {discord.joinedServer ? (
+                        <CheckCircle className="w-5 h-5 text-[#22c55e]" />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleRequirement("server")}
+                          disabled={busyRequirement !== null}
+                          className="flex items-center gap-2 px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                        >
+                          {busyRequirement === "server" ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <>
+                              <ExternalLink className="w-4 h-4" />
+                              Unirse
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                      discord.acceptedRules
+                        ? "bg-[#22c55e]/10 border-[#22c55e]/30"
+                        : "bg-[#0a0a12] border-[#1e1e2e]"
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          discord.acceptedRules ? "bg-[#22c55e]" : "bg-[#1a1a28]"
+                        }`}>
+                          {discord.acceptedRules ? (
+                            <Check className="w-4 h-4 text-white" />
+                          ) : (
+                            <Bell className="w-4 h-4 text-gray-500" />
+                          )}
+                        </div>
+                        <span className={discord.acceptedRules ? "text-white" : "text-gray-400"}>
+                          Aceptar las reglas del servidor
+                        </span>
+                      </div>
+                      {discord.acceptedRules ? (
+                        <CheckCircle className="w-5 h-5 text-[#22c55e]" />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleRequirement("rules")}
+                          disabled={busyRequirement !== null || !discord.joinedServer}
+                          className="flex items-center gap-2 px-4 py-2 bg-[#8e00f7] hover:bg-[#7a00d4] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                        >
+                          {busyRequirement === "rules" ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Aceptar"
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">
+                      <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                      <span className="text-sm">{error}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 space-y-6">
+                  <div className="w-20 h-20 rounded-full bg-[#22c55e]/20 flex items-center justify-center mx-auto animate-prize-reveal">
+                    <CheckCircle className="h-10 w-10 text-[#22c55e]" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Discord Verificado</h2>
+                    <p className="text-gray-400">
+                      Tu cuenta de Discord ha sido vinculada exitosamente.
+                    </p>
+                  </div>
+
+                  <div className="inline-flex items-center gap-3 px-4 py-3 bg-[#5865F2]/10 border border-[#5865F2]/30 rounded-xl">
+                    {discord.avatar ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={discord.avatar} alt={discord.username} className="w-10 h-10 rounded-full" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#5865F2]/30 flex items-center justify-center text-white font-bold">
+                        {discord.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="text-left">
+                      <div className="font-semibold text-white">{discord.globalName || discord.username}</div>
+                      <div className="text-sm text-[#5865F2]">@{discord.username}</div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => router.push("/whitelist/roblox")}
+                    className="inline-flex items-center justify-center gap-2 h-12 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
+                  >
+                    Continuar a Roblox
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              ¿Problemas con la verificación?{" "}
+              <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer" className="text-[#8e00f7] hover:underline">
+                Contacta soporte
+              </a>
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

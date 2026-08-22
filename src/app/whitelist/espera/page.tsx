@@ -1,0 +1,380 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {
+  Clock, CheckCircle, XCircle, AlertCircle,
+  RefreshCw, MessageCircle, FileText, Shield,
+  ArrowRight, Loader2
+} from "lucide-react";
+import ParticlesBackground from "@/components/ParticlesBackground";
+import WhitelistStepper from "@/components/WhitelistStepper";
+import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
+import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import type { ApplicationStatus } from "@/lib/whitelistTypes";
+
+interface StatusConfig {
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+}
+
+const statusConfigs: Record<ApplicationStatus, StatusConfig> = {
+  pending: {
+    title: "En Espera",
+    description: "Tu solicitud está en la cola de revisión. Un miembro del staff la revisará pronto.",
+    icon: Clock,
+    color: "text-yellow-400",
+    bgColor: "bg-yellow-400/10",
+    borderColor: "border-yellow-400/30"
+  },
+  in_review: {
+    title: "En Revisión",
+    description: "Un miembro del staff está revisando tu solicitud en este momento.",
+    icon: FileText,
+    color: "text-blue-400",
+    bgColor: "bg-blue-400/10",
+    borderColor: "border-blue-400/30"
+  },
+  approved: {
+    title: "Aprobada",
+    description: "Tu solicitud ha sido aprobada. Puedes continuar al siguiente paso.",
+    icon: CheckCircle,
+    color: "text-[#22c55e]",
+    bgColor: "bg-[#22c55e]/10",
+    borderColor: "border-[#22c55e]/30"
+  },
+  rejected: {
+    title: "Rechazada",
+    description: "Tu solicitud no cumple con los requisitos. Revisa las notas del staff.",
+    icon: XCircle,
+    color: "text-red-400",
+    bgColor: "bg-red-400/10",
+    borderColor: "border-red-400/30"
+  },
+  needs_revision: {
+    title: "Requiere Correcciones",
+    description: "Tu solicitud necesita algunas correcciones. Revisa las notas del staff.",
+    icon: AlertCircle,
+    color: "text-orange-400",
+    bgColor: "bg-orange-400/10",
+    borderColor: "border-orange-400/30"
+  }
+};
+
+export default function ReviewWaitingPage() {
+  const router = useRouter();
+  const { application, queue, loading, reload } = useWhitelistApplication(["review", "dni"]);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastChecked, setLastChecked] = useState<Date | null>(null);
+
+  // Consulta periódica del estado real de la solicitud.
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await reload();
+      setLastChecked(new Date());
+    }, 20000);
+    return () => clearInterval(interval);
+  }, [reload]);
+
+  useEffect(() => {
+    if (!loading) setLastChecked(new Date());
+  }, [loading]);
+
+  const checkStatus = async () => {
+    setIsRefreshing(true);
+    await reload();
+    setLastChecked(new Date());
+    setIsRefreshing(false);
+  };
+
+  if (loading || !application) {
+    return (
+      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
+      </div>
+    );
+  }
+
+  const status = application.status;
+  const statusConfig = statusConfigs[status];
+  const StatusIcon = statusConfig.icon;
+
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+
+  const formatDate = (value?: string) =>
+    value
+      ? new Date(value).toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "—";
+
+  return (
+    <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
+      <ParticlesBackground />
+      <WhitelistBetaPanel currentPhase="review" />
+
+      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
+            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
+          </Link>
+          <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <Clock className="h-4 w-4" />
+            <span className="font-mono">{application.applicationId}</span>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <WhitelistStepper currentPhase="review" />
+          </div>
+
+          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+            <div className={`p-8 ${statusConfig.bgColor} border-b ${statusConfig.borderColor}`}>
+              <div className="flex flex-col items-center text-center">
+                <div className={`w-20 h-20 rounded-full ${statusConfig.bgColor} border-2 ${statusConfig.borderColor} flex items-center justify-center mb-4 ${
+                  status === "pending" || status === "in_review" ? "animate-pulse" : ""
+                }`}>
+                  <StatusIcon className={`h-10 w-10 ${statusConfig.color}`} />
+                </div>
+                <h1 className={`text-3xl font-bold ${statusConfig.color} mb-2`}>
+                  {statusConfig.title}
+                </h1>
+                <p className="text-gray-400 max-w-md">
+                  {statusConfig.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {(status === "pending" || status === "in_review") && (
+                <div className="space-y-6">
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="bg-[#0a0a12] rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-white mb-1">
+                        #{queue?.position ?? "—"}
+                      </div>
+                      <div className="text-sm text-gray-500">Posición en cola</div>
+                    </div>
+                    <div className="bg-[#0a0a12] rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-white mb-1">
+                        {queue?.total ?? 0}
+                      </div>
+                      <div className="text-sm text-gray-500">En revisión</div>
+                    </div>
+                    <div className="bg-[#0a0a12] rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-[#8e00f7] mb-1">
+                        {application.questionnaireScore ?? 0}%
+                      </div>
+                      <div className="text-sm text-gray-500">Puntuación</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#0a0a12] rounded-xl p-4">
+                    <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                      Historial
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-white font-medium">Solicitud enviada</div>
+                          <div className="text-sm text-gray-500">{formatDate(application.submittedAt)}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          status === "in_review" ? "bg-blue-500" : "bg-[#1a1a28]"
+                        }`}>
+                          {status === "in_review" ? (
+                            <Loader2 className="w-4 h-4 text-white animate-spin" />
+                          ) : (
+                            <Clock className="w-4 h-4 text-gray-500" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className={status === "in_review" ? "text-white font-medium" : "text-gray-500"}>
+                            {status === "in_review" ? "En revisión por staff" : "Esperando revisión"}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 opacity-50">
+                        <div className="w-8 h-8 rounded-full bg-[#1a1a28] flex items-center justify-center flex-shrink-0">
+                          <Shield className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-gray-500">Decisión final</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-[#0a0a12] rounded-xl">
+                    <div className="text-sm text-gray-500">
+                      Última comprobación: {lastChecked ? formatTime(lastChecked) : "—"}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={checkStatus}
+                      disabled={isRefreshing}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#1a1a28] hover:bg-[#2a2a3a] disabled:opacity-50 text-white rounded-lg transition-colors"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                      Actualizar
+                    </button>
+                  </div>
+
+                  <p className="text-center text-xs text-gray-600">
+                    Esta página se actualiza sola cada 20 segundos. La decisión la toma el staff
+                    desde su panel.
+                  </p>
+                </div>
+              )}
+
+              {status === "approved" && (
+                <div className="text-center py-8 space-y-6">
+                  <div className="w-24 h-24 rounded-full bg-[#22c55e]/20 flex items-center justify-center mx-auto animate-prize-reveal">
+                    <CheckCircle className="h-12 w-12 text-[#22c55e]" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">¡Felicitaciones!</h2>
+                    <p className="text-gray-400 max-w-md mx-auto">
+                      Tu solicitud de whitelist ha sido aprobada. Ahora puedes crear tu documento de identidad
+                      y comenzar a jugar en ERLC HUB.
+                    </p>
+                  </div>
+
+                  {application.staffNotes && (
+                    <div className="bg-[#0a0a12] border border-[#1e1e2e] rounded-xl p-4 text-left max-w-md mx-auto">
+                      <h3 className="text-sm font-semibold text-[#22c55e] mb-2">Notas del staff:</h3>
+                      <p className="text-gray-400 text-sm">{application.staffNotes}</p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-8 py-4">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[#22c55e]">
+                        {application.questionnaireScore ?? 0}%
+                      </div>
+                      <div className="text-sm text-gray-500">Puntuación</div>
+                    </div>
+                    <div className="h-12 w-px bg-[#1e1e2e]" />
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[#8e00f7]">
+                        {formatDate(application.reviewedAt)}
+                      </div>
+                      <div className="text-sm text-gray-500">Revisada</div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => router.push("/whitelist/dni")}
+                    className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
+                  >
+                    Crear mi Documento de Identidad
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+
+              {status === "rejected" && (
+                <div className="text-center py-8 space-y-6">
+                  <div className="w-24 h-24 rounded-full bg-red-500/20 flex items-center justify-center mx-auto">
+                    <XCircle className="h-12 w-12 text-red-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Solicitud Rechazada</h2>
+                    <p className="text-gray-400 max-w-md mx-auto">
+                      Lamentablemente tu solicitud no cumple con los requisitos necesarios.
+                    </p>
+                  </div>
+
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-left max-w-md mx-auto">
+                    <h3 className="text-sm font-semibold text-red-400 mb-2">Notas del Staff:</h3>
+                    <p className="text-gray-400 text-sm">
+                      {application.staffNotes || "El staff no dejó notas adicionales."}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-4">
+                    <Link
+                      href="/"
+                      className="px-6 py-3 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
+                    >
+                      Volver al inicio
+                    </Link>
+                    <a
+                      href="https://discord.gg/xKJqNX7uC3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-6 py-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-xl transition-colors"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      Contactar Soporte
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {status === "needs_revision" && (
+                <div className="text-center py-8 space-y-6">
+                  <div className="w-24 h-24 rounded-full bg-orange-400/20 flex items-center justify-center mx-auto">
+                    <AlertCircle className="h-12 w-12 text-orange-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Correcciones Necesarias</h2>
+                    <p className="text-gray-400 max-w-md mx-auto">
+                      Tu solicitud está casi lista, pero necesita algunas correcciones antes de ser aprobada.
+                    </p>
+                  </div>
+
+                  <div className="bg-orange-400/10 border border-orange-400/30 rounded-xl p-4 text-left max-w-md mx-auto">
+                    <h3 className="text-sm font-semibold text-orange-400 mb-2">Correcciones solicitadas:</h3>
+                    <p className="text-gray-400 text-sm">
+                      {application.staffNotes || "Amplía y mejora tus respuestas del formulario."}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => router.push("/whitelist/formulario")}
+                    className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
+                  >
+                    Corregir Formulario
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              ¿Tienes preguntas sobre tu solicitud?{" "}
+              <a href="https://discord.gg/xKJqNX7uC3" target="_blank" rel="noopener noreferrer" className="text-[#8e00f7] hover:underline">
+                Contacta al staff
+              </a>
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

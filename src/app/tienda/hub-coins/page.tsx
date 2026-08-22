@@ -1,0 +1,539 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { 
+  ShoppingCart, 
+  Shield, 
+  Zap, 
+  Check, 
+  Clock, 
+  Star, 
+  Gift, 
+  ArrowRight, 
+  TrendingUp, 
+  Coins, 
+  ShoppingBag 
+} from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { useCart } from "@/contexts/CartContext";
+import { useReviews } from "@/hooks/useReviews";
+import { useDiscordAuth } from "@/hooks/useDiscordAuth";
+import { useHubCoins } from "@/hooks/useHubCoins";
+import AddToCartButton from "@/components/AddToCartButton";
+import { hubCoinsPackages, currencies, formatNumber, convertPrice } from "@/lib/shopData";
+import { CurrencyRate } from "@/lib/types";
+
+const recentPurchases = [
+  { user: "Jo***", amount: 2000, time: "hace 5m" },
+  { user: "Ma***", amount: 1000, time: "hace 12m" },
+  { user: "Ca***", amount: 4000, time: "hace 25m" },
+  { user: "Lu***", amount: 500, time: "hace 1h" },
+  { user: "An***", amount: 10000, time: "hace 1h" },
+  { user: "Di***", amount: 2000, time: "hace 2h" },
+  { user: "Pa***", amount: 6000, time: "hace 3h" },
+];
+
+export default function HubCoinsPage() {
+  const [selectedPackage, setSelectedPackage] = useState(hubCoinsPackages[2].id);
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
+  const { addItem } = useCart();
+  const { reviews: hubCoinsReviews, renderStars, stats, refetch: fetchReviews } = useReviews('Hub Coins');
+  const { isAuthenticated } = useDiscordAuth();
+  const { balance, transactions, totalOrders, loading: hubCoinsLoading } = useHubCoins();
+
+  const calculateDynamicStats = () => {
+    if (!hubCoinsReviews || hubCoinsReviews.length === 0) {
+      return { avgRating: 0, count: 0 };
+    }
+    
+    const totalRating = hubCoinsReviews.reduce((sum, review) => sum + review.rating, 0);
+    const avgRating = Math.round((totalRating / hubCoinsReviews.length) * 10) / 10;
+    
+    return { avgRating, count: hubCoinsReviews.length };
+  };
+
+  const dynamicStats = calculateDynamicStats();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchReviews();
+    }, 30000); 
+
+    return () => clearInterval(interval);
+  }, [fetchReviews]);
+
+  const currentPackage = hubCoinsPackages.find(p => p.id === selectedPackage) || hubCoinsPackages[2];
+  const totalCoins = currentPackage.coins + currentPackage.bonus;
+  
+  const discountedPrice = currentPackage.priceUSD;
+
+  const renderStarsManual = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star key={i} className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'}`} />
+    ));
+  };
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      window.location.href = 'https://www.erlchub.pro/ingresar';
+      return;
+    }
+
+    addItem({
+      id: currentPackage.id,
+      type: "hub-coins",
+      name: `${formatNumber(currentPackage.coins)} Hub Coins`,
+      priceUSD: discountedPrice,
+      quantity: 1,
+      coins: currentPackage.coins,
+      bonus: currentPackage.bonus,
+    });
+  };
+
+  return (
+    <main className="min-h-screen bg-[#0c0c14]">
+      <Navbar />
+
+      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+
+          <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+            <Link href="/tienda" className="hover:text-white flex items-center gap-1">
+              Tienda
+            </Link>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+
+            <div className="lg:col-span-2 space-y-8">
+
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8e00f7] to-[#a64dfa] flex items-center justify-center flex-shrink-0">
+                  <Image
+                    src="/hub-coins.png"
+                    alt="Hub Coins"
+                    width={72}
+                    height={72}
+                    className="w-18 h-18 object-contain"
+                  />
+                </div>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Comprar Hub Coins</h1>
+                  <p className="text-gray-400">Elige tu cantidad, método de pago y moneda.</p>
+
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <span className="flex items-center gap-1 bg-[#8e00f7]/20 border border-[#8e00f7]/30 px-3 py-1 rounded-full text-xs text-white">
+                      <Shield className="h-3 w-3 text-[#8e00f7]" />
+                      Mejor precio
+                    </span>
+                    <span className="flex items-center gap-1 bg-[#8e00f7]/20 border border-[#8e00f7]/30 px-3 py-1 rounded-full text-xs text-white">
+                      <Zap className="h-3 w-3 text-[#8e00f7]" />
+                      Entrega instantánea
+                    </span>
+                    <span className="flex items-center gap-1 bg-[#8e00f7]/20 border border-[#8e00f7]/30 px-3 py-1 rounded-full text-xs text-white">
+                      <Check className="h-3 w-3 text-[#8e00f7]" />
+                      Compra Segura
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-[#8e00f7] text-white text-sm font-bold flex items-center justify-center">1</div>
+                  <h2 className="text-lg font-bold text-white uppercase tracking-wider">Cantidad de Hub Coins</h2>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {hubCoinsPackages.map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      type="button"
+                      onClick={() => setSelectedPackage(pkg.id)}
+                      className={`relative bg-[#12121c] border-2 rounded-xl p-4 text-left transition-all duration-200 ${
+                        selectedPackage === pkg.id
+                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
+                          : "border-[#1a1a28] hover:border-[#3a3a4a]"
+                      }`}
+                    >
+                      {pkg.popular && (
+                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#8e00f7] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          Popular
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-1">
+                        <Image
+                          src="/hub-coins.png"
+                          alt="Hub Coins"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10"
+                        />
+                        <span className="text-xl font-bold text-white">{formatNumber(pkg.coins)}</span>
+                      </div>
+
+                      {pkg.bonus > 0 ? (
+                        <div className="text-[#8e00f7] text-xs font-medium flex items-center gap-1">
+                          <Gift className="h-3 w-3" />
+                          +{formatNumber(pkg.bonus)} gratis
+                        </div>
+                      ) : (
+                        <div className="text-gray-500 text-xs">&nbsp;</div>
+                      )}
+
+                      <div className="text-gray-400 text-sm mt-2">
+                        {convertPrice(pkg.priceUSD, selectedCurrency)}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-[#8e00f7] text-white text-sm font-bold flex items-center justify-center">2</div>
+                  <h2 className="text-lg font-bold text-white uppercase tracking-wider">Moneda</h2>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {currencies.map((currency) => (
+                    <button
+                      key={currency.code}
+                      type="button"
+                      onClick={() => setSelectedCurrency(currency)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
+                        selectedCurrency.code === currency.code
+                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
+                          : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
+                      }`}
+                    >
+                      <div className="w-5 h-3 rounded-sm overflow-hidden">
+                        <Image
+                          src={`/banderas/${
+                            currency.code === "USD" ? "usa-bandera" :
+                            currency.code === "EUR" ? "eu-bandera" :
+                            currency.code === "MXN" ? "mexico-bandera" :
+                            currency.code === "COP" ? "colombia-bandera" :
+                            currency.code === "ARS" ? "argentina-bandera" :
+                            currency.code === "PEN" ? "peru-bandera" :
+                            currency.code === "CLP" ? "chile-bandera" :
+                            "usa-bandera"
+                          }.png`}
+                          alt={currency.name}
+                          width={20}
+                          height={12}
+                          className="object-cover object-[0px_0px]"
+                        />
+                      </div>
+                      <span className="text-white font-medium">{currency.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-5">
+                  <h3 className="text-white font-bold mb-2">Cómo comprar?</h3>
+                  <p className="text-gray-400 text-sm">
+                    Guía rápida paso a paso.
+                  </p>
+                  <ol className="mt-3 space-y-2 text-sm text-gray-300">
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#8e00f7]/20 text-[#8e00f7] text-xs flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                      Selecciona la cantidad
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#8e00f7]/20 text-[#8e00f7] text-xs flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                      Elige tu moneda
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#8e00f7]/20 text-[#8e00f7] text-xs flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                      Completa el pago
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#8e00f7]/20 text-[#8e00f7] text-xs flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                      Recibe tus Hub Coins
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-5">
+                  <h3 className="text-white font-bold mb-2">Pagos Seguros</h3>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-700/20 cursor-pointer">
+                      <svg className="h-4 w-auto" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.958 10.283l-5.792 11.45h-3.79l-2.85-9.138c-.173-.679-.323-.928-.849-1.215-.86-.467-2.277-.905-3.523-1.177l.084-.42h6.099c.777 0 1.476.517 1.652 1.413l1.51 8.017 3.73-9.43h3.73zm14.722 7.71c.015-3.022-4.178-3.188-4.15-4.537.01-.41.4-.847 1.257-.958.424-.056 1.595-.098 2.923.514l.52-2.432a7.968 7.968 0 0 0-2.773-.507c-2.93 0-4.993 1.558-5.011 3.787-.02 1.65 1.473 2.57 2.6 3.118 1.159.562 1.543.922 1.543 1.424-.008.769-.925 1.108-1.78 1.12-1.495.024-2.364-.404-3.056-.726l-.54 2.52c.696.32 1.98.6 3.312.613 3.114 0 5.15-1.538 5.155-3.936zm7.727 3.74h3.27l-2.852-11.45h-3.02a1.463 1.463 0 0 0-1.37.914l-4.832 10.536h3.113l.618-1.712h3.805l.359 1.712h2.91zm-3.31-4.063l1.561-4.31.898 4.31h-2.46zM24.08 10.283l-2.452 11.45h-2.964l2.454-11.45h2.962z" fill="#1A1F71"/>
+                      </svg>
+                    </div>
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-orange-500/20 cursor-pointer">
+                      <svg className="h-4 w-auto" viewBox="0 0 48 32" fill="none">
+                        <circle cx="18" cy="16" r="10" fill="#EB001B"/>
+                        <circle cx="30" cy="16" r="10" fill="#F79E1B"/>
+                        <path d="M24 8.02a9.965 9.965 0 0 0-6 7.98 9.965 9.965 0 0 0 6 7.98 9.965 9.965 0 0 0 6-7.98 9.965 9.965 0 0 0 6-7.98z" fill="#FF5F00"/>
+                      </svg>
+                    </div>
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-yellow-500/20 cursor-pointer">
+                      <img src="https://www.radioacktiva.com/wp-content/uploads/2024/02/19022024-bancolombia.jpg" alt="Bancolombia" className="h-4 w-auto" />
+                    </div>
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-green-500/20 cursor-pointer">
+                      <img src="https://juntanacional.co/wp-content/uploads/2015/08/logo_380.png" alt="PSE" className="h-4 w-auto" />
+                    </div>
+                  </div>
+                  <h3 className="text-white font-bold mb-2">Pagos Seguros Mediante Tickets</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/20 cursor-pointer">
+                      <img src="/pagos/visa-rewarble.png" alt="Visa Rewarble" className="h-4 w-auto" />
+                    </div>
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-orange-500/20 cursor-pointer">
+                      <img src="/pagos/bitcoins.png" alt="Criptomonedas" className="h-4 w-auto" />
+                    </div>
+                    <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-600/20 cursor-pointer">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Paypal_2014_logo.png" alt="PayPal" className="h-4 w-auto" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-4">
+
+                <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-gray-400 text-sm uppercase tracking-wider">Resumen</h3>
+                    <div className="w-10 h-10 rounded-full bg-[#8e00f7] flex items-center justify-center">
+                      <Image
+                        src="/hub-coins.png"
+                        alt="Hub Coins"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-center mb-6">
+                    <div className="text-5xl font-black text-white mb-1">
+                      {formatNumber(totalCoins)}
+                    </div>
+                    <div className="text-gray-400">Hub Coins</div>
+                  </div>
+
+                  <div className="space-y-3 text-sm border-t border-[#1a1a28] pt-4">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Cantidad base</span>
+                      <span className="text-white flex items-center gap-1">
+                        {formatNumber(currentPackage.coins)}
+                        <Image
+                          src="/hub-coins.png"
+                          alt="Hub Coins"
+                          width={48}
+                          height={48}
+                          className="w-12 h-12"
+                        />
+                      </span>
+                    </div>
+                    {currentPackage.bonus > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Bonus gratis</span>
+                        <span className="text-[#8e00f7] flex items-center gap-1">
+                          +{formatNumber(currentPackage.bonus)}
+                          <Image
+                            src="/hub-coins.png"
+                            alt="Hub Coins"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8"
+                          />
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Moneda</span>
+                      <span className="text-white flex items-center gap-1">
+                        <div className="w-5 h-3 rounded-sm overflow-hidden">
+                          <Image
+                            src={`/banderas/${
+                              selectedCurrency.code === "USD" ? "usa-bandera" :
+                              selectedCurrency.code === "EUR" ? "eu-bandera" :
+                              selectedCurrency.code === "MXN" ? "mexico-bandera" :
+                              selectedCurrency.code === "COP" ? "colombia-bandera" :
+                              selectedCurrency.code === "ARS" ? "argentina-bandera" :
+                              selectedCurrency.code === "PEN" ? "peru-bandera" :
+                              selectedCurrency.code === "CLP" ? "chile-bandera" :
+                              "usa-bandera"
+                            }.png`}
+                            alt={selectedCurrency.name}
+                            width={20}
+                            height={12}
+                            className="object-cover object-[0px_0px]"
+                          />
+                        </div>
+                        {selectedCurrency.code}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-[#1a1a28] mt-4 pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-gray-400">Total</span>
+                      <span className="text-3xl font-bold text-white">
+                        {convertPrice(currentPackage.priceUSD, selectedCurrency)}
+                      </span>
+                    </div>
+
+                    {selectedCurrency.code !== "USD" && (
+                      <div className="text-right text-gray-500 text-sm mb-4">
+                        ${currentPackage.priceUSD} 
+                        <div className="w-5 h-3 rounded-sm overflow-hidden inline-block ml-1">
+                          <Image
+                            src="/banderas/usa-bandera.png"
+                            alt="USA"
+                            width={20}
+                            height={12}
+                            className="object-cover object-[0px_0px]"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <AddToCartButton 
+                      onClick={handleAddToCart}
+                      text="AGREGAR AL CARRITO"
+                      requireAuth={true}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Shield className="h-3 w-3" />
+                      Pago seguro
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Zap className="h-3 w-3" />
+                      Entrega instantánea
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-1 mt-4">
+                    {renderStarsManual(dynamicStats?.avgRating || 0)}
+                    <span className="text-gray-400 text-sm ml-1">{dynamicStats?.avgRating?.toFixed(1) || '0.0'} ({dynamicStats?.count || 0} Reseñas )</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {hubCoinsReviews.slice(0, 2).map((review, index) => (
+                    <div key={index} className="bg-[#1a1a28] rounded-lg p-3 border border-[#2a2a3a]">
+                      <div className="flex items-start gap-2">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-white font-medium text-sm">{review.name}</span>
+                            <div className="flex items-center gap-1">
+                              {review.rating && (
+                                <>
+                                  {renderStarsManual(review.rating)}
+                                  <span className="text-gray-400 text-xs ml-1">{review.rating}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-gray-300 text-sm leading-relaxed mb-2">{review.comment}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="bg-[#8e00f7]/20 text-[#8e00f7] px-2 py-1 rounded text-xs">Hub Coins</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-bold text-sm">ÓRDENES</h3>
+                    <div className="bg-[#8e00f7]/20 text-[#8e00f7] px-2 py-1 rounded-full text-xs font-bold">
+                      {totalOrders} transacciones exitosas
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-xs">Total de transacciones completadas</p>
+                </div>
+
+                <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-bold text-sm">Compras Recientes</h3>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-green-500 text-xs">En vivo</span>
+                    </div>
+                  </div>
+
+                  {hubCoinsLoading ? (
+                    <div className="text-center text-gray-500 text-sm py-8">
+                      <div className="w-12 h-12 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-3">
+                        <div className="w-6 h-6 border-2 border-[#8e00f7] border-t-transparent rounded-full animate-spin" />
+                      </div>
+                      <p>Cargando compras...</p>
+                    </div>
+                  ) : transactions.filter(t => t.type === 'purchase').length === 0 ? (
+                    <div className="text-center text-gray-500 text-sm py-8">
+                      <div className="w-12 h-12 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-3">
+                        <ShoppingBag className="h-6 w-6 text-[#8e00f7]" />
+                      </div>
+                      <p>No hay compras recientes</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {transactions
+                        .filter(t => t.type === 'purchase')
+                        .slice(0, 5)
+                        .map((transaction) => (
+                          <div key={transaction._id} className="flex items-center gap-3 p-2 bg-[#1a1a28] rounded-lg">
+                            {transaction.user?.avatar ? (
+                              <Image
+                                src={`https://cdn.discordapp.com/avatars/${transaction.userId}/${transaction.user.avatar}.png?size=32`}
+                                alt={transaction.user.username}
+                                width={32}
+                                height={32}
+                                className="w-8 h-8 rounded-full"
+                                onError={(e) => {
+                                  e.currentTarget.src = `https://cdn.discordapp.com/embed/avatars/0.png?size=32`;
+                                }}
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-[#8e00f7] flex items-center justify-center text-white font-bold text-xs">
+                                {(transaction.user?.username || "U").charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-white text-sm font-medium">
+                                  {transaction.user?.username || 'Usuario'}
+                                </span>
+                                <TrendingUp className="h-3 w-3 text-green-400" />
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-gray-400">
+                                <Coins className="h-3 w-3" />
+                                <span>+{transaction.amount} Hub Coins</span>
+                                <span>•</span>
+                                <Clock className="h-3 w-3" />
+                                <span>{new Date(transaction.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Footer />
+    </main>
+  );
+}

@@ -1,0 +1,294 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useDiscordAuth } from "@/hooks/useDiscordAuth";
+import { useHubCoins } from "@/hooks/useHubCoins";
+import Image from "next/image";
+import { User, Mail, Calendar, Shield, Crown, Coins, ShoppingCart, TrendingUp, CheckCircle, XCircle, Clock, MapPin, ArrowLeft } from "lucide-react";
+
+export default function PerfilPage() {
+  const { user, guilds, isAuthenticated } = useDiscordAuth();
+  const { balance: hubCoinsBalance } = useHubCoins();
+  
+  const membershipLevel = user?.membership?.name || "Ninguna";
+  
+  const [profileData, setProfileData] = useState<any>({
+    hubCoinsBalance: 0,
+    totalHubCoinsPurchased: 0,
+    totalSpent: 0,
+    totalOrders: 0,
+    completedOrders: 0,
+    rejectedOrders: 0,
+    recentActivity: [],
+    allTransactions: [],
+    serverJoins: {
+      erlchub: null,
+      losSantos: null
+    },
+    currentCity: null,
+    membership: null
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return;
+
+    const fetchProfileData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/profile/data?userId=${user.id}`);
+        const result = await response.json();
+        
+        
+        if (result.success) {
+          setProfileData(result.profileData);
+        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [isAuthenticated, user?.id]);
+
+  const getMemberSince = () => {
+    const dateStr = profileData.serverJoins?.erlchub || profileData.serverJoins?.losSantos;
+    
+    if (dateStr && dateStr !== "null") {
+      return new Date(dateStr).toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+    
+    if (user?.membership?.purchasedAt) {
+      return new Date(user.membership.purchasedAt).toLocaleDateString('es-CO');
+    }
+
+    return "N/A";
+  };
+
+  const getCurrentCityName = () => {
+    if (profileData && profileData.currentCity) {
+      return profileData.currentCity.name || "Los Santos";
+    }
+    return null;
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Acceso Restringido</h1>
+          <p className="text-gray-400 mb-8">Debes iniciar sesión para ver tu perfil</p>
+          <a
+            href="/ingresar"
+            className="inline-flex items-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-6 py-3 rounded-full transition-all"
+          >
+            Iniciar Sesión
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0c0c14]">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-white mb-8">Mi Perfil</h1>
+
+        {/* Profile Header */}
+        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-8">
+          <div className="flex items-center gap-6">
+            {user?.avatar && (
+              <img
+                src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`}
+                alt={user.username}
+                className="w-24 h-24 rounded-full border-4 border-[#8e00f7]"
+              />
+            )}
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {user?.global_name || user?.username}
+              </h2>
+              <div className="flex items-center gap-4 text-gray-400">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>@{user?.username}</span>
+                </div>
+                {user?.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <span>{user.email}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Miembro desde {getMemberSince()}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[#8e00f7]" />
+                  <span>
+                    Ciudad: {getCurrentCityName() || "No está en ninguna ciudad"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className={`h-5 w-5 ${membershipLevel !== "Ninguna" ? 'text-[#fbbf24]' : 'text-gray-400'}`} />
+                <span className={`font-bold text-lg ${membershipLevel !== "Ninguna" ? 'text-[#fbbf24]' : 'text-gray-400'}`}>
+                  {membershipLevel}
+                </span>
+              </div>
+              <p className="text-gray-400 text-sm">Nivel de Membresía</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-8">
+            <div className="flex items-center gap-4 mb-3">
+              <Image
+                src="/hub-coins.png"
+                alt="Hub Coins"
+                width={24}
+                height={24}
+                className="w-6 h-6"
+              />
+              <span className="text-gray-400 text-base">Hub Coins</span>
+            </div>
+            <div className="text-3xl font-bold text-white">
+              {loading ? (
+                <div className="animate-pulse">Cargando...</div>
+              ) : (
+                profileData.hubCoinsBalance.toLocaleString()
+              )}
+            </div>
+            <div className="text-sm text-gray-500 mt-2">
+              Comprados: {profileData.totalHubCoinsPurchased.toLocaleString()}
+            </div>
+          </div>
+
+          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-12">
+            <div className="flex items-center gap-4 mb-3">
+              <TrendingUp className="h-6 w-6 text-[#8e00f7]" />
+              <span className="text-gray-400 text-base">Total Gastado</span>
+            </div>
+            <div className="text-3xl font-bold text-white">
+              {loading ? (
+                <div className="animate-pulse">Cargando...</div>
+              ) : (
+                `$${profileData.totalSpent.toLocaleString()}`
+              )}
+            </div>
+          </div>
+
+          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-12">
+            <div className="flex items-center gap-4 mb-3">
+              <Clock className="h-6 w-6 text-[#f59e0b]" />
+              <span className="text-gray-400 text-base">Actividad Reciente</span>
+            </div>
+            <div className="text-3xl font-bold text-white">
+              {loading ? (
+                <div className="animate-pulse">Cargando...</div>
+              ) : (
+                profileData.recentActivity.length
+              )}
+            </div>
+            <div className="text-sm text-gray-500 mt-2">Últimas transacciones</div>
+          </div>
+        </div>
+
+        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-white mb-4">Actividad Reciente</h3>
+          <div className="space-y-4">
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-pulse text-gray-400">Cargando actividad reciente...</div>
+              </div>
+            ) : profileData.recentActivity.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-400">No hay actividad reciente</p>
+              </div>
+            ) : (
+              profileData.recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-[#1a1a28] rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      activity.status === 'completed' 
+                        ? 'bg-green-500/20' 
+                        : 'bg-red-500/20'
+                    }`}>
+                      {activity.status === 'completed' ? (
+                        <CheckCircle className="h-5 w-5 text-green-400" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-red-400" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-white font-medium">
+                        {activity.isHubCoins ? 'Hub Coins' : 'Compra'}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {activity.isHubCoins ? 'Hub Coins recibidos' : activity.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-white font-bold">
+                      {activity.isHubCoins ? (
+                        <span className="flex items-center gap-1">
+                          <Image
+                            src="/hub-coins.png"
+                            alt="Hub Coins"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5"
+                          />
+                          +{Math.abs(activity.amount)} HC
+                        </span>
+                      ) : (
+                        `$${Math.abs(activity.amount)}`
+                      )}
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      {(() => {
+                        const now = new Date();
+                        const activityDate = new Date(activity.timestamp);
+                        const diffMs = now.getTime() - activityDate.getTime();
+                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                        const diffDays = Math.floor(diffHours / 24);
+                        
+                        if (diffHours < 1) {
+                          return 'Hace unos minutos';
+                        } else if (diffHours < 24) {
+                          return `Hace ${diffHours} ${diffHours === 1 ? 'hora' : 'horas'}`;
+                        } else {
+                          return `Hace ${diffDays} ${diffDays === 1 ? 'día' : 'días'}`;
+                        }
+                      })()}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-8 text-center">
+        <button
+          onClick={() => window.location.href = '/'}
+          className="px-6 py-3 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 mx-auto"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Regresar a Inicio
+        </button>
+      </div>
+    </div>
+  );
+}
