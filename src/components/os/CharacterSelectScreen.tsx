@@ -85,10 +85,16 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
       <div className="relative z-10 flex flex-col items-center max-w-4xl w-full px-6">
         <p className="text-white/40 text-[11px] uppercase tracking-[0.25em] mb-1">ERLC HUB OS</p>
         <h1 className="text-white text-2xl font-light mb-1">¿Con qué personaje vas a entrar?</h1>
-        {institutionalDept && (
-          <p className="text-white/35 text-xs mb-9">Elegí el personaje — después vas a poder abrir la terminal de {institutionalDept.name}.</p>
-        )}
-        {!institutionalDept && <div className="mb-9" />}
+        <div className="flex items-center gap-2 mb-9">
+          {institutionalDept && (
+            <p className="text-white/35 text-xs">Elegí el personaje — después vas a poder abrir la terminal de {institutionalDept.name}.</p>
+          )}
+          {!loading && (
+            <span className={`text-[10px] font-mono tracking-wide text-white/30 border border-white/10 rounded-full px-2 py-0.5 ${institutionalDept ? '' : 'mx-auto'}`}>
+              {rows.length}/{characterSlots} PERSONAJES
+            </span>
+          )}
+        </div>
 
         {loading ? (
           <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
@@ -128,7 +134,7 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
 
                   <div className="flex items-center gap-1.5 px-3.5 py-2 border-b border-white/5">
                     <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-white/25'}`} />
-                    <span className="text-[10px] text-white/35 uppercase tracking-wide">{isActive ? 'Sesión activa' : `Personaje ${i + 1}`}</span>
+                    <span className="text-[10px] text-white/35 uppercase tracking-wide">{isActive ? 'Sesión activa' : 'Disponible'}</span>
                   </div>
 
                   <div className="px-3.5 py-2.5 space-y-1.5">
