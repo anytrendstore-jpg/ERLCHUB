@@ -24,12 +24,37 @@ import { useTiendaStats } from "@/hooks/useTiendaStats";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductCard from "@/components/tienda/ProductCard";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
+import MembershipTierCard from "@/components/tienda/MembershipTierCard";
+
+const KIT_CATEGORY_LABELS: Record<string, string> = {
+  basico: "Básico",
+  armas: "Armas",
+  vehiculos: "Vehículos",
+  personajes: "Personajes",
+  premium: "Premium",
+  criminal: "Criminal",
+  oficial: "Oficial",
+  staff: "Staff",
+};
 
 export default function TiendaPage() {
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
-  const { stats: reviewStats, reviews } = useReviews('Tienda'); 
+  const [billing, setBilling] = useState<"monthly" | "permanent">("permanent");
+  const [kitCategory, setKitCategory] = useState<string | null>(null);
+  const { stats: reviewStats, reviews } = useReviews('Tienda');
   const { stats: tiendaStats, loading: statsLoading } = useTiendaStats();
   const { addItem } = useCart();
+
+  const kitCategories = Array.from(new Set(kits.map((k) => k.category)));
+  const visibleKits = kitCategory ? kits.filter((k) => k.category === kitCategory) : kits;
+
+  // Ahorro real de KIT FULL comparado con comprar dinero + autos + personajes por separado
+  // (los 3 componentes que sí calzan uno a uno con lo que ya trae el bundle) — no es un número inventado.
+  const kitFull = kits.find((k) => k.id === "kit-full");
+  const bundleParts = ["kit-dinero", "kit-autos", "kit-personajes"]
+    .map((id) => kits.find((k) => k.id === id)?.priceHubCoins || 0)
+    .reduce((a, b) => a + b, 0);
+  const bundleSavingsPct = kitFull ? Math.round(((bundleParts - kitFull.priceHubCoins) / bundleParts) * 100) : 0;
   const tiendaRating = reviewStats.tienda.avgRating > 0 ? reviewStats.tienda.avgRating.toFixed(1) : "0";
   const handleAddWhitelistFastToCart = () => {
     addItem({
@@ -59,10 +84,30 @@ export default function TiendaPage() {
     <main className="min-h-screen bg-[#0c0c14]">
       <Navbar />
 
-      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      {/* Navegación rápida — la página es larga, así se salta directo a la sección que importa */}
+      <nav className="sticky top-16 z-30 bg-[#0c0c14]/90 backdrop-blur-xl border-b border-[#1a1a28]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1 overflow-x-auto scrollbar-hide py-2.5">
+          {[
+            { href: "#hubcoins", label: "Hub Coins" },
+            { href: "#membresias", label: "Membresías" },
+            { href: "#whitelist-fast", label: "Whitelist Fast" },
+            { href: "#kits", label: "Kits" },
+          ].map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
+      <div className="pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
 
-          <section className="mb-12">
+          <section id="hubcoins" className="mb-12 scroll-mt-24">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#8e00f7]/20 via-[#8e00f7]/10 to-[#a64dfa]/20 border border-[#8e00f7]/30">
               {/* Background pattern */}
               <div className="absolute inset-0 opacity-10">
@@ -135,8 +180,8 @@ export default function TiendaPage() {
             </div>
           </section>
 
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
+          <section id="membresias" className="mb-12 scroll-mt-24">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#fbbf24]/20 flex items-center justify-center">
                   <Crown className="h-5 w-5 text-[#fbbf24]" />
@@ -146,30 +191,38 @@ export default function TiendaPage() {
                   <p className="text-gray-400 text-sm">Beneficios exclusivos con pago en dinero real</p>
                 </div>
               </div>
+
+              <div className="flex items-center bg-[#12121c] border border-[#1a1a28] rounded-xl p-1">
+                <button
+                  type="button"
+                  onClick={() => setBilling("monthly")}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${billing === "monthly" ? "bg-[#8e00f7] text-white" : "text-gray-400 hover:text-white"}`}
+                >
+                  Mensual
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBilling("permanent")}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${billing === "permanent" ? "bg-[#8e00f7] text-white" : "text-gray-400 hover:text-white"}`}
+                >
+                  Permanente
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {memberships.map((membership) => (
-                <ProductCard
+                <MembershipTierCard
                   key={membership.id}
-                  href={`/tienda/membresia/${membership.id}`}
-                  image={membership.image}
-                  name={membership.name}
-                  description={membership.description}
-                  color={membership.color}
-                  priceLabel={
-                    <span className="inline-flex items-center gap-2">
-                      Desde ${membership.priceMonthly}
-                      <Image src="/banderas/usa-bandera.png" alt="USA" width={20} height={12} className="w-5 h-3 rounded-sm object-cover" />
-                      /mes
-                    </span>
-                  }
+                  membership={membership}
+                  billing={billing}
+                  recommended={membership.id === "mem-elite"}
                 />
               ))}
             </div>
           </section>
 
-          <section className="mb-12">
+          <section id="whitelist-fast" className="mb-12 scroll-mt-24">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#8e00f7]/20 via-[#8e00f7]/10 to-[#a64dfa]/20 border border-[#8e00f7]/30">
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-[#8e00f7] blur-3xl" />
@@ -265,7 +318,7 @@ export default function TiendaPage() {
             </div>
           </section>
 
-          <section className="mb-12">
+          <section id="kits" className="mb-12 scroll-mt-24">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#22c55e]/20 flex items-center justify-center">
@@ -278,8 +331,28 @@ export default function TiendaPage() {
               </div>
             </div>
 
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                type="button"
+                onClick={() => setKitCategory(null)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${kitCategory === null ? "bg-[#22c55e] text-black" : "bg-[#12121c] border border-[#1a1a28] text-gray-400 hover:border-[#3a3a4a]"}`}
+              >
+                Todos
+              </button>
+              {kitCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setKitCategory(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${kitCategory === cat ? "bg-[#22c55e] text-black" : "bg-[#12121c] border border-[#1a1a28] text-gray-400 hover:border-[#3a3a4a]"}`}
+                >
+                  {KIT_CATEGORY_LABELS[cat] || cat}
+                </button>
+              ))}
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {kits.map((kit) => (
+              {visibleKits.map((kit) => (
                 <ProductCard
                   key={kit.id}
                   href={`/tienda/kit/${kit.id}`}
@@ -287,6 +360,11 @@ export default function TiendaPage() {
                   name={kit.name}
                   description={kit.description}
                   color={kit.color}
+                  badge={kit.id === "kit-full" && bundleSavingsPct > 0 ? (
+                    <span className="text-[10px] font-bold uppercase tracking-wide bg-emerald-500 text-black px-2 py-1 rounded-full">
+                      Ahorrás {bundleSavingsPct}%
+                    </span>
+                  ) : undefined}
                   priceLabel={
                     <span className="inline-flex items-center gap-1.5">
                       {kit.priceHubCoins}
