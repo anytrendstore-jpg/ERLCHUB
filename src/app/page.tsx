@@ -3,18 +3,23 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
-import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import Footer from "@/components/Footer";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import {
-  ChevronRight, Truck, Shield, Headphones, Eye, Star, MessageSquare,
-  Gamepad2, UserCheck, FileCheck, Users, Car, Building2, Briefcase, Siren,
-  Instagram, Youtube, ChevronDown, MapPin, Globe
+  ChevronRight, Shield, Headphones, Eye, Star, MessageSquare,
+  Gamepad2, UserCheck, FileCheck, Users,
+  Instagram, Youtube, ChevronDown, Globe, LayoutDashboard, ClipboardCheck,
+  ShoppingBag, Coins, Crown, Package, Quote,
 } from "lucide-react";
 import { useHomeReviews } from "@/hooks/useHomeReviews";
+import { useReviews } from "@/hooks/useReviews";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
+import { useWhitelistStatus } from "@/hooks/useWhitelistStatus";
+import { useTiendaStats } from "@/hooks/useTiendaStats";
 import { useRouter } from "next/navigation";
-import DiscordLogin from "@/components/DiscordLogin";
+import { useCardTilt } from "@/hooks/useCardTilt";
+import ProductCard from "@/components/tienda/ProductCard";
+import { memberships, kits, hubCoinsPackages, currencies, convertPrice, formatNumber } from "@/lib/shopData";
 
 const DiscordIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -107,55 +112,6 @@ const teamMembers = [
   },
 ];
 
-interface RoleplaySystem {
-  id: string;
-  name: string;
-  icon: React.ComponentType<any>;
-  image: string;
-  color: string;
-  title: string;
-  description: string;
-}
-
-const roleplaySystems: RoleplaySystem[] = [
-  {
-    id: "vehicles",
-    name: "Vehículos",
-    icon: Car,
-    image: "/sistemas/conseccionario.png",
-    color: "#8e00f7",
-    title: "SISTEMA DE VEHÍCULOS",
-    description: "Experimenta la conducción más realista con nuestro sistema de vehículos avanzado. Desde patrullas policiales hasta vehículos civiles de alta gama, cada unidad cuenta con física realista, daños visuales y personalización completa.",
-  },
-  {
-    id: "properties",
-    name: "Propiedades",
-    icon: Building2,
-    image: "/sistemas/propiedades.png",
-    color: "#3b82f6",
-    title: "SISTEMA DE PROPIEDADES",
-    description: "Adquiere y personaliza tu propio espacio en la ciudad. Desde apartamentos urbanos hasta mansiones de lujo, cada propiedad es completamente personalizable.",
-  },
-  {
-    id: "jobs",
-    name: "Empleos",
-    icon: Briefcase,
-    image: "/sistemas/empleos.png",
-    color: "#22c55e",
-    title: "SISTEMA DE EMPLEOS",
-    description: "Más de 25 profesiones diferentes te esperan. Desde policía, bombero y paramédico hasta mecánico, taxista o empresario.",
-  },
-  {
-    id: "emergency",
-    name: "Emergencias",
-    icon: Siren,
-    image: "/sistemas/emergencia.png",
-    color: "#ef4444",
-    title: "SISTEMA DE EMERGENCIAS",
-    description: "Vive la adrenalina de los servicios de emergencia. Sistema de despacho en tiempo real, radio policial, códigos 10 y procedimientos realistas.",
-  },
-];
-
 const servers = [
   { id: "los-santos", name: "Los Santos", description: "La ciudad principal con todo tipo de actividades", maxPlayers: 40, color: "#8e00f7", comingSoon: false },
   { id: "liberty-city", name: "Liberty City", description: "Ambiente urbano con rascacielos y negocios", maxPlayers: 40, color: "#3b82f6", comingSoon: true },
@@ -208,28 +164,24 @@ function AnimatedSection({ children, className = "", delay = 0 }: { children: Re
 export default function Home() {
   const { isAuthenticated, isLoading } = useDiscordAuth();
   const router = useRouter();
+  const whitelist = useWhitelistStatus();
+  const { stats: tiendaStats } = useTiendaStats();
+  const { reviews: allReviews, stats: allReviewStats, loading: reviewsLoading } = useReviews("Todas");
 
-  const [activeSystem, setActiveSystem] = useState("vehicles");
-  const { stats: reviewStats } = useHomeReviews(); 
-  
+  const { stats: reviewStats } = useHomeReviews();
+
   const communityRating = reviewStats.comunidad.avgRating > 0 ? reviewStats.comunidad.avgRating.toFixed(1) : "0";
   const communityReviews = reviewStats.comunidad.count > 0 ? `${reviewStats.comunidad.count}` : "0";
   const [serverStatus, setServerStatus] = useState({ online: 0, max: 40 });
-  const [totalOnline, setTotalOnline] = useState(0);
   const [serverPlayers, setServerPlayers] = useState<Record<string, number>>({});
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const currentSystem = roleplaySystems.find(s => s.id === activeSystem) || roleplaySystems[0];
-  const handleSystemChange = (systemId: string) => {
-    if (systemId === activeSystem || isTransitioning) return;
-    
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setActiveSystem(systemId);
-      setIsTransitioning(false);
-    }, 150);
-  };
+  // Sin solicitud -> hacerla · a medias -> continuar · terminada -> su dashboard (misma lógica del Navbar).
+  const primaryAction = whitelist.completed
+    ? { href: "/dashboard", label: "Ir a mi Dashboard", icon: LayoutDashboard }
+    : whitelist.hasApplication
+      ? { href: whitelist.nextRoute, label: "Continuar mi Whitelist", icon: ClipboardCheck }
+      : { href: "/whitelist", label: "Empezar Whitelist", icon: ClipboardCheck };
 
   useEffect(() => {
     const fetchServerStatus = async () => {
@@ -242,24 +194,12 @@ export default function Home() {
             online: data.online || 0,
             max: data.max || 40,
           });
-          const baseOnline = data.online || 0;
-          setServerPlayers({
-            "los-santos": baseOnline,
-            "liberty-city": Math.floor(Math.random() * 25 + 5),
-            "vice-city": Math.floor(Math.random() * 20 + 3),
-            "las-venturas": Math.floor(Math.random() * 18 + 2),
-          });
-          setTotalOnline(baseOnline + Math.floor(Math.random() * 50 + 20));
+          setServerPlayers({ "los-santos": data.online || 0 });
         }
       } catch (error) {
         console.error("Error fetching server status:", error);
         setServerStatus({ online: 0, max: 40 });
-        setServerPlayers({
-          "los-santos": 0,
-          "liberty-city": 0,
-          "vice-city": 0,
-          "las-venturas": 0,
-        });
+        setServerPlayers({ "los-santos": 0 });
       }
     };
 
@@ -269,11 +209,25 @@ export default function Home() {
   }, []);
 
   const dynamicStats = [
-    { icon: Users, value: "+11K", label: "MIEMBROS" },
     { icon: Eye, value: `${serverStatus.online}/${serverStatus.max}`, label: "EN LÍNEA" },
     { icon: Star, value: communityRating, label: "RATING" },
     { icon: MessageSquare, value: communityReviews, label: "RESEÑAS" },
   ];
+
+  const featuredMembership = memberships.find((m) => m.id === "mem-elite") || memberships[0];
+  const featuredKit = kits.find((k) => k.id === "kit-full") || kits[0];
+  const featuredCoins = hubCoinsPackages.find((p) => p.popular) || hubCoinsPackages[0];
+
+  const overallReviewCount = allReviewStats.comunidad.count + allReviewStats.tienda.count + allReviewStats.hubCoins.count;
+  const overallReviewAvg = overallReviewCount > 0
+    ? (
+        (allReviewStats.comunidad.avgRating * allReviewStats.comunidad.count +
+          allReviewStats.tienda.avgRating * allReviewStats.tienda.count +
+          allReviewStats.hubCoins.avgRating * allReviewStats.hubCoins.count) /
+        overallReviewCount
+      )
+    : 0;
+  const featuredReviews = allReviews.filter((r) => r.rating >= 4).slice(0, 6);
 
   return (
     <main className="min-h-screen bg-[#0c0c14]">
@@ -298,20 +252,27 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4">
-                  <a 
-                    href="https://discord.com/invite/xKJqNX7uC3" 
-                    target="_blank" 
+                  {!isLoading && (
+                    <a
+                      href={primaryAction.href}
+                      className="group flex items-center justify-center gap-2 bg-[#8e00f7] hover:bg-[#a64dfa] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300"
+                    >
+                      <primaryAction.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      {primaryAction.label}
+                      <span className="flex items-center">
+                        <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 animate-chevron" />
+                        <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 -ml-2 animate-chevron" style={{ animationDelay: "0.1s" }} />
+                      </span>
+                    </a>
+                  )}
+                  <a
+                    href="https://discord.com/invite/xKJqNX7uC3"
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-center gap-2 bg-[#8e00f7] hover:bg-[#a64dfa] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300"
+                    className="group flex items-center justify-center gap-2 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300"
                   >
-                    UNIRSE AHORA
-                    <span className="flex items-center">
-                      <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 animate-chevron" />
-                      <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 -ml-2 animate-chevron" style={{ animationDelay: "0.1s" }} />
-                    </span>
-                  </a>
-                  <a href="/resenas" className="flex items-center justify-center gap-2 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300">
-                    TESTIMONIOS
+                    <DiscordIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    UNIRSE A DISCORD
                   </a>
                 </div>
 
@@ -348,7 +309,59 @@ export default function Home() {
               </div>
 
               <div className="lg:pt-8">
-                <TestimonialsCarousel />
+                <div className="relative bg-[#12121c]/80 backdrop-blur-sm border border-[#1a1a28] rounded-2xl p-6 sm:p-8 overflow-hidden">
+                  <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 100% 0%, rgba(142,0,247,0.15), transparent 60%)' }} />
+
+                  <div className="relative flex items-center gap-2 mb-6">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e]" />
+                    </span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#22c55e]">
+                      {serverStatus.online} jugadores en línea ahora
+                    </span>
+                  </div>
+
+                  <div className="relative flex items-center gap-4 mb-6 pb-6 border-b border-[#1a1a28]">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`h-5 w-5 ${i < Math.round(Number(communityRating)) ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
+                      ))}
+                    </div>
+                    <div>
+                      <div className="text-white font-bold leading-none">{communityRating}/5</div>
+                      <div className="text-xs text-gray-500">{communityReviews} reseñas de la comunidad</div>
+                    </div>
+                  </div>
+
+                  {featuredReviews[0] ? (
+                    <div className="relative">
+                      <Quote className="h-6 w-6 text-[#8e00f7]/40 mb-2" />
+                      <p className="text-gray-300 leading-relaxed mb-4 line-clamp-4">"{featuredReviews[0].comment}"</p>
+                      <div className="flex items-center gap-3">
+                        {featuredReviews[0].avatar && featuredReviews[0].userId ? (
+                          <img
+                            src={`https://cdn.discordapp.com/avatars/${featuredReviews[0].userId}/${featuredReviews[0].avatar}.png?size=48`}
+                            alt={featuredReviews[0].username || featuredReviews[0].name}
+                            className="w-9 h-9 rounded-full border border-[#8e00f7]/40"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-[#8e00f7]/20 flex items-center justify-center text-[#8e00f7] font-bold text-sm">
+                            {featuredReviews[0].name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="text-sm text-white font-medium">{featuredReviews[0].username || featuredReviews[0].name}</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="relative text-gray-500 text-sm">Sé el primero en dejar una reseña de tu experiencia.</p>
+                  )}
+
+                  <a href="#resenas" className="relative mt-6 flex items-center justify-center gap-2 text-sm font-bold text-[#8e00f7] hover:text-[#a64dfa] transition-colors">
+                    Ver todas las reseñas
+                    <ChevronRight className="h-4 w-4" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -416,18 +429,24 @@ export default function Home() {
           </div>
 
           <AnimatedSection delay={500}>
-            <div className="text-center mt-12">
-              <a href="https://discord.gg/xKJqNX7uC3" className="inline-flex items-center gap-3 bg-[#8e00f7] hover:bg-[#7a00d4] text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg shadow-[#8e00f7]/25">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+              {!isLoading && (
+                <a href={primaryAction.href} className="inline-flex items-center gap-3 bg-[#8e00f7] hover:bg-[#7a00d4] text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg shadow-[#8e00f7]/25">
+                  <primaryAction.icon className="w-5 h-5" />
+                  {primaryAction.label}
+                  <ChevronRight className="w-5 h-5" />
+                </a>
+              )}
+              <a href="https://discord.gg/xKJqNX7uC3" className="inline-flex items-center gap-3 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-white px-8 py-4 rounded-xl font-bold transition-all duration-300">
                 <DiscordIcon className="w-5 h-5" />
                 Unirse al Discord
-                <ChevronRight className="w-5 h-5" />
               </a>
             </div>
           </AnimatedSection>
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0a0a10] overflow-hidden">
+      <section className="relative py-24 bg-[#0c0c14] overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 opacity-20" style={{
             backgroundImage: `
@@ -602,7 +621,156 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0a0a12]">
+      <section className="relative py-24 bg-[#0a0a12] overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#8e00f7]/10 rounded-full blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+              <div>
+                <p className="text-[#8e00f7] font-medium uppercase tracking-wider mb-2">Tienda ERLC HUB</p>
+                <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+                  Potencia tu <span className="text-[#8e00f7]">experiencia</span>
+                </h2>
+                <p className="text-gray-400 text-lg max-w-xl">
+                  Membresías, kits y Hub Coins para llevar tu roleplay al siguiente nivel.
+                  {tiendaStats.totalOrders > 0 && (
+                    <span className="text-gray-500"> Ya se completaron {formatNumber(tiendaStats.totalOrders)} pedidos.</span>
+                  )}
+                </p>
+              </div>
+              <a href="/tienda" className="group flex items-center gap-2 bg-[#12121c] border border-[#1a1a28] hover:border-[#8e00f7]/50 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap w-fit">
+                Ver Tienda Completa
+                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+            </div>
+          </AnimatedSection>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatedSection delay={0}>
+              <ProductCard
+                href={`/tienda/membresia/${featuredMembership.id}`}
+                image={featuredMembership.image}
+                name={`Membresía ${featuredMembership.name}`}
+                description={featuredMembership.description}
+                color={featuredMembership.color}
+                badge={
+                  <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide bg-[#12121c]/80 backdrop-blur-sm text-white px-2 py-1 rounded-full border border-white/10">
+                    <Crown className="w-3 h-3" style={{ color: featuredMembership.color }} /> Membresía
+                  </span>
+                }
+                priceLabel={<span>{convertPrice(featuredMembership.pricePermanent, currencies[0])} único pago</span>}
+              />
+            </AnimatedSection>
+
+            <AnimatedSection delay={100}>
+              <ProductCard
+                href={`/tienda/kit/${featuredKit.id}`}
+                image={featuredKit.image}
+                name={featuredKit.name}
+                description={featuredKit.description}
+                color={featuredKit.color}
+                badge={
+                  <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide bg-[#12121c]/80 backdrop-blur-sm text-white px-2 py-1 rounded-full border border-white/10">
+                    <Package className="w-3 h-3" style={{ color: featuredKit.color }} /> Kit
+                  </span>
+                }
+                priceLabel={
+                  <span className="inline-flex items-center gap-1.5">
+                    {featuredKit.priceHubCoins}
+                    <Image src="/hub-coins.png" alt="Hub Coins" width={16} height={16} className="w-4 h-4" />
+                  </span>
+                }
+              />
+            </AnimatedSection>
+
+            <AnimatedSection delay={200}>
+              <ProductCard
+                href="/tienda/hub-coins"
+                image="/hub-coins.png"
+                name={`${formatNumber(featuredCoins.coins + featuredCoins.bonus)} Hub Coins`}
+                description={`Recarga ${formatNumber(featuredCoins.coins)} Hub Coins${featuredCoins.bonus > 0 ? ` + ${formatNumber(featuredCoins.bonus)} de bono` : ""} para gastar en kits, whitelist fast y más.`}
+                color="#f59e0b"
+                badge={
+                  <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide bg-[#12121c]/80 backdrop-blur-sm text-white px-2 py-1 rounded-full border border-white/10">
+                    <Coins className="w-3 h-3 text-[#f59e0b]" /> Hub Coins
+                  </span>
+                }
+                priceLabel={<span>${featuredCoins.priceUSD} USD</span>}
+              />
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      <section id="resenas" className="relative py-24 bg-[#0c0c14] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <div className="text-center mb-12">
+              <p className="text-[#8e00f7] font-medium uppercase tracking-wider mb-2">Reseñas</p>
+              <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+                Lo que dice <span className="text-[#8e00f7]">nuestra comunidad</span>
+              </h2>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={`h-5 w-5 ${i < Math.round(overallReviewAvg) ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
+                  ))}
+                </div>
+                <span className="text-white font-bold">{overallReviewAvg > 0 ? overallReviewAvg.toFixed(1) : "0"}/5</span>
+              </div>
+              <p className="text-gray-400">{overallReviewCount} reseñas de la comunidad y de la tienda</p>
+            </div>
+          </AnimatedSection>
+
+          {!reviewsLoading && featuredReviews.length === 0 ? (
+            <div className="text-center text-gray-500 py-12">Aún no hay reseñas. Sé el primero en compartir tu experiencia.</div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredReviews.map((review, index) => (
+                <AnimatedSection key={review._id} delay={index * 100}>
+                  <div className="h-full bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 flex flex-col">
+                    <div className="flex items-center gap-1 mb-4">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`h-4 w-4 ${i < review.rating ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
+                      ))}
+                    </div>
+                    <p className="text-gray-300 leading-relaxed mb-6 flex-1 line-clamp-4">"{review.comment}"</p>
+                    <div className="flex items-center gap-3">
+                      {review.avatar && review.userId ? (
+                        <img
+                          src={`https://cdn.discordapp.com/avatars/${review.userId}/${review.avatar}.png?size=48`}
+                          alt={review.username || review.name}
+                          className="w-9 h-9 rounded-full border border-[#8e00f7]/40"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-[#8e00f7]/20 flex items-center justify-center text-[#8e00f7] font-bold text-sm">
+                          {review.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-sm text-white font-medium">{review.username || review.name}</div>
+                        <div className="text-xs text-gray-500">{review.tag}</div>
+                      </div>
+                    </div>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+          )}
+
+          <AnimatedSection delay={300}>
+            <div className="text-center mt-12">
+              <a href="/resenas" className="inline-flex items-center gap-2 text-[#8e00f7] hover:text-[#a64dfa] font-bold transition-colors">
+                Ver todas las reseñas
+                <ChevronRight className="w-4 h-4" />
+              </a>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      <section className="relative py-24 bg-[#0c0c14]">
         <div className="absolute inset-0 bg-gradient-to-b from-[#8e00f7]/5 via-transparent to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -615,7 +783,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-500" />
                     <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg">
                       <p className="text-white font-medium">Nuestra Comunidad</p>
-                      <p className="text-sm text-gray-300">+11,000 miembros activos</p>
+                      <p className="text-sm text-gray-300">{serverStatus.online} jugadores conectados ahora</p>
                     </div>
                   </div>
                   
@@ -648,8 +816,8 @@ export default function Home() {
                       <Star className="w-6 h-6 text-[#8e00f7]" />
                     </div>
                     <div>
-                      <div className="text-2xl font-black text-white">4.9</div>
-                      <div className="text-xs text-gray-500">Calificación</div>
+                      <div className="text-2xl font-black text-white">{communityRating}</div>
+                      <div className="text-xs text-gray-500">{communityReviews} reseñas</div>
                     </div>
                   </div>
                 </div>
@@ -699,9 +867,9 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#1e1e2e]">
-                  <div><div className="text-3xl font-black text-white">11K+</div><div className="text-sm text-gray-500">Miembros</div></div>
-                  <div><div className="text-3xl font-black text-white">3+</div><div className="text-sm text-gray-500">Años activos</div></div>
-                  <div><div className="text-3xl font-black text-white">24/7</div><div className="text-sm text-gray-500">Online</div></div>
+                  <div><div className="text-3xl font-black text-white">{serverStatus.online}</div><div className="text-sm text-gray-500">En línea ahora</div></div>
+                  <div><div className="text-3xl font-black text-white">{communityRating}/5</div><div className="text-sm text-gray-500">Calificación</div></div>
+                  <div><div className="text-3xl font-black text-white">24/7</div><div className="text-sm text-gray-500">Soporte</div></div>
                 </div>
               </div>
             </AnimatedSection>
@@ -782,110 +950,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0a0a12] overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#8e00f7]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#8e00f7]/5 rounded-full blur-3xl" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection>
-            <div className="text-center mb-12">
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
-                Experimenta el roleplay <span className="text-[#8e00f7]">como nunca antes...</span>
-              </h2>
-              <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-                Con más de <span className="text-[#8e00f7] font-bold">+3 años</span> en constante desarrollo, ERLC HUB cuenta con los
-                <span className="text-[#8e00f7] font-bold"> sistemas más revolucionarios</span> en la historia del roleplay en Roblox.
-              </p>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection delay={200}>
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              {roleplaySystems.map((system) => (
-                <button
-                  key={system.id}
-                  onClick={() => handleSystemChange(system.id)}
-                  disabled={isTransitioning}
-                  className={`flex items-center gap-3 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                    activeSystem === system.id
-                      ? "bg-[#8e00f7] text-white shadow-lg shadow-[#8e00f7]/25"
-                      : "bg-[#12121c] text-gray-400 hover:bg-[#1a1a28] hover:text-white border border-[#1e1e2e]"
-                  } ${
-                    isTransitioning ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300" style={{ 
-                    backgroundColor: activeSystem === system.id ? '#8e00f7' : '#12121c'
-                  }}>
-                    <system.icon className={`w-5 h-5 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] ${activeSystem === system.id ? 'animate-pulse' : ''}`} style={{ animationDuration: '3s' }} />
-                  </div>
-                  {system.name}
-                </button>
-              ))}
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection delay={300}>
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#8e00f7]/20 rounded-lg">
-                  <currentSystem.icon className="w-5 h-5 text-[#8e00f7]" />
-                  <span className="text-[#8e00f7] font-medium text-sm">Sistema Destacado</span>
-                </div>
-                <h3 className="text-3xl sm:text-4xl font-black text-white">{currentSystem.title}</h3>
-                <p className="text-gray-400 text-lg leading-relaxed">{currentSystem.description}</p>
-                <span className="inline-flex items-center gap-2 text-[#8e00f7] font-medium">
-                  PROXIMAMENTE
-                  <ChevronRight className="w-5 h-5" />
-                </span>
-              </div>
-
-              <div className="relative">
-                <div className="space-y-4">
-                  <div className="relative h-64 rounded-2xl overflow-hidden group">
-                    <div className={`absolute inset-0 transition-opacity duration-500 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
-                      <Image
-                        src={currentSystem.image}
-                        alt={currentSystem.name}
-                        fill
-                        className="object-cover rounded-2xl opacity-50 transition-opacity duration-300 group-hover:opacity-60"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        priority={false}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#8e00f7]/10 to-[#0c0c14]" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <currentSystem.icon className="w-32 h-32 text-white/90 drop-shadow-[0_0_25px_rgba(255,255,255,0.9)] animate-pulse" style={{ animationDuration: '3s' }} />
-                      </div>
-                      <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                        <span className="px-3 py-1 bg-white/10 backdrop-blur-sm rounded text-white text-sm font-medium">Proximamente</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="relative h-32 rounded-xl overflow-hidden bg-gradient-to-br from-[#1a1a28] to-[#0c0c14] border border-[#1e1e2e] flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-2xl font-black text-[#8e00f7]">200+</div>
-                        <div className="text-xs text-gray-500">Características</div>
-                      </div>
-                    </div>
-                    <div className="relative h-32 rounded-xl overflow-hidden bg-gradient-to-br from-[#1a1a28] to-[#0c0c14] border border-[#1e1e2e] flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-2xl font-black text-[#22c55e]">99%</div>
-                        <div className="text-xs text-gray-500">Satisfacción</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute -top-4 -right-4 bg-[#8e00f7] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-[#8e00f7]/20">
-                  Exclusivo
-                </div>
-              </div>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
       <AnimatedSection>
         <section className="relative py-16 bg-[#0c0c14]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -893,21 +957,29 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/20 rounded-full blur-2xl" />
 
-              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
                     <DiscordIcon className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-white">¡Te esperamos en Discord!</h3>
+                    <h3 className="text-2xl font-black text-white">¿Listo para empezar?</h3>
                     <p className="text-white/80">Únete a nuestra comunidad para compartir y hacer preguntas.</p>
                   </div>
                 </div>
 
-                <a href="https://discord.gg/xKJqNX7uC3" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white text-[#8e00f7] px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 hover:scale-105 whitespace-nowrap">
-                  Ir a Discord
-                  <ChevronRight className="w-5 h-5" />
-                </a>
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                  {!isLoading && (
+                    <a href={primaryAction.href} className="flex items-center justify-center gap-2 bg-white text-[#8e00f7] px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 hover:scale-105 whitespace-nowrap w-full sm:w-auto">
+                      <primaryAction.icon className="w-5 h-5" />
+                      {primaryAction.label}
+                    </a>
+                  )}
+                  <a href="https://discord.gg/xKJqNX7uC3" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-white/10 border border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/20 transition-all duration-300 whitespace-nowrap w-full sm:w-auto">
+                    Ir a Discord
+                    <ChevronRight className="w-5 h-5" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
