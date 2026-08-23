@@ -34,7 +34,7 @@ export default function ProductCard({ href, image, name, description, color, pri
       className="product-card group relative bg-[#12121c] border border-[#1a1a28] rounded-2xl overflow-hidden transition-[transform,border-color,box-shadow] duration-300 [transform-style:preserve-3d] hover:-translate-y-1"
     >
       <div className="relative w-full h-48 overflow-hidden">
-        <Image src={image} alt={name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+        <Image src={image} alt={name} fill className="object-cover object-top transition-transform duration-500 group-hover:scale-105" />
         <div
           className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{ background: 'radial-gradient(220px circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,255,255,0.12), transparent 60%)' }}
