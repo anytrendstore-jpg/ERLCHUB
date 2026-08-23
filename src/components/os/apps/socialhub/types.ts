@@ -1,0 +1,97 @@
+export interface Story {
+  id: string;
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatar?: string;
+  type: 'image' | 'text';
+  content: string;
+  backgroundColor?: string;
+  viewedBy: string[];
+  createdAt: string;
+}
+
+export interface StoryGroup {
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatar?: string;
+  hasUnseen: boolean;
+  stories: Story[];
+}
+
+export interface Comment {
+  id: string;
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatar?: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface Post {
+  id: string;
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatar?: string;
+  text: string;
+  imageUrl?: string;
+  likes: string[];
+  comments: Comment[];
+  shares: string[];
+  savedBy: string[];
+  viewedBy: string[];
+  editedAt?: string;
+  verified?: boolean;
+  accountType?: 'personal' | 'business' | 'organization';
+  createdAt: string;
+}
+
+export interface Profile {
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatar?: string;
+  avatarUrl?: string;
+  coverUrl?: string;
+  bio?: string;
+  verified?: boolean;
+  accountType?: 'personal' | 'business' | 'organization';
+}
+
+/** Pestañas de nivel superior de HubSocial. Las que todavía no tienen datos reales (grupos,
+ * páginas, eventos, marketplace, videos) se agregan en fases posteriores del rediseño —
+ * mientras tanto muestran un estado "Próximamente" honesto, nunca contenido inventado. */
+export type SocialView =
+  | { mode: 'feed' }
+  | { mode: 'explore' }
+  | { mode: 'videos' }
+  | { mode: 'marketplace' }
+  | { mode: 'groups' }
+  | { mode: 'pages' }
+  | { mode: 'events' }
+  | { mode: 'profile'; discordId: string }
+  | { mode: 'saved' };
+
+export function timeAgo(iso: string): string {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return 'ahora';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
+}
+
+import { createElement, Fragment, type ReactNode } from 'react';
+
+export function renderTextWithMentions(text: string): ReactNode {
+  const parts = text.split(/(@[a-zA-Z0-9_.]{2,32})/g);
+  return parts.map((part, i) =>
+    part.startsWith('@')
+      ? createElement('span', { key: i, className: 'text-violet-400 font-medium' }, part)
+      : createElement(Fragment, { key: i }, part)
+  );
+}
