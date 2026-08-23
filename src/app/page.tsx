@@ -113,10 +113,10 @@ const teamMembers = [
 ];
 
 const servers = [
-  { id: "los-santos", name: "Los Santos", description: "La ciudad principal con todo tipo de actividades", maxPlayers: 40, color: "#8e00f7", comingSoon: false },
-  { id: "liberty-city", name: "Liberty City", description: "Ambiente urbano con rascacielos y negocios", maxPlayers: 40, color: "#3b82f6", comingSoon: true },
-  { id: "vice-city", name: "Vice City", description: "Estilo retro con playas y vida nocturna", maxPlayers: 40, color: "#22c55e", comingSoon: true },
-  { id: "las-venturas", name: "Las Venturas", description: "La ciudad del entretenimiento y los casinos", maxPlayers: 40, color: "#ef4444", comingSoon: true },
+  { id: "los-santos", name: "Los Santos", description: "La ciudad principal con todo tipo de actividades", maxPlayers: 50, color: "#8e00f7", comingSoon: false },
+  { id: "liberty-city", name: "Liberty City", description: "Ambiente urbano con rascacielos y negocios", maxPlayers: 50, color: "#3b82f6", comingSoon: true },
+  { id: "vice-city", name: "Vice City", description: "Estilo retro con playas y vida nocturna", maxPlayers: 50, color: "#22c55e", comingSoon: true },
+  { id: "las-venturas", name: "Las Venturas", description: "La ciudad del entretenimiento y los casinos", maxPlayers: 50, color: "#ef4444", comingSoon: true },
 ];
 
 function useScrollAnimation() {
@@ -198,7 +198,7 @@ export default function Home() {
         }
       } catch (error) {
         console.error("Error fetching server status:", error);
-        setServerStatus({ online: 0, max: 40 });
+        setServerStatus({ online: 0, max: 50 });
         setServerPlayers({ "los-santos": 0 });
       }
     };
@@ -207,6 +207,8 @@ export default function Home() {
     const interval = setInterval(fetchServerStatus, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const totalMaxPlayers = servers.reduce((sum, s) => sum + s.maxPlayers, 0);
 
   const dynamicStats = [
     { icon: Eye, value: `${serverStatus.online}/${serverStatus.max}`, label: "EN LÍNEA" },
@@ -534,7 +536,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl sm:text-5xl font-black text-white">{serverStatus.max}</span>
+                <span className="text-4xl sm:text-5xl font-black text-white">{totalMaxPlayers}</span>
                 <div className="text-gray-500 text-sm uppercase tracking-wider">
                   <div>MÁXIMO</div>
                   <div>JUGADORES</div>
