@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentDiscordUser } from '@/lib/whitelistServer';
-import { logStaffAction, nextTicketNumber, staffTickets, type TicketCategory, type TicketStatus } from '@/lib/staffServer';
+import { logStaffAction, nextTicketNumber, staffTickets, type TicketAttachment, type TicketCategory, type TicketStatus } from '@/lib/staffServer';
+import { isValidAttachment, MAX_ATTACHMENTS_PER_MESSAGE } from '@/lib/ticketAttachments';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
       ticketNumber: await nextTicketNumber(col),
       subject: subject.trim().slice(0, 200),
       category: CATEGORIES.includes(category) ? (category as TicketCategory) : 'Otro',
+      priority: 'medium' as const,
       playerName,
       playerId: user.id,
       status: 'open' as TicketStatus,
@@ -87,9 +89,12 @@ export async function PATCH(request: NextRequest) {
   if (!user) return notLoggedIn();
 
   try {
-    const { id, body } = await request.json();
-    if (!id || !body?.trim()) {
-      return NextResponse.json({ success: false, error: 'Falta el mensaje' }, { status: 400 });
+    const { id, body, attachments } = await request.json();
+    const safeAttachments: TicketAttachment[] = Array.isArray(attachments)
+      ? attachments.filter((a) => isValidAttachment(a) && a.url.includes(`/tickets/${id}/`)).slice(0, MAX_ATTACHMENTS_PER_MESSAGE)
+      : [];
+    if (!id || (!body?.trim() && safeAttachments.length === 0)) {
+      return NextResponse.json({ success: false, error: 'Falta el mensaje o un adjunto' }, { status: 400 });
     }
 
     const col = await staffTickets();
@@ -106,7 +111,7 @@ export async function PATCH(request: NextRequest) {
     await col.updateOne(
       { id },
       {
-        $push: { messages: { author: playerName, authorRole: 'user', body: body.trim().slice(0, 2000), createdAt: now } },
+        $push: { messages: { author: playerName, authorRole: 'user', body: (body || '').trim().slice(0, 2000), createdAt: now, attachments: safeAttachments } },
         $set: { updatedAt: now, lastMessageFrom: 'user', status: 'open' },
       }
     );

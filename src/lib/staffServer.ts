@@ -298,11 +298,20 @@ export async function ticketCategories(): Promise<Collection<TicketCategoryDoc>>
   return col;
 }
 
+export interface TicketAttachment {
+  url: string;
+  name: string;
+  contentType: string;
+  size: number;
+  kind: 'image' | 'video' | 'audio' | 'file';
+}
+
 export interface StaffTicketMessage {
   author: string;
   authorRole: 'staff' | 'user';
   body: string;
   createdAt: Date;
+  attachments?: TicketAttachment[];
 }
 
 /** Nota privada del staff dentro de un ticket: el jugador nunca la ve. */

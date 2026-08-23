@@ -3,14 +3,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Plus, X, Loader2, Ticket, Send, Lock, ShieldCheck, MessageCircle,
-  UserCog, CheckCircle2, Paperclip, Circle, Settings, Trash2,
+  UserCog, CheckCircle2, Circle, Settings, Trash2,
 } from "lucide-react";
 import { PanelHeader, Card, CardTitle, Chip, TextInput, TextArea, Select, PrimaryButton, LoadingBlock, EmptyState, formatDate, useToast, Pagination, SortToggle } from "@/components/staff/ui";
+import TicketAttachments, { type TicketAttachment } from "@/components/soporte/TicketAttachments";
+import AttachButton from "@/components/soporte/AttachButton";
 
 type TicketStatus = "open" | "in_progress" | "closed";
 type TicketPriority = "low" | "medium" | "high" | "critical";
 type TicketCategory = string;
-interface TicketMsg { author: string; authorRole: "staff" | "user"; body: string; createdAt: string; }
+interface TicketMsg { author: string; authorRole: "staff" | "user"; body: string; createdAt: string; attachments?: TicketAttachment[]; }
 interface TicketNote { author: string; body: string; createdAt: string; }
 interface TicketDoc {
   id: string; ticketNumber: number; subject: string; category: TicketCategory; priority: TicketPriority; playerName: string;
@@ -56,6 +58,8 @@ export default function TicketsPanel({ onChanged }: { onChanged?: () => void }) 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tab, setTab] = useState<"chat" | "notes">("chat");
   const [reply, setReply] = useState("");
+  const [replyAttachments, setReplyAttachments] = useState<TicketAttachment[]>([]);
+  const [attachError, setAttachError] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
@@ -148,11 +152,12 @@ export default function TicketsPanel({ onChanged }: { onChanged?: () => void }) 
 
   const sendReply = async (text?: string) => {
     const body = text ?? reply;
-    if (!selected || !body.trim()) return;
+    if (!selected || (!body.trim() && replyAttachments.length === 0)) return;
     setSaving(true);
     try {
-      await fetch("/api/staff/tickets", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: selected.id, action: "reply", body }) });
+      await fetch("/api/staff/tickets", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: selected.id, action: "reply", body, attachments: replyAttachments }) });
       setReply("");
+      setReplyAttachments([]);
       await load();
       onChanged?.();
     } finally {
@@ -394,10 +399,11 @@ export default function TicketsPanel({ onChanged }: { onChanged?: () => void }) 
                           }`}>
                             <div className="flex items-center gap-1.5 mb-1">
                               <span className="text-xs font-medium text-slate-300">{m.author}</span>
-                              {m.authorRole === "staff" && <ShieldCheck className="h-3 w-3 text-blue-400" title="Respuesta verificada del staff" />}
+                              {m.authorRole === "staff" && <ShieldCheck className="h-3 w-3 text-blue-400" aria-label="Respuesta verificada del staff" />}
                               <span className="text-[10px] text-slate-600">{formatDate(m.createdAt)}</span>
                             </div>
-                            <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{m.body}</p>
+                            {m.body && <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{m.body}</p>}
+                            <TicketAttachments attachments={m.attachments} />
                           </div>
                         </div>
                       ))
@@ -414,11 +420,29 @@ export default function TicketsPanel({ onChanged }: { onChanged?: () => void }) 
                         ))}
                       </div>
                     )}
+                    {attachError && <p className="text-xs text-rose-400">{attachError}</p>}
+                    {replyAttachments.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {replyAttachments.map((a, i) => (
+                          <span key={i} className="flex items-center gap-1.5 text-xs bg-blue-600/10 border border-blue-500/30 text-slate-300 rounded-lg px-2.5 py-1.5">
+                            {a.name}
+                            <button type="button" onClick={() => setReplyAttachments((prev) => prev.filter((_, idx) => idx !== i))} className="text-slate-500 hover:text-white">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     {selected.status !== "closed" ? (
                       <div className="flex items-center gap-2">
-                        <button type="button" className="h-10 w-10 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-300 hover:bg-[#151C2A] transition flex-shrink-0" title="Adjuntar (próximamente)">
-                          <Paperclip className="h-4 w-4" />
-                        </button>
+                        <AttachButton
+                          uploadUrl="/api/staff/tickets/upload"
+                          ticketId={selected.id}
+                          pendingCount={replyAttachments.length}
+                          disabled={saving}
+                          onAdd={(a) => setReplyAttachments((prev) => [...prev, a])}
+                          onError={(msg) => setAttachError(msg)}
+                        />
                         <input
                           value={reply}
                           onChange={(e) => setReply(e.target.value)}
@@ -426,7 +450,7 @@ export default function TicketsPanel({ onChanged }: { onChanged?: () => void }) 
                           placeholder="Escribe una respuesta... (Enter para enviar, Shift+Enter nueva línea)"
                           className="flex-1 h-10 px-3 bg-[#0B0F17] border border-[#1F2937] rounded-lg text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                         />
-                        <button type="button" onClick={() => sendReply()} disabled={saving || !reply.trim()} className="h-10 w-10 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition flex-shrink-0">
+                        <button type="button" onClick={() => sendReply()} disabled={saving || (!reply.trim() && replyAttachments.length === 0)} className="h-10 w-10 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition flex-shrink-0">
                           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                         </button>
                       </div>

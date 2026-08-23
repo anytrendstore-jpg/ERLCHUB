@@ -6,12 +6,14 @@ import Footer from "@/components/Footer";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import {
   LifeBuoy, Ticket, Flag, Plus, X, Send, Loader2, ChevronRight,
-  MessageSquare, Lock, AlertCircle, CheckCircle2, ShieldCheck,
+  MessageSquare, Lock, AlertCircle, CheckCircle2, ShieldCheck, Paperclip, Download, Music,
 } from "lucide-react";
+import TicketAttachments, { type TicketAttachment } from "@/components/soporte/TicketAttachments";
+import AttachButton from "@/components/soporte/AttachButton";
 
 type TicketStatus = "open" | "in_progress" | "closed";
 type TicketCategory = "Soporte Técnico" | "Whitelist" | "Pagos" | "Reporte" | "Otro";
-interface TicketMsg { author: string; authorRole: "staff" | "user"; body: string; createdAt: string; }
+interface TicketMsg { author: string; authorRole: "staff" | "user"; body: string; createdAt: string; attachments?: TicketAttachment[]; }
 interface TicketDoc {
   id: string; ticketNumber: number; subject: string; category: TicketCategory; status: TicketStatus;
   messages: TicketMsg[]; createdAt: string; updatedAt: string;
@@ -101,6 +103,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
   const [showForm, setShowForm] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reply, setReply] = useState("");
+  const [replyAttachments, setReplyAttachments] = useState<TicketAttachment[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [replyError, setReplyError] = useState<string | null>(null);
@@ -150,17 +153,17 @@ function TicketsTab({ playerName }: { playerName: string }) {
   };
 
   const sendReply = async () => {
-    if (!selected || !reply.trim()) return;
+    if (!selected || (!reply.trim() && replyAttachments.length === 0)) return;
     setSaving(true);
     setReplyError(null);
     try {
       const res = await fetch("/api/support/tickets", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: selected.id, body: reply }),
+        body: JSON.stringify({ id: selected.id, body: reply, attachments: replyAttachments }),
       });
       const data = await res.json();
-      if (data.success) { setReply(""); await load(); }
+      if (data.success) { setReply(""); setReplyAttachments([]); await load(); }
       else setReplyError(data.error || "No se pudo enviar la respuesta");
     } catch {
       setReplyError("No se pudo enviar la respuesta");
@@ -209,7 +212,8 @@ function TicketsTab({ playerName }: { playerName: string }) {
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{m.body}</p>
+                {m.body && <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{m.body}</p>}
+                <TicketAttachments attachments={m.attachments} />
                 <div className="text-[10px] text-gray-600 mt-1">{formatDate(m.createdAt)}</div>
               </div>
             </div>
@@ -219,7 +223,27 @@ function TicketsTab({ playerName }: { playerName: string }) {
         <div className="p-4 border-t border-[#1a1a28]">
           {selected.status !== "closed" ? (
             <div>
+              {replyAttachments.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {replyAttachments.map((a, i) => (
+                    <span key={i} className="flex items-center gap-1.5 text-xs bg-[#8e00f7]/10 border border-[#8e00f7]/30 text-gray-300 rounded-lg px-2.5 py-1.5">
+                      {a.name}
+                      <button type="button" onClick={() => setReplyAttachments((prev) => prev.filter((_, idx) => idx !== i))} className="text-gray-500 hover:text-white">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="flex gap-2">
+                <AttachButton
+                  uploadUrl="/api/support/tickets/upload"
+                  ticketId={selected.id}
+                  pendingCount={replyAttachments.length}
+                  disabled={saving}
+                  onAdd={(a) => setReplyAttachments((prev) => [...prev, a])}
+                  onError={(msg) => setReplyError(msg)}
+                />
                 <input
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
@@ -230,7 +254,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
                 <button
                   type="button"
                   onClick={sendReply}
-                  disabled={saving || !reply.trim()}
+                  disabled={saving || (!reply.trim() && replyAttachments.length === 0)}
                   className="h-11 w-11 flex items-center justify-center rounded-xl bg-[#8e00f7] hover:bg-[#7a00d4] disabled:opacity-50 text-white transition"
                 >
                   {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

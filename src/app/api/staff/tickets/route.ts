@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { logStaffAction, nextTicketNumber, staffIdentity, staffTickets, ticketCategories, type TicketStatus, type TicketPriority } from '@/lib/staffServer';
+import { logStaffAction, nextTicketNumber, staffIdentity, staffTickets, ticketCategories, type TicketAttachment, type TicketStatus, type TicketPriority } from '@/lib/staffServer';
 import { requirePermission } from '@/lib/permissions/engine';
+import { isValidAttachment, MAX_ATTACHMENTS_PER_MESSAGE } from '@/lib/ticketAttachments';
 
 export const dynamic = 'force-dynamic';
 
@@ -92,7 +93,7 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { id, action, body, status, assignedTo, priority } = await request.json();
+    const { id, action, body, status, assignedTo, priority, attachments } = await request.json();
     if (!id) return NextResponse.json({ success: false, error: 'Falta el id del ticket' }, { status: 400 });
 
     const col = await staffTickets();
@@ -103,11 +104,14 @@ export async function PATCH(request: NextRequest) {
     const now = new Date();
 
     if (action === 'reply') {
-      if (!body?.trim()) return NextResponse.json({ success: false, error: 'Escribe un mensaje' }, { status: 400 });
+      const safeAttachments: TicketAttachment[] = Array.isArray(attachments)
+        ? attachments.filter((a) => isValidAttachment(a) && a.url.includes(`/tickets/${id}/`)).slice(0, MAX_ATTACHMENTS_PER_MESSAGE)
+        : [];
+      if (!body?.trim() && safeAttachments.length === 0) return NextResponse.json({ success: false, error: 'Escribe un mensaje o adjuntá un archivo' }, { status: 400 });
       await col.updateOne(
         { id },
         {
-          $push: { messages: { author: identity?.name || 'Staff', authorRole: 'staff', body: body.trim(), createdAt: now } },
+          $push: { messages: { author: identity?.name || 'Staff', authorRole: 'staff', body: (body || '').trim(), createdAt: now, attachments: safeAttachments } },
           $set: { updatedAt: now, lastMessageFrom: 'staff', status: ticket.status === 'open' ? 'in_progress' : ticket.status },
         }
       );
