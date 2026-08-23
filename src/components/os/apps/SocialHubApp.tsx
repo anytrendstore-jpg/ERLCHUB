@@ -5,6 +5,8 @@ import { Compass, Film, ShoppingBag, Users, Building2, CalendarDays } from 'luci
 import type { Profile, SocialView } from './socialhub/types';
 import TopBar from './socialhub/TopBar';
 import LeftSidebar from './socialhub/LeftSidebar';
+import RightSidebar from './socialhub/RightSidebar';
+import ChatPanel from './socialhub/ChatPanel';
 import FeedTab from './socialhub/FeedTab';
 import SavedTab from './socialhub/SavedTab';
 import ProfileTab from './socialhub/ProfileTab';
@@ -66,6 +68,9 @@ export default function SocialHubApp() {
             <ComingSoon icon={CalendarDays} title="Eventos llega pronto" text="Organiza y confirma asistencia a eventos de la comunidad." />
           )}
         </div>
+
+        <RightSidebar onOpenProfile={openProfile} />
+        <ChatPanel />
       </div>
     </div>
   );
