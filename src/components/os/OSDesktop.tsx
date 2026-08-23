@@ -139,15 +139,31 @@ function OSContent() {
   React.useEffect(() => {
     if (!charactersLoaded) return;
     let cancelled = false;
-    fetch('/api/terminal/whoami', { cache: 'no-store' })
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        const dept = data.success && data.department ? getDepartment(data.department) : null;
-        setInstitutionalDept(dept);
-        setBoot('characters');
-      })
-      .catch(() => { if (!cancelled) setBoot('characters'); });
+
+    // Un solo reintento ante un hiccup de red/DB — sin esto, una falla transitoria del
+    // check institucional degrada silenciosamente a "cuenta personal" para toda la sesión,
+    // aunque la cuenta sí sea miembro de un departamento.
+    const checkWhoami = (attempt = 0): void => {
+      fetch('/api/terminal/whoami', { cache: 'no-store' })
+        .then((res) => res.json())
+        .then((data) => {
+          if (cancelled) return;
+          if (!data.success && attempt === 0) {
+            setTimeout(() => checkWhoami(1), 800);
+            return;
+          }
+          const dept = data.success && data.department ? getDepartment(data.department) : null;
+          setInstitutionalDept(dept);
+          setBoot('characters');
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt === 0) { setTimeout(() => checkWhoami(1), 800); return; }
+          setBoot('characters');
+        });
+    };
+    checkWhoami();
+
     return () => { cancelled = true; };
   }, [charactersLoaded]);
 
