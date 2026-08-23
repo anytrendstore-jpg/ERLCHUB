@@ -55,6 +55,28 @@ export async function getCharacterSlots(discordId: string): Promise<number> {
 }
 
 /**
+ * Suma cupos de personaje a una cuenta (compra de kit confirmada, nunca un valor absoluto).
+ * Si la cuenta todavía no tiene documento en `account_meta`, siembra el default real (1) antes
+ * de sumar — si no, un `$inc` sobre un doc inexistente arrancaría desde 0 en vez de desde 1.
+ */
+export async function grantCharacterSlots(discordId: string, amount: number): Promise<number> {
+  if (amount <= 0) return getCharacterSlots(discordId);
+  const col = await accountMetaCollection();
+  const existing = await col.findOne({ discordId });
+  const now = new Date();
+  if (!existing) {
+    await col.insertOne({ discordId, characterSlots: 1 + amount, updatedAt: now });
+    return 1 + amount;
+  }
+  const result = await col.findOneAndUpdate(
+    { discordId },
+    { $inc: { characterSlots: amount }, $set: { updatedAt: now } },
+    { returnDocument: 'after' }
+  );
+  return result?.characterSlots ?? existing.characterSlots + amount;
+}
+
+/**
  * Crea el personaje principal (id === discordId a propósito: así los documentos de
  * preferencias/tema del OS, que hoy están indexados únicamente por discordId, siguen
  * funcionando sin ninguna migración para cualquier cuenta que nunca cree un segundo personaje.

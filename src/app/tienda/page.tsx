@@ -9,9 +9,7 @@ import {
   ChevronRight,
   Crown,
   Package,
-  Dices,
   ShoppingBag,
-  Sparkles,
   Shield,
   Zap,
   Check,
@@ -19,11 +17,13 @@ import {
   Clock,
   ShoppingCart
 } from "lucide-react";
-import { memberships, kits, casinoGames, currencies, convertPrice, formatNumber } from "@/lib/shopData";
+import { memberships, kits, currencies, convertPrice, formatNumber } from "@/lib/shopData";
 import { useReviews } from "@/hooks/useReviews";
 import { useCart } from "@/contexts/CartContext";
 import { useTiendaStats } from "@/hooks/useTiendaStats";
 import AddToCartButton from "@/components/AddToCartButton";
+import ProductCard from "@/components/tienda/ProductCard";
+import CurrencySelector from "@/components/tienda/CurrencySelector";
 
 export default function TiendaPage() {
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
@@ -150,54 +150,21 @@ export default function TiendaPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {memberships.map((membership) => (
-                <Link
+                <ProductCard
                   key={membership.id}
                   href={`/tienda/membresia/${membership.id}`}
-                  className={`group bg-[#12121c] border border-[#1a1a28] rounded-2xl overflow-hidden transition-all duration-300`}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = `${membership.color}20`;
-                    e.currentTarget.style.boxShadow = `0 0 30px ${membership.color}40`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#12121c';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  <div className="relative w-full h-48">
-                    <Image
-                      src={membership.image}
-                      alt={membership.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold mb-2" style={{ color: membership.color }}>
-                      {membership.name}
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{membership.description}</p>
-
-                    <div className="flex items-center justify-between">
-                      <div className="text-white font-bold">
-                        Desde ${membership.priceMonthly}
-                        <div className="w-5 h-3 rounded-sm overflow-hidden inline-block ml-2">
-                          <Image
-                            src="/banderas/usa-bandera.png"
-                            alt="USA"
-                            width={20}
-                            height={12}
-                            className="object-cover"
-                          />
-                        </div>
-                        /mes
-                      </div>
-                      <span className="text-[#8e00f7] flex items-center gap-1 text-sm">
-                        Ver <ChevronRight className="h-4 w-4" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+                  image={membership.image}
+                  name={membership.name}
+                  description={membership.description}
+                  color={membership.color}
+                  priceLabel={
+                    <span className="inline-flex items-center gap-2">
+                      Desde ${membership.priceMonthly}
+                      <Image src="/banderas/usa-bandera.png" alt="USA" width={20} height={12} className="w-5 h-3 rounded-sm object-cover" />
+                      /mes
+                    </span>
+                  }
+                />
               ))}
             </div>
           </section>
@@ -283,148 +250,7 @@ export default function TiendaPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "USD", name: "Dólar estadounidense", symbol: "$", flag: "🇺🇸", rateToUSD: 1 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "USD"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/usa-bandera.png"
-                          alt="USA"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>USD</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺", rateToUSD: 0.92 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "EUR"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/eu-bandera.png"
-                          alt="EU"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>EUR</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "MXN", name: "Peso mexicano", symbol: "$", flag: "🇲🇽", rateToUSD: 17.15 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "MXN"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/mexico-bandera.png"
-                          alt="Mexico"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>MXN</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "COP", name: "Peso colombiano", symbol: "$", flag: "🇨🇴", rateToUSD: 3950 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "COP"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/colombia-bandera.png"
-                          alt="Colombia"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>COP</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "ARS", name: "Peso argentino", symbol: "$", flag: "🇦🇷", rateToUSD: 875 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "ARS"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/argentina-bandera.png"
-                          alt="Argentina"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>ARS</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "PEN", name: "Sol peruano", symbol: "S/", flag: "🇵🇪", rateToUSD: 3.72 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "PEN"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/peru-bandera.png"
-                          alt="Peru"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>PEN</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency({ code: "CLP", name: "Peso chileno", symbol: "$", flag: "🇨🇱", rateToUSD: 940 })}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                        selectedCurrency.code === "CLP"
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                            : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                        }`}
-                    >
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src="/banderas/chile-bandera.png"
-                          alt="Chile"
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
-                      <span>CLP</span>
-                    </button>
-                  </div>
+                  <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} className="mb-4" />
 
                   <div className="flex flex-wrap gap-2">
                     <AddToCartButton 
@@ -454,98 +280,23 @@ export default function TiendaPage() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {kits.map((kit) => (
-                <Link
+                <ProductCard
                   key={kit.id}
                   href={`/tienda/kit/${kit.id}`}
-                  className={`group bg-[#12121c] border border-[#1a1a28] rounded-xl overflow-hidden transition-all duration-300`}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = `${kit.color}20`;
-                    e.currentTarget.style.boxShadow = `0 0 30px ${kit.color}40`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#12121c';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  <div className="relative w-full h-64">
-                    <Image
-                      src={kit.image}
-                      alt={kit.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <div className="p-4">
-                    <h3 className="text-base font-bold text-white truncate">{kit.name}</h3>
-                    <div className="flex items-center gap-1 text-white text-base font-bold mt-1">
-                      <span>{kit.priceHubCoins}</span>
-                      <Image
-                        src="/hub-coins.png"
-                        alt="Hub Coins"
-                        width={40}
-                        height={40}
-                        className="w-10 h-10"
-                      />
-                    </div>
-                  </div>
-                </Link>
+                  image={kit.image}
+                  name={kit.name}
+                  description={kit.description}
+                  color={kit.color}
+                  priceLabel={
+                    <span className="inline-flex items-center gap-1.5">
+                      {kit.priceHubCoins}
+                      <Image src="/hub-coins.png" alt="Hub Coins" width={18} height={18} className="w-[18px] h-[18px]" />
+                    </span>
+                  }
+                />
               ))}
             </div>
           </section>
-
-          {false && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#ef4444]/20 flex items-center justify-center">
-                  <Dices className="h-5 w-5 text-[#ef4444]" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Casino</h2>
-                  <p className="text-gray-400 text-sm">Apuesta Hub Coins y gana premios increíbles</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {casinoGames.map((game) => (
-                <Link
-                  key={game.id}
-                  href={`/tienda/casino/${game.id}`}
-                  className="group relative bg-[#12121c] border border-[#1a1a28] rounded-2xl overflow-hidden hover:border-[#ef4444] transition-all duration-300"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#ef4444]/5 via-transparent to-[#8e00f7]/5" />
-
-                  <div className="relative p-6">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#ef4444] to-[#8e00f7] flex items-center justify-center mb-4">
-                      <Sparkles className="h-7 w-7 text-white" />
-                    </div>
-
-                    <h3 className="text-lg font-bold text-white mb-2">{game.name}</h3>
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{game.description}</p>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 flex items-center gap-1">
-                        Min: {game.minBet}
-                        <Image
-                          src="/hub-coins.png"
-                          alt="Hub Coins"
-                          width={36}
-                          height={36}
-                          className="w-9 h-9"
-                        />
-                      </span>
-                      <span className="text-[#8e00f7] flex items-center gap-1">
-                        Jugar <ChevronRight className="h-4 w-4" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-          )}
 
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
@@ -558,9 +309,6 @@ export default function TiendaPage() {
                   <p className="text-gray-400 text-sm">Artículos individuales - Se compran con Hub Coins</p>
                 </div>
               </div>
-              <Link href="/tienda/items" className="text-[#8e00f7] text-sm flex items-center gap-1 hover:underline">
-                Ver todos <ChevronRight className="h-4 w-4" />
-              </Link>
             </div>
 
             <div className="bg-gradient-to-r from-[#8e00f7]/20 via-[#a64dfa]/20 to-[#8e00f7]/20 border border-[#8e00f7]/30 rounded-3xl p-12 text-center relative overflow-hidden">

@@ -9,16 +9,47 @@ import Image from "next/image";
 import { Package, Check, ChevronRight, Coins, Shield, Zap, ShoppingCart } from "lucide-react";
 import { kits, currencies, convertPrice, whitelistFastKit } from "@/lib/shopData";
 import { useCart } from "@/contexts/CartContext";
+import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import AddToCartButton from "@/components/AddToCartButton";
+import CurrencySelector from "@/components/tienda/CurrencySelector";
 
 export default function KitPage() {
   const params = useParams();
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
-  
+  const [buyingWhitelistFast, setBuyingWhitelistFast] = useState(false);
+  const [whitelistFastError, setWhitelistFastError] = useState("");
+
   const isWhitelistFast = params.id === "whitelist-fast";
   const kit = isWhitelistFast ? whitelistFastKit : kits.find(k => k.id === params.id);
-  
+
   const { addItem } = useCart();
+  const { isAuthenticated, user } = useDiscordAuth();
+
+  const handleBuyWhitelistFast = async () => {
+    if (!isAuthenticated || !user?.id) {
+      window.location.href = "https://www.erlchub.pro/ingresar";
+      return;
+    }
+    setBuyingWhitelistFast(true);
+    setWhitelistFastError("");
+    try {
+      const res = await fetch("/api/whitelist-fast/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await res.json();
+      if (data.success && data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        setWhitelistFastError(data.error || "No se pudo iniciar el pago. Intentá de nuevo.");
+        setBuyingWhitelistFast(false);
+      }
+    } catch {
+      setWhitelistFastError("No se pudo iniciar el pago. Intentá de nuevo.");
+      setBuyingWhitelistFast(false);
+    }
+  };
 
   const getDescriptionImage = (kitId: string) => {
     switch(kitId) {
@@ -49,12 +80,12 @@ export default function KitPage() {
   }
 
   const handleAddToCart = () => {
+    if (isWhitelistFast || !("priceHubCoins" in kit)) return;
     addItem({
       id: kit.id,
       type: "kit",
       name: kit.name,
-      priceHubCoins: isWhitelistFast ? undefined : (kit as any).priceHubCoins,
-      priceUSD: isWhitelistFast ? discountedPrice : undefined,
+      priceHubCoins: kit.priceHubCoins,
       quantity: 1,
       image: kit.image,
     });
@@ -104,70 +135,14 @@ export default function KitPage() {
                 {isWhitelistFast ? (
                   <div>
                     <div className="flex items-center gap-2 text-4xl font-bold text-[#8b5cf6] mb-4">
-                      <span className="text-white">
-                        {convertPrice(isWhitelistFast ? (kit as any).priceDollars : (kit as any).priceHubCoins, selectedCurrency)}
-                      </span>
-                      <div className="w-5 h-3 rounded-sm overflow-hidden">
-                        <Image
-                          src={`/banderas/${
-                            selectedCurrency.code === "USD" ? "usa-bandera" :
-                            selectedCurrency.code === "EUR" ? "eu-bandera" :
-                            selectedCurrency.code === "MXN" ? "mexico-bandera" :
-                            selectedCurrency.code === "COP" ? "colombia-bandera" :
-                            selectedCurrency.code === "ARS" ? "argentina-bandera" :
-                            selectedCurrency.code === "PEN" ? "peru-bandera" :
-                            selectedCurrency.code === "CLP" ? "chile-bandera" :
-                            "usa-bandera"
-                          }.png`}
-                          alt={selectedCurrency.name}
-                          width={20}
-                          height={12}
-                          className="object-cover"
-                        />
-                      </div>
+                      <span className="text-white">{convertPrice(whitelistFastKit.priceDollars, selectedCurrency)}</span>
                     </div>
-                    <div className="text-gray-500 text-sm">
-                      ≈ ${isWhitelistFast ? (kit as any).priceDollars : (kit as any).priceHubCoins}.00 
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {currencies.map((currency) => (
-                        <button
-                          key={currency.code}
-                          type="button"
-                          onClick={() => setSelectedCurrency(currency)}
-                          className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
-                            selectedCurrency.code === currency.code
-                              ? "border-[#8b5cf6] bg-[#8b5cf6]/10"
-                              : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
-                          }`}
-                        >
-                          <div className="w-5 h-3 rounded-sm overflow-hidden">
-                            <Image
-                              src={`/banderas/${
-                                currency.code === "USD" ? "usa-bandera" :
-                                currency.code === "EUR" ? "eu-bandera" :
-                                currency.code === "MXN" ? "mexico-bandera" :
-                                currency.code === "COP" ? "colombia-bandera" :
-                                currency.code === "ARS" ? "argentina-bandera" :
-                                currency.code === "PEN" ? "peru-bandera" :
-                                currency.code === "CLP" ? "chile-bandera" :
-                                "usa-bandera"
-                              }.png`}
-                              alt={currency.name}
-                              width={20}
-                              height={12}
-                              className="object-cover"
-                            />
-                          </div>
-                          <span>{currency.code}</span>
-                        </button>
-                      ))}
-                    </div>
+                    <div className="text-gray-500 text-sm">≈ ${whitelistFastKit.priceDollars}.00</div>
+                    <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} className="mt-4" />
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-4xl font-bold text-[#8e00f7]">
-                    {(kit as any).priceHubCoins.toLocaleString()}
+                    {"priceHubCoins" in kit ? kit.priceHubCoins.toLocaleString() : 0}
                     <Image
                       src="/hub-coins.png"
                       alt="Hub Coins"
@@ -179,15 +154,19 @@ export default function KitPage() {
                 )}
               </div>
 
-              
               {isWhitelistFast ? (
-                <button
-                  type="button"
-                  className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 mb-2 shadow-lg shadow-[#8b5cf6]/30"
-                >
-                  <Zap className="h-5 w-5" />
-                  OBTENER AHORA
-                </button>
+                <div className="mb-2">
+                  <button
+                    type="button"
+                    onClick={handleBuyWhitelistFast}
+                    disabled={buyingWhitelistFast}
+                    className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] disabled:bg-[#5b3a8f] disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8b5cf6]/30"
+                  >
+                    <Zap className="h-5 w-5" />
+                    {buyingWhitelistFast ? "Redirigiendo al pago..." : isAuthenticated ? "OBTENER AHORA" : "INICIAR SESIÓN PARA COMPRAR"}
+                  </button>
+                  {whitelistFastError && <p className="text-red-400 text-sm mt-2 text-center">{whitelistFastError}</p>}
+                </div>
               ) : (
                 <>
                   <AddToCartButton 

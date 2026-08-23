@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle, AlertCircle, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -29,6 +29,8 @@ export default function CartPage() {
   const { generatePaymentReference, convertToCents, checkTransactionStatus, isLoading: wompiLoading, error: wompiError, clearError } = useWompi();
   const { isAuthenticated, user } = useDiscordAuth();
   const { balance: hubCoinsBalance, createTransaction } = useHubCoins();
+  const [notice, setNotice] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const notify = (type: 'success' | 'error', text: string) => setNotice({ type, text });
 
   const getTotals = () => {
     const usdTotal = items
@@ -75,24 +77,15 @@ export default function CartPage() {
 
       if (result.success) {
         setAppliedDiscount(result.discountCode);
-        alert(`Código de descuento aplicado: ${result.discountCode.discountPercentage}% de descuento`);
-        
-        const discountedItems = items.map(item => ({
-          ...item,
-          priceUSD: item.priceUSD ? item.priceUSD * (1 - result.discountCode.discountPercentage / 100) : item.priceUSD,
-          priceHubCoins: item.priceHubCoins 
-        }));
-        
-        discountedItems.forEach(item => updateQuantity(item.id, item.quantity));
-        
+        notify('success', `Código aplicado: ${result.discountCode.discountPercentage}% de descuento`);
       } else {
         setAppliedDiscount(null);
-        alert('Código de descuento inválido o expirado');
+        notify('error', 'Código de descuento inválido o expirado');
       }
     } catch (error) {
       console.error('Error validating discount code:', error);
       setAppliedDiscount(null);
-      alert('Error al validar el código de descuento');
+      notify('error', 'Error al validar el código de descuento');
     } finally {
       setValidatingDiscount(false);
     }
@@ -182,7 +175,7 @@ export default function CartPage() {
       }
       
     } catch (error) {
-      alert('Error al procesar el pago. Por favor intenta nuevamente.');
+      notify('error', 'Error al procesar el pago. Por favor intenta nuevamente.');
     } finally {
       setIsProcessing(false);
     }
@@ -248,14 +241,14 @@ export default function CartPage() {
       saveCancelledTransaction();
     }
     
-    alert('Error en el pago: ' + error);
+    notify('error', 'Error en el pago: ' + error);
   };
 
   const handleHubCoinsPayment = async () => {
     if (items.length === 0) return;
-    
+
     if (!isAuthenticated || !user?.id) {
-      alert('Debes iniciar sesión para pagar con Hub Coins');
+      notify('error', 'Debes iniciar sesión para pagar con Hub Coins');
       return;
     }
 
@@ -263,12 +256,12 @@ export default function CartPage() {
     const totalHubCoins = hubCoinsItems.reduce((acc, item) => acc + (item.priceHubCoins || 0) * item.quantity, 0);
 
     if (totalHubCoins === 0) {
-      alert('No hay items para pagar con Hub Coins');
+      notify('error', 'No hay items para pagar con Hub Coins');
       return;
     }
 
     if (hubCoinsBalance < totalHubCoins) {
-      alert(`No tienes suficientes Hub Coins. Necesitas ${totalHubCoins} pero solo tienes ${hubCoinsBalance}`);
+      notify('error', `No tienes suficientes Hub Coins. Necesitas ${totalHubCoins} pero solo tienes ${hubCoinsBalance}`);
       return;
     }
 
@@ -315,8 +308,10 @@ export default function CartPage() {
           await createTransaction(-totalHubCoins, 'purchase', `Compra de kit: ${hubCoinsItems.map(item => item.name).join(', ')}`);
         }
 
-        alert('¡Pago con Hub Coins procesado exitosamente!');
-        
+        notify('success', typeof result.newCharacterSlots === 'number'
+          ? `¡Pago procesado! Ahora tenés ${result.newCharacterSlots} cupos de personaje.`
+          : '¡Pago con Hub Coins procesado exitosamente!');
+
         const remainingItems = items.filter(item => !item.priceHubCoins);
         if (remainingItems.length > 0) {
           handleCheckout();
@@ -324,11 +319,11 @@ export default function CartPage() {
           clearCart();
         }
       } else {
-        alert('Error: ' + (result.error || 'Error procesando pago con Hub Coins'));
+        notify('error', 'Error: ' + (result.error || 'Error procesando pago con Hub Coins'));
       }
     } catch (error) {
       console.error('Error en pago con Hub Coins:', error);
-      alert('Error procesando pago con Hub Coins. Por favor intenta nuevamente.');
+      notify('error', 'Error procesando pago con Hub Coins. Por favor intenta nuevamente.');
     } finally {
       setIsProcessingHubCoins(false);
     }
@@ -368,7 +363,19 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-[#0a0a12] pt-20">
       <Navbar />
-      
+
+      {notice && (
+        <div className="sticky top-16 z-40 px-4 pt-3">
+          <div className={`max-w-6xl mx-auto flex items-center gap-3 rounded-xl px-4 py-3 border backdrop-blur-xl ${notice.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-red-500/10 border-red-500/30 text-red-300'}`}>
+            {notice.type === 'success' ? <CheckCircle className="h-5 w-5 flex-shrink-0" /> : <AlertCircle className="h-5 w-5 flex-shrink-0" />}
+            <p className="text-sm flex-1">{notice.text}</p>
+            <button onClick={() => setNotice(null)} className="opacity-60 hover:opacity-100 transition-opacity">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
@@ -388,7 +395,7 @@ export default function CartPage() {
             </button>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8 relative">
+          <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
                 <div key={item.id} className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
@@ -501,54 +508,11 @@ export default function CartPage() {
                 </div>
               ))}
             </div>
-          </div>
 
-          <div className="fixed top-24 right-4 w-80 bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 max-h-screen overflow-y-auto z-50 hidden lg:block">
-            <h2 className="text-xl font-bold text-white mb-6">Resumen del Pedido</h2>
-            
-            <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
-              {items.map((item) => (
-                <div key={item.id} className="flex justify-between items-center text-sm">
-                  <div className="flex-1 truncate">
-                    <div className="text-gray-300">{item.name}</div>
-                    <div className="text-gray-500 text-xs">
-                      {item.quantity} × {item.priceHubCoins ? `${item.priceHubCoins} Hub Coins` : `$${item.priceUSD || item.price || 0}`}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    {item.priceHubCoins ? (
-                      <div className="text-[#fbbf24] font-medium flex items-center gap-1">
-                        <Image
-                          src="/hub-coins.png"
-                          alt="Hub Coins"
-                          width={12}
-                          height={12}
-                          className="w-3 h-3"
-                        />
-                        {item.quantity} x {item.priceHubCoins}
-                      </div>
-                        ) : (
-                          <>
-                            <div className="text-[#8e00f7] font-medium">
-                              {item.quantity} x {getConvertedPrice(item.priceUSD || item.price || 0)}
-                            </div>
-                            {hasDiscount && (
-                              <div className="text-green-400 text-sm">
-                                (15% DTO.)
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="lg:sticky lg:top-24 bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-white mb-6">Resumen del Pedido</h2>
 
-          <div className="lg:hidden bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 mt-8">
-            <h2 className="text-xl font-bold text-white mb-6">Resumen del Pedido</h2>
-            
-            <div className="space-y-2 mb-6">
+              <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-sm">
                   <div className="flex-1">
@@ -576,7 +540,7 @@ export default function CartPage() {
                         </div>
                         {hasDiscount && (
                           <div className="text-green-400 text-sm">
-                            (15% DTO.)
+                            ({appliedDiscount.discountPercentage}% DTO.)
                           </div>
                         )}
                       </>
@@ -754,7 +718,8 @@ export default function CartPage() {
               </div>
             </div>
           </div>
-        <Footer />
         </div>
+        <Footer />
+      </div>
   );
 }

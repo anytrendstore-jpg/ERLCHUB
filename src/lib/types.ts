@@ -27,6 +27,8 @@ export interface Kit {
   priceHubCoins: number;
   category: string;
   color: string;
+  /** Cupos de personaje que otorga automáticamente esta compra (se suman a la cuenta al pagar). */
+  characterSlotsGranted?: number;
 }
 
 export interface ShopItem {

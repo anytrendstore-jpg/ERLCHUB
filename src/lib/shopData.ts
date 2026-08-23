@@ -116,7 +116,8 @@ export const kits: Kit[] = [
     items: ["Desbloquea el acceso a tener su personaje inicial y 1 personaje completamente nuevo ya sea en cualquier ciudad "],
     priceHubCoins: 2000,
     category: "personajes",
-    color: "#60a5fa"
+    color: "#60a5fa",
+    characterSlotsGranted: 1
   },
   {
     id: "kit-full",
@@ -126,7 +127,8 @@ export const kits: Kit[] = [
     items: ["$50,000 en efectivo + $20,000 en cuenta bancaria.", "Vehículo económico + deportivo.", "Acceso a 2 Personajes.", "2-AK-47 y 5 TEC-9."],
     priceHubCoins: 2500,
     category: "premium",
-    color: "#8b5cf6"
+    color: "#8b5cf6",
+    characterSlotsGranted: 1
   },
   {
     id: "kit-facciones-ilegales",

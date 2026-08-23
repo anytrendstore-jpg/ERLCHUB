@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ShoppingBag, Coins } from "lucide-react";
 import { PanelHeader, Card, Chip, Kpi, LoadingBlock, EmptyState, ErrorBlock, formatDate } from "@/components/staff/ui";
 
-interface Purchase { id: string; username: string; amount: number; description: string; status: string; timestamp: string; }
+interface Purchase { id: string; username: string; amount: number; description: string; status: string; timestamp: string; kitNames?: string[]; }
 
 const STATUS_TONE: Record<string, "emerald" | "amber" | "rose" | "slate"> = {
   completed: "emerald", pending: "amber", rejected: "rose", failed: "rose", cancelled: "slate",
@@ -47,7 +47,15 @@ export default function PurchasesPanel() {
               <div key={p.id} className="flex items-center justify-between gap-4 px-4 py-3">
                 <div className="min-w-0">
                   <div className="text-sm text-white truncate">{p.username}</div>
-                  <div className="text-xs text-slate-500 truncate">{p.description}</div>
+                  {p.kitNames?.length ? (
+                    <div className="flex flex-wrap gap-1 mt-0.5">
+                      {p.kitNames.map((name, i) => (
+                        <span key={i} className="text-[10px] text-blue-300 bg-blue-500/10 border border-blue-500/20 rounded px-1.5 py-0.5">{name}</span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-slate-500 truncate">{p.description}</div>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0">
                   <span className="text-sm font-semibold text-amber-300">{p.amount.toLocaleString()}</span>

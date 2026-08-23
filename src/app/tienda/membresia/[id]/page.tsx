@@ -11,13 +11,13 @@ import { memberships, currencies, convertPrice } from "@/lib/shopData";
 import type { CurrencyRate } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
 import AddToCartButton from "@/components/AddToCartButton";
+import CurrencySelector from "@/components/tienda/CurrencySelector";
 
 export default function MembershipPage() {
   const params = useParams();
   const membership = memberships.find(m => m.id === params.id);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const [paymentType, setPaymentType] = useState<"monthly" | "permanent">("permanent");
-  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const { addItem } = useCart();
 
   if (!membership) {
@@ -121,76 +121,9 @@ export default function MembershipPage() {
               </div>
 
               <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-gray-400">Moneda</span>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-                      className="bg-[#0c0c14] border border-[#1a1a28] rounded-lg px-4 py-2 text-white text-lg flex items-center gap-2 min-w-[120px] justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-3 rounded-sm overflow-hidden">
-                          <Image
-                            src={`/banderas/${
-                              selectedCurrency.code === "USD" ? "usa-bandera" :
-                              selectedCurrency.code === "EUR" ? "eu-bandera" :
-                              selectedCurrency.code === "MXN" ? "mexico-bandera" :
-                              selectedCurrency.code === "COP" ? "colombia-bandera" :
-                              selectedCurrency.code === "ARS" ? "argentina-bandera" :
-                              selectedCurrency.code === "PEN" ? "peru-bandera" :
-                              selectedCurrency.code === "CLP" ? "chile-bandera" :
-                              "usa-bandera"
-                            }.png`}
-                            alt={selectedCurrency.name}
-                            width={20}
-                            height={12}
-                            className="object-cover"
-                          />
-                        </div>
-                        <span>{selectedCurrency.code}</span>
-                      </div>
-                      <ChevronRight className={`h-4 w-4 transition-transform ${showCurrencyDropdown ? 'rotate-90' : ''}`} />
-                    </button>
-                    
-                    {showCurrencyDropdown && (
-                      <div className="absolute top-full mt-1 right-0 bg-[#0c0c14] border border-[#1a1a28] rounded-lg shadow-xl z-50 min-w-[150px]">
-                        {currencies.map((currency) => (
-                          <button
-                            key={currency.code}
-                            type="button"
-                            onClick={() => {
-                              setSelectedCurrency(currencies.find(c => c.code === currency.code) || currencies[0]);
-                              setShowCurrencyDropdown(false);
-                            }}
-                            className={`w-full flex items-center gap-2 px-4 py-2 text-white hover:bg-[#1a1a28] transition-colors ${
-                              selectedCurrency.code === currency.code ? 'bg-[#8e00f7]/20' : ''
-                            }`}
-                          >
-                            <div className="w-5 h-3 rounded-sm overflow-hidden">
-                              <Image
-                                src={`/banderas/${
-                                  currency.code === "USD" ? "usa-bandera" :
-                                  currency.code === "EUR" ? "eu-bandera" :
-                                  currency.code === "MXN" ? "mexico-bandera" :
-                                  currency.code === "COP" ? "colombia-bandera" :
-                                  currency.code === "ARS" ? "argentina-bandera" :
-                                  currency.code === "PEN" ? "peru-bandera" :
-                                  currency.code === "CLP" ? "chile-bandera" :
-                                  "usa-bandera"
-                                }.png`}
-                                alt={currency.name}
-                                width={20}
-                                height={12}
-                                className="object-cover"
-                              />
-                            </div>
-                            <span className="text-sm">{currency.code}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                <div className="mb-4">
+                  <span className="text-gray-400 block mb-2">Moneda</span>
+                  <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} />
                 </div>
                 <div className="text-4xl font-bold text-white mb-1">
                   <span className="text-white">

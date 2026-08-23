@@ -46,6 +46,7 @@ export async function GET() {
         description: p.description,
         status: p.status,
         timestamp: p.timestamp,
+        kitNames: p.metadata?.kitNames || (p.metadata?.kitName ? [p.metadata.kitName] : undefined),
       })),
       totalHubCoinsSold: totalRevenue[0]?.total || 0,
     });

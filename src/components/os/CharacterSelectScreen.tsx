@@ -204,7 +204,7 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
 
             {showLockedSlot && (
               <Link
-                href="/tienda/kit/kit-completo"
+                href="/tienda/kit/kit-full"
                 style={{ animationDelay: `${(rows.length + (canCreate ? 1 : 0)) * 80}ms` }}
                 className={`${CARD_SHELL} card-enter block opacity-70 hover:opacity-100 hover:-translate-y-1`}
               >

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useOS } from '@/contexts/OSContext';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, ShoppingBag } from 'lucide-react';
 import { AppIcon, HubPayIcon, CryptoIcon } from '@/components/icons/AppIcons';
 import AppContextMenu from './AppContextMenu';
 import type { DesktopIconSize } from '@/lib/osTypes';
@@ -265,6 +265,20 @@ export default function Desktop() {
             </div>
           </Link>
         )}
+
+        {/* Tienda ERLC quick access — visible para todas las cuentas */}
+        <Link
+          href="/tienda"
+          className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#8e00f7]/90 to-[#a64dfa]/80 backdrop-blur-xl border border-[#a64dfa]/30 shadow-lg shadow-[#8e00f7]/20 hover:from-[#8e00f7] hover:to-[#a64dfa] transition-all group"
+        >
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+            <ShoppingBag className="w-5 h-5 text-white" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-white text-sm font-bold">Tienda ERLC</p>
+            <p className="text-white/70 text-[11px]">Membresías y kits</p>
+          </div>
+        </Link>
 
         {/* Time Widget */}
         <div
