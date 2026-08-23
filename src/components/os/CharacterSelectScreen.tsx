@@ -42,6 +42,31 @@ function StatRow({ icon: Icon, label, accent }: { icon: typeof Clock; label: str
 const NOISE_BG =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
+const PARTICLES = [
+  { left: '8%', size: 3, dur: 9, delay: -1 },
+  { left: '18%', size: 2, dur: 12, delay: -6 },
+  { left: '29%', size: 2, dur: 10, delay: -3 },
+  { left: '41%', size: 3, dur: 14, delay: -8 },
+  { left: '58%', size: 2, dur: 11, delay: -2 },
+  { left: '69%', size: 3, dur: 13, delay: -9 },
+  { left: '81%', size: 2, dur: 9.5, delay: -4 },
+  { left: '91%', size: 2, dur: 12.5, delay: -7 },
+];
+
+function Particles() {
+  return (
+    <>
+      {PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="particle absolute bottom-0 rounded-full bg-blue-300/40 pointer-events-none"
+          style={{ left: p.left, width: p.size, height: p.size, animationDuration: `${p.dur}s`, animationDelay: `${p.delay}s` }}
+        />
+      ))}
+    </>
+  );
+}
+
 function CardShine() {
   return (
     <div
@@ -109,6 +134,7 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
       }} />
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none mix-blend-overlay" style={{ backgroundImage: NOISE_BG }} />
       <div className="scanline absolute inset-x-0 h-40 pointer-events-none opacity-[0.05] bg-gradient-to-b from-transparent via-white to-transparent" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none"><Particles /></div>
 
       <div className="relative z-10 flex flex-col items-center max-w-4xl w-full px-6">
         <div className="flex items-center gap-2 mb-3">
@@ -246,8 +272,17 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
           from { background-position: 150% 0; }
           to { background-position: -50% 0; }
         }
+        .particle {
+          animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+          0% { transform: translateY(0); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.3; }
+          100% { transform: translateY(-100vh); opacity: 0; }
+        }
         @media (prefers-reduced-motion: reduce) {
-          .card-enter, .scanline, .shimmer { animation: none !important; }
+          .card-enter, .scanline, .shimmer, .particle { animation: none !important; }
         }
       `}</style>
     </div>

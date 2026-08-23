@@ -33,7 +33,7 @@ import CryptoWalletApp from './apps/CryptoWalletApp';
 import HubCareerApp from './apps/hubcareer/HubCareerApp';
 import OnboardingFlow from './OnboardingFlow';
 import CharacterSelectScreen from './CharacterSelectScreen';
-import { Shield, UserCircle, Loader2 } from 'lucide-react';
+import { Shield, UserCircle, Loader2, ArrowRightLeft } from 'lucide-react';
 import { wallpaperPresetById } from '@/lib/wallpaperPresets';
 import { ToastProvider } from './ui';
 
@@ -283,6 +283,22 @@ function OSContent() {
 
       {/* Desktop Area */}
       <Desktop />
+
+      {/* Acceso permanente a la terminal institucional — sin esto, elegir "personal" una
+          vez en esta pestaña dejaba a la cuenta sin forma de volver a la pantalla de elegir
+          ordenador (se recuerda por sesión de navegador a propósito, para no interrumpir en
+          cada carga). Este botón es la vía de vuelta real, siempre visible. */}
+      {institutionalDept && (
+        <button
+          onClick={() => setBoot('transitioning')}
+          className="fixed bottom-16 sm:bottom-20 left-3 z-[890] flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full backdrop-blur-xl border border-white/10 bg-black/40 hover:bg-black/60 hover:border-blue-500/40 transition-all shadow-lg group"
+          title={`Abrir terminal de ${institutionalDept.name}`}
+        >
+          <img src={institutionalDept.badge} alt="" className="w-6 h-6 object-contain" />
+          <span className="text-white/70 group-hover:text-white text-xs font-medium transition-colors">Terminal {institutionalDept.factionAbbreviation}</span>
+          <ArrowRightLeft className="w-3 h-3 text-white/30 group-hover:text-blue-400 transition-colors" />
+        </button>
+      )}
 
       {/* Windows */}
       {windows.map((window) => (

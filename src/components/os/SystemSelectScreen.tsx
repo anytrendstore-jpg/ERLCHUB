@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Monitor, ShieldCheck } from "lucide-react";
 import type { DepartmentConfig } from "@/lib/departments";
 import { bootFont } from "@/lib/bootFont";
@@ -20,6 +20,31 @@ const NOISE_BG =
 const CARD_SHELL =
   "group relative w-60 rounded-2xl overflow-hidden bg-gradient-to-b from-[#12121e] to-[#0a0a12] border border-white/10 transition-[transform,border-color,box-shadow] duration-300 ease-out will-change-transform [transform-style:preserve-3d] disabled:opacity-40 disabled:hover:translate-y-0";
 
+const PARTICLES = [
+  { left: '8%', size: 3, dur: 9, delay: -1 },
+  { left: '18%', size: 2, dur: 12, delay: -6 },
+  { left: '29%', size: 2, dur: 10, delay: -3 },
+  { left: '41%', size: 3, dur: 14, delay: -8 },
+  { left: '58%', size: 2, dur: 11, delay: -2 },
+  { left: '69%', size: 3, dur: 13, delay: -9 },
+  { left: '81%', size: 2, dur: 9.5, delay: -4 },
+  { left: '91%', size: 2, dur: 12.5, delay: -7 },
+];
+
+function Particles() {
+  return (
+    <>
+      {PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="particle absolute bottom-0 rounded-full bg-blue-300/40 pointer-events-none"
+          style={{ left: p.left, width: p.size, height: p.size, animationDuration: `${p.dur}s`, animationDelay: `${p.delay}s` }}
+        />
+      ))}
+    </>
+  );
+}
+
 /**
  * "¿Qué computadora abrís?" — la elección real entre el escritorio personal
  * y la terminal institucional. Antes esto se decidía solo (redirect forzado);
@@ -28,9 +53,25 @@ const CARD_SHELL =
 export default function SystemSelectScreen({ displayName, avatar, department, onChoosePersonal, onChooseInstitutional }: SystemSelectScreenProps) {
   const [picked, setPicked] = useState<"personal" | "institutional" | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [visibleLines, setVisibleLines] = useState(0);
+  const [showCards, setShowCards] = useState(false);
   const scene = useCardTilt<HTMLDivElement>();
   const personalTilt = useCardTilt<HTMLButtonElement>();
   const institutionalTilt = useCardTilt<HTMLButtonElement>();
+
+  const bootLines = [
+    `IDENTIDAD VERIFICADA: ${displayName.toUpperCase()}`,
+    `AFILIACIÓN: ${department.name.toUpperCase()}`,
+    'SISTEMAS DISPONIBLES: 2 — SELECCIONÁ UNO',
+  ];
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    bootLines.forEach((_, i) => timers.push(setTimeout(() => setVisibleLines(i + 1), 260 + i * 260)));
+    timers.push(setTimeout(() => setShowCards(true), 260 + bootLines.length * 260 + 200));
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const choose = (which: "personal" | "institutional") => {
     if (picked) return;
@@ -59,8 +100,21 @@ export default function SystemSelectScreen({ displayName, avatar, department, on
       }} />
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none mix-blend-overlay" style={{ backgroundImage: NOISE_BG }} />
       <div className="scanline absolute inset-x-0 h-40 pointer-events-none opacity-[0.05] bg-gradient-to-b from-transparent via-white to-transparent" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none"><Particles /></div>
 
-      <div className="relative z-10 flex flex-col items-center px-6">
+      {!showCards && (
+        <div className="relative z-10 flex flex-col items-center px-6">
+          <div className="space-y-2 font-mono text-[13px] text-center min-h-[4.5rem]">
+            {bootLines.slice(0, visibleLines).map((line, i) => (
+              <p key={i} className="text-[#7dd3fc]/80 tracking-wide">
+                <span className="text-blue-500 mr-1.5">&gt;</span>{line}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className={`relative z-10 flex-col items-center px-6 transition-opacity duration-500 ${showCards ? 'flex opacity-100' : 'hidden opacity-0'}`}>
         <div className="flex items-center gap-2 mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           <p className="text-white/40 text-[11px] uppercase tracking-[0.3em]">ERLC HUB OS · Personaje confirmado</p>
@@ -189,8 +243,17 @@ export default function SystemSelectScreen({ displayName, avatar, department, on
           from { background-position: 150% 0; }
           to { background-position: -50% 0; }
         }
+        .particle {
+          animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+          0% { transform: translateY(0); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.3; }
+          100% { transform: translateY(-100vh); opacity: 0; }
+        }
         @media (prefers-reduced-motion: reduce) {
-          .card-enter, .scanline, .shimmer { animation: none !important; }
+          .card-enter, .scanline, .shimmer, .particle { animation: none !important; }
         }
       `}</style>
     </div>
