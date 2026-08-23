@@ -267,7 +267,10 @@ export default function Desktop() {
         )}
 
         {/* Time Widget */}
-        <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10">
+        <div
+          className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10"
+          style={{ boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 20%, transparent) inset' }}
+        >
           <div className="text-white/60 text-xs sm:text-sm mb-1">
             {currentTime?.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }) || 'Cargando...'}
           </div>
@@ -278,7 +281,10 @@ export default function Desktop() {
 
         {/* Quick Stats Widget */}
         {isAppInstalled('hubpay') && (
-          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10">
+          <div
+            className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10"
+            style={{ boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 20%, transparent) inset' }}
+          >
             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <HubPayIcon size={18} />
@@ -303,7 +309,10 @@ export default function Desktop() {
 
         {/* Crypto Wallet Widget */}
         {isAppInstalled('crypto') && (
-          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10">
+          <div
+            className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10"
+            style={{ boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 20%, transparent) inset' }}
+          >
             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center">
                 <CryptoIcon size={18} />

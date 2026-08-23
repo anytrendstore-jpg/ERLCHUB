@@ -18,7 +18,7 @@ export default function StartMenu() {
     ? installedApps.filter(a => a.name.toLowerCase().includes(query) || a.description.toLowerCase().includes(query))
     : [];
   const pinnedApps = installedApps.filter(a => !a.comingSoon).slice(0, 8);
-  const recommendedApps = apps.filter(a => a.comingSoon).slice(0, 4);
+  const recommendedApps = apps.filter(a => a.comingSoon).slice(0, 2);
 
   return (
     <>
@@ -31,7 +31,10 @@ export default function StartMenu() {
       {/* Menu - Windows Style - LEFT ALIGNED */}
       <div
         className="fixed bottom-16 sm:bottom-20 left-2 sm:left-3 sm:w-[360px] md:w-[400px] backdrop-blur-2xl border border-white/10 rounded-2xl sm:rounded-3xl z-[950] overflow-hidden shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-4 slide-in-from-left-4 duration-200 max-h-[80vh] overflow-y-auto"
-        style={{ backgroundColor: 'color-mix(in srgb, var(--os-start-menu) calc(var(--os-transparency) * 1%), transparent)' }}
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--os-start-menu) calc(var(--os-transparency) * 1%), transparent)',
+          boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 25%, transparent) inset, 0 25px 50px -12px rgba(0,0,0,0.5)',
+        }}
       >
 
         {/* Search Bar */}
@@ -107,7 +110,7 @@ export default function StartMenu() {
                 <h3 className="text-white text-xs sm:text-sm font-semibold">Próximamente</h3>
               </div>
               <div className="space-y-2">
-                {recommendedApps.slice(0, 2).map((app) => (
+                {recommendedApps.map((app) => (
                   <div
                     key={app.id}
                     className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-white/5 border border-white/5 opacity-60"
@@ -191,7 +194,7 @@ export default function StartMenu() {
                 <img
                   src={user.avatar}
                   alt={user.displayName}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full ring-2 ring-white/10 group-hover:ring-purple-500/30 transition-all"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full ring-2 ring-white/10 group-hover:ring-[color:color-mix(in_srgb,var(--os-accent)_30%,transparent)] transition-all"
                 />
                 {activeProfile?.type === 'admin' ? (
                   <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">

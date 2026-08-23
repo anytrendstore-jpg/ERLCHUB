@@ -45,7 +45,13 @@ export default function NotificationPanel() {
       />
 
       {/* Panel - Windows 11 Style */}
-      <div className="absolute bottom-20 right-3 w-[360px] max-h-[500px] bg-black/80 backdrop-blur-2xl border border-white/10 rounded-3xl z-[950] overflow-hidden shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-4 duration-200">
+      <div
+        className="absolute bottom-20 right-3 w-[360px] max-h-[500px] backdrop-blur-2xl border border-white/10 rounded-3xl z-[950] overflow-hidden shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-4 duration-200"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--os-start-menu) calc(var(--os-transparency) * 1%), transparent)',
+          boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 25%, transparent) inset, 0 25px 50px -12px rgba(0,0,0,0.5)',
+        }}
+      >
 
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/5">
