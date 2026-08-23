@@ -23,10 +23,6 @@ interface ReviewStats {
   total: number;
 }
 
-const reviewsCache = new Map<string, { reviews: Review[]; stats: ReviewStats; timestamp: number }>();
-const CACHE_DURATION = 30 * 1000;
-let forceRefresh = false;
-
 export function useReviews(tag?: 'Comunidad' | 'Tienda' | 'Hub Coins' | 'Todas') {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats>({
@@ -80,13 +76,6 @@ export function useReviews(tag?: 'Comunidad' | 'Tienda' | 'Hub Coins' | 'Todas')
         
         setReviews(newReviews);
         setStats(newStats);
-        
-        const cacheKey = tag || 'all';
-        reviewsCache.set(cacheKey, {
-          reviews: newReviews,
-          stats: newStats,
-          timestamp: Date.now()
-        });
       } else {
         throw new Error(data.error || 'API returned failure');
       }

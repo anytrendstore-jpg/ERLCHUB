@@ -38,7 +38,7 @@ export default function SoportePage() {
   const [tab, setTab] = useState<"tickets" | "report">("tickets");
 
   return (
-    <div className="min-h-screen bg-[#0a0a12]">
+    <div className="min-h-screen bg-[#0c0c14]">
       <Navbar />
 
       <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
@@ -103,16 +103,21 @@ function TicketsTab({ playerName }: { playerName: string }) {
   const [reply, setReply] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [replyError, setReplyError] = useState<string | null>(null);
   const [form, setForm] = useState({ subject: "", category: "Soporte Técnico" as TicketCategory, message: "" });
 
   const selected = useMemo(() => tickets.find((t) => t.id === selectedId) || null, [tickets, selectedId]);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/support/tickets", { cache: "no-store" });
       const data = await res.json();
       if (data.success) setTickets(data.tickets);
+      else setError(data.error || "No se pudieron cargar tus tickets");
+    } catch {
+      setError("No se pudieron cargar tus tickets");
     } finally {
       setLoading(false);
     }
@@ -147,6 +152,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
   const sendReply = async () => {
     if (!selected || !reply.trim()) return;
     setSaving(true);
+    setReplyError(null);
     try {
       const res = await fetch("/api/support/tickets", {
         method: "PATCH",
@@ -155,6 +161,9 @@ function TicketsTab({ playerName }: { playerName: string }) {
       });
       const data = await res.json();
       if (data.success) { setReply(""); await load(); }
+      else setReplyError(data.error || "No se pudo enviar la respuesta");
+    } catch {
+      setReplyError("No se pudo enviar la respuesta");
     } finally {
       setSaving(false);
     }
@@ -209,22 +218,25 @@ function TicketsTab({ playerName }: { playerName: string }) {
 
         <div className="p-4 border-t border-[#1a1a28]">
           {selected.status !== "closed" ? (
-            <div className="flex gap-2">
-              <input
-                value={reply}
-                onChange={(e) => setReply(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendReply()}
-                placeholder="Escribe tu respuesta..."
-                className="flex-1 h-11 px-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
-              />
-              <button
-                type="button"
-                onClick={sendReply}
-                disabled={saving || !reply.trim()}
-                className="h-11 w-11 flex items-center justify-center rounded-xl bg-[#8e00f7] hover:bg-[#7a00d4] disabled:opacity-50 text-white transition"
-              >
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              </button>
+            <div>
+              <div className="flex gap-2">
+                <input
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendReply()}
+                  placeholder="Escribe tu respuesta..."
+                  className="flex-1 h-11 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+                />
+                <button
+                  type="button"
+                  onClick={sendReply}
+                  disabled={saving || !reply.trim()}
+                  className="h-11 w-11 flex items-center justify-center rounded-xl bg-[#8e00f7] hover:bg-[#7a00d4] disabled:opacity-50 text-white transition"
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </button>
+              </div>
+              {replyError && <p className="text-sm text-red-400 flex items-center gap-2 mt-2"><AlertCircle className="h-4 w-4 flex-shrink-0" /> {replyError}</p>}
             </div>
           ) : (
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
@@ -259,13 +271,13 @@ function TicketsTab({ playerName }: { playerName: string }) {
               value={form.subject}
               onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
               placeholder="Asunto"
-              className="h-11 px-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+              className="h-11 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
               required
             />
             <select
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as TicketCategory }))}
-              className="h-11 px-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white focus:outline-none focus:border-[#8e00f7]"
+              className="h-11 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white focus:outline-none focus:border-[#8e00f7]"
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -275,7 +287,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
             onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
             placeholder="Cuéntanos qué necesitas..."
             rows={4}
-            className="w-full p-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
+            className="w-full p-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
             required
           />
           {error && <p className="text-sm text-red-400 flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {error}</p>}
@@ -291,6 +303,12 @@ function TicketsTab({ playerName }: { playerName: string }) {
 
       {loading ? (
         <div className="py-16 flex justify-center"><Loader2 className="h-6 w-6 text-[#8e00f7] animate-spin" /></div>
+      ) : error ? (
+        <div className="bg-[#12121c] border border-red-500/30 rounded-2xl p-10 text-center">
+          <AlertCircle className="h-9 w-9 text-red-400 mx-auto mb-3" />
+          <p className="text-sm text-gray-300 mb-3">{error}</p>
+          <button type="button" onClick={() => load()} className="text-sm text-[#8e00f7] hover:underline">Reintentar</button>
+        </div>
       ) : tickets.length === 0 ? (
         <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-10 text-center">
           <MessageSquare className="h-9 w-9 text-gray-700 mx-auto mb-3" />
@@ -369,14 +387,14 @@ function ReportTab() {
         value={form.targetName}
         onChange={(e) => setForm((f) => ({ ...f, targetName: e.target.value }))}
         placeholder="Usuario o personaje reportado"
-        className="w-full h-12 px-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+        className="w-full h-12 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
         required
       />
       <input
         value={form.reason}
         onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))}
         placeholder="Motivo (ej. RDM, VDM, Fail RP, lenguaje inapropiado...)"
-        className="w-full h-12 px-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+        className="w-full h-12 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
         required
       />
       <textarea
@@ -384,7 +402,7 @@ function ReportTab() {
         onChange={(e) => setForm((f) => ({ ...f, details: e.target.value }))}
         placeholder="Describe lo que ocurrió, con la mayor cantidad de detalles posible (hora, lugar, testigos, evidencia si tienes)..."
         rows={5}
-        className="w-full p-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
+        className="w-full p-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
       />
       {error && <p className="text-sm text-red-400 flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {error}</p>}
       <button
