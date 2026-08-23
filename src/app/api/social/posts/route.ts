@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
     const posts = docs.map(({ _id, ...p }: any) => ({
       ...p,
       likes: p.likes || [],
+      reactions: p.reactions || [],
       comments: p.comments || [],
       shares: p.shares || [],
       savedBy: p.savedBy || [],
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
       text: trimmed,
       imageUrl: imageUrl ? String(imageUrl).trim().slice(0, 1000) : undefined,
       likes: [],
+      reactions: [],
       comments: [],
       shares: [],
       savedBy: [],

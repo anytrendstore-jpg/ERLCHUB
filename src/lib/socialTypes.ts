@@ -5,7 +5,16 @@ export interface SocialComment {
   displayName: string;
   avatar?: string;
   text: string;
+  /** Comentario al que responde, para hilos de un nivel. Ausente = comentario de primer nivel. */
+  parentCommentId?: string;
   createdAt: Date;
+}
+
+export type SocialReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad';
+
+export interface SocialReaction {
+  discordId: string;
+  type: SocialReactionType;
 }
 
 export interface SocialPost {
@@ -16,7 +25,10 @@ export interface SocialPost {
   avatar?: string;
   text: string;
   imageUrl?: string;
+  /** @deprecated reemplazado por `reactions` — se sigue leyendo para posts creados antes de
+   * las multi-reacciones (se tratan como reacciones tipo "like"), pero ya no se escribe. */
   likes: string[];
+  reactions?: SocialReaction[];
   comments: SocialComment[];
   shares: string[];
   savedBy: string[];

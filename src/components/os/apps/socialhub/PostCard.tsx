@@ -1,47 +1,40 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Bookmark, Eye, Pencil, Trash2, Flag, Check, X, Send } from 'lucide-react';
-import type { Post, Profile } from './types';
-import { timeAgo, renderTextWithMentions } from './types';
+import { MessageCircle, Share2, Bookmark, Eye, Pencil, Trash2, Flag, Check, X } from 'lucide-react';
+import type { Post, Profile, ReactionType } from './types';
+import { timeAgo, renderTextWithMentions, reactionsOf } from './types';
 import VerifiedBadge from './VerifiedBadge';
 import ReportModal from './ReportModal';
+import ReactionPicker from './ReactionPicker';
+import CommentThread from './CommentThread';
 import { useToast } from '@/components/os/ui';
 
 interface PostCardProps {
   post: Post;
   me: Profile | null;
   onOpenProfile: (discordId: string) => void;
-  onToggleLike: (postId: string) => void;
+  onReact: (postId: string, type: ReactionType) => void;
   onToggleSave: (postId: string) => void;
   onShare: (postId: string) => void;
-  onSendComment: (postId: string, text: string) => void;
+  onSendComment: (postId: string, text: string, parentCommentId?: string) => void;
   onDelete: (postId: string) => void;
   onReport: (postId: string, reason: string) => void;
   onSaveEdit: (postId: string, text: string) => void;
 }
 
 export default function PostCard({
-  post, me, onOpenProfile, onToggleLike, onToggleSave, onShare, onSendComment, onDelete, onReport, onSaveEdit,
+  post, me, onOpenProfile, onReact, onToggleSave, onShare, onSendComment, onDelete, onReport, onSaveEdit,
 }: PostCardProps) {
   const toast = useToast();
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [commentDraft, setCommentDraft] = useState('');
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState(post.text);
   const [reporting, setReporting] = useState(false);
 
-  const liked = me ? post.likes.includes(me.discordId) : false;
   const saved = me ? post.savedBy.includes(me.discordId) : false;
   const shared = me ? post.shares.includes(me.discordId) : false;
   const isMine = me?.discordId === post.discordId;
-
-  const submitComment = () => {
-    const text = commentDraft.trim();
-    if (!text) return;
-    onSendComment(post.id, text);
-    setCommentDraft('');
-  };
 
   const submitEdit = () => {
     const text = editDraft.trim();
@@ -118,10 +111,7 @@ export default function PostCard({
       )}
 
       <div className="px-4 py-2.5 flex items-center gap-4 border-t border-white/5 mt-1">
-        <button onClick={() => onToggleLike(post.id)} className="flex items-center gap-1.5 text-sm transition-colors group">
-          <Heart className={`w-4 h-4 transition-all ${liked ? 'fill-violet-500 text-violet-500 scale-110' : 'text-white/50 group-hover:text-violet-400'}`} />
-          <span className={liked ? 'text-violet-400' : 'text-white/50'}>{post.likes.length}</span>
-        </button>
+        <ReactionPicker reactions={reactionsOf(post)} myDiscordId={me?.discordId} onReact={(type) => onReact(post.id, type)} />
         <button onClick={() => setCommentsOpen((v) => !v)} className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors">
           <MessageCircle className="w-4 h-4" />
           <span>{post.comments.length}</span>
@@ -139,28 +129,7 @@ export default function PostCard({
       </div>
 
       {commentsOpen && (
-        <div className="px-4 pb-3 space-y-2 border-t border-white/5 pt-2">
-          {post.comments.map((c) => (
-            <div key={c.id} className="flex gap-2 items-baseline">
-              <span className="text-white/70 text-xs font-semibold flex-shrink-0">{c.displayName}</span>
-              <span className="text-white/60 text-xs">{renderTextWithMentions(c.text)}</span>
-            </div>
-          ))}
-          <div className="flex gap-2 pt-1">
-            <input
-              type="text"
-              value={commentDraft}
-              onChange={(e) => setCommentDraft(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && submitComment()}
-              placeholder="Comentar..."
-              maxLength={300}
-              className="flex-1 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
-            />
-            <button onClick={submitComment} className="p-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white transition-colors">
-              <Send className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
+        <CommentThread comments={post.comments} onSendComment={(text, parentCommentId) => onSendComment(post.id, text, parentCommentId)} />
       )}
     </div>
   );

@@ -7,7 +7,7 @@ import { useSocialPosts } from './useSocialPosts';
 import PostCard from './PostCard';
 
 export default function SavedTab({ me, onOpenProfile }: { me: Profile | null; onOpenProfile: (discordId: string) => void }) {
-  const { posts, loading, toggleLike, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts('/api/social/posts?saved=1', me);
+  const { posts, loading, react, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts('/api/social/posts?saved=1', me);
 
   return (
     <div className="max-w-xl mx-auto py-6 px-4">
@@ -27,7 +27,7 @@ export default function SavedTab({ me, onOpenProfile }: { me: Profile | null; on
               post={post}
               me={me}
               onOpenProfile={onOpenProfile}
-              onToggleLike={toggleLike}
+              onReact={react}
               onToggleSave={toggleSave}
               onShare={share}
               onSendComment={sendComment}

@@ -18,7 +18,7 @@ export default function FeedTab({ me, onOpenProfile }: { me: Profile | null; onO
   const toast = useToast();
   const [feedTab, setFeedTab] = useState<'forYou' | 'following'>('forYou');
   const endpoint = feedTab === 'following' ? '/api/social/posts?feed=following' : '/api/social/posts';
-  const { posts, loading, publish, toggleLike, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts(endpoint, me);
+  const { posts, loading, publish, react, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts(endpoint, me);
 
   const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
   const [openStoryGroup, setOpenStoryGroup] = useState<StoryGroup | null>(null);
@@ -93,7 +93,7 @@ export default function FeedTab({ me, onOpenProfile }: { me: Profile | null; onO
               post={post}
               me={me}
               onOpenProfile={onOpenProfile}
-              onToggleLike={toggleLike}
+              onReact={react}
               onToggleSave={toggleSave}
               onShare={share}
               onSendComment={sendComment}

@@ -27,7 +27,15 @@ export interface Comment {
   displayName: string;
   avatar?: string;
   text: string;
+  parentCommentId?: string;
   createdAt: string;
+}
+
+export type ReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad';
+
+export interface Reaction {
+  discordId: string;
+  type: ReactionType;
 }
 
 export interface Post {
@@ -38,7 +46,9 @@ export interface Post {
   avatar?: string;
   text: string;
   imageUrl?: string;
+  /** @deprecated leído para posts viejos sin `reactions` — ver `reactionsOf()` en este archivo. */
   likes: string[];
+  reactions?: Reaction[];
   comments: Comment[];
   shares: string[];
   savedBy: string[];
@@ -48,6 +58,16 @@ export interface Post {
   accountType?: 'personal' | 'business' | 'organization';
   createdAt: string;
 }
+
+/** Normaliza reacciones: si el post ya tiene `reactions` las usa, si no, trata `likes` viejos
+ * como reacciones tipo "like" — así los posts creados antes de las multi-reacciones se ven bien
+ * sin ninguna migración de datos. */
+export function reactionsOf(post: Post): Reaction[] {
+  if (post.reactions && post.reactions.length > 0) return post.reactions;
+  return post.likes.map((discordId) => ({ discordId, type: 'like' as const }));
+}
+
+export const REACTION_ORDER: ReactionType[] = ['like', 'love', 'haha', 'wow', 'sad'];
 
 export interface Profile {
   discordId: string;

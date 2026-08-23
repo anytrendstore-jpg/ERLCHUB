@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Tu cuenta de HubSocial está suspendida por staff' }, { status: 403 });
     }
 
-    const { postId, text } = await request.json();
+    const { postId, text, parentCommentId } = await request.json();
     const trimmed = String(text || '').trim().slice(0, 300);
     if (!postId || !trimmed) {
       return NextResponse.json({ success: false, error: 'Faltan datos' }, { status: 400 });
@@ -24,6 +24,11 @@ export async function POST(request: NextRequest) {
     const existing = await col.findOne({ id: postId });
     if (!existing) return NextResponse.json({ success: false, error: 'No existe' }, { status: 404 });
 
+    // Solo se permite responder a un comentario de primer nivel (hilos de un solo nivel).
+    const parent = parentCommentId
+      ? (existing.comments || []).find((c) => c.id === parentCommentId && !c.parentCommentId)
+      : undefined;
+
     const comment = {
       id: crypto.randomUUID(),
       discordId: user.id,
@@ -31,6 +36,7 @@ export async function POST(request: NextRequest) {
       displayName: user.displayName,
       avatar: user.avatar,
       text: trimmed,
+      ...(parent ? { parentCommentId: parent.id } : {}),
       createdAt: new Date(),
     };
     await col.updateOne({ id: postId }, { $push: { comments: comment } });
@@ -40,6 +46,14 @@ export async function POST(request: NextRequest) {
       await notifyUser(existing.discordId, {
         title: 'Nuevo comentario',
         message: `${user.displayName} comentó: "${trimmed.slice(0, 80)}"`,
+        type: 'info',
+        appId: 'hubsocial',
+      });
+    }
+    if (parent && parent.discordId !== user.id && parent.discordId !== existing.discordId) {
+      await notifyUser(parent.discordId, {
+        title: 'Nueva respuesta',
+        message: `${user.displayName} respondió tu comentario: "${trimmed.slice(0, 80)}"`,
         type: 'info',
         appId: 'hubsocial',
       });

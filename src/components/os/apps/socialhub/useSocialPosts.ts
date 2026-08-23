@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Post, Profile } from './types';
+import type { Post, Profile, ReactionType } from './types';
 
 const POLL_MS = 10000;
 
@@ -52,15 +52,18 @@ export function useSocialPosts(endpoint: string | null, me: Profile | null) {
     return data;
   }, []);
 
-  const toggleLike = useCallback((postId: string) => {
+  const react = useCallback((postId: string, type: ReactionType) => {
     if (!me) return;
     setPosts((prev) => prev.map((p) => {
       if (p.id !== postId) return p;
-      const liked = p.likes.includes(me.discordId);
-      return { ...p, likes: liked ? p.likes.filter((id) => id !== me.discordId) : [...p.likes, me.discordId] };
+      const current = p.reactions && p.reactions.length > 0 ? p.reactions : p.likes.map((id) => ({ discordId: id, type: 'like' as const }));
+      const withoutMine = current.filter((r) => r.discordId !== me.discordId);
+      const mine = current.find((r) => r.discordId === me.discordId);
+      const nextReactions = mine?.type === type ? withoutMine : [...withoutMine, { discordId: me.discordId, type }];
+      return { ...p, reactions: nextReactions };
     }));
-    fetch('/api/social/posts/like', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ postId }),
+    fetch('/api/social/posts/react', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ postId, type }),
     }).catch(() => {});
   }, [me]);
 
@@ -84,9 +87,9 @@ export function useSocialPosts(endpoint: string | null, me: Profile | null) {
     }).catch(() => {});
   }, [me]);
 
-  const sendComment = useCallback(async (postId: string, text: string) => {
+  const sendComment = useCallback(async (postId: string, text: string, parentCommentId?: string) => {
     const res = await fetch('/api/social/posts/comment', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ postId, text }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ postId, text, parentCommentId }),
     });
     const data = await res.json();
     if (data.success) {
@@ -115,5 +118,5 @@ export function useSocialPosts(endpoint: string | null, me: Profile | null) {
     setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, text, editedAt: new Date().toISOString() } : p));
   }, []);
 
-  return { posts, loading, publish, toggleLike, toggleSave, share, sendComment, deletePost, reportPost, saveEdit, refetch: load };
+  return { posts, loading, publish, react, toggleSave, share, sendComment, deletePost, reportPost, saveEdit, refetch: load };
 }

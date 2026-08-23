@@ -48,7 +48,7 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
 
   useEffect(() => { load(); }, [load]);
 
-  const { posts, loading, toggleLike, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts(`/api/social/posts?discordId=${discordId}`, me);
+  const { posts, loading, react, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts(`/api/social/posts?discordId=${discordId}`, me);
   const photoPosts = posts.filter((p) => p.imageUrl);
 
   const toggleFollow = async () => {
@@ -187,7 +187,7 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
                 post={post}
                 me={me}
                 onOpenProfile={onOpenProfile}
-                onToggleLike={toggleLike}
+                onReact={react}
                 onToggleSave={toggleSave}
                 onShare={share}
                 onSendComment={sendComment}
