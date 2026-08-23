@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Search, Home, Compass, Film, ShoppingBag, Users, CalendarDays,
-  MessageCircle, Bell, ChevronDown, Sparkles,
+  MessageCircle, Bell, ChevronDown, HelpCircle,
 } from 'lucide-react';
+import TutorialModal, { HUBSOCIAL_TUTORIAL_START } from '@/components/os/TutorialModal';
+import { SocialHubIcon } from '@/components/icons/AppIcons';
 import { useOS } from '@/contexts/OSContext';
 import type { Post, Profile, SocialView } from './types';
 
@@ -30,6 +32,7 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
   const [searchPostResults, setSearchPostResults] = useState<Post[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -66,9 +69,7 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
   return (
     <div className="h-14 flex-shrink-0 border-b border-white/5 bg-[#0d0d14] flex items-center gap-4 px-4">
       <div className="flex items-center gap-2 flex-shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-          <Sparkles className="w-4 h-4 text-white" />
-        </div>
+        <SocialHubIcon size={32} />
         <span className="text-white font-bold text-sm hidden lg:inline">HubSocial</span>
       </div>
 
@@ -131,6 +132,13 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
 
       <div className="flex items-center gap-1.5 flex-shrink-0">
         <button
+          onClick={() => setTutorialOpen(true)}
+          title="Cómo funciona HubSocial"
+          className="h-10 w-10 hidden sm:flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+        >
+          <HelpCircle className="w-5 h-5" />
+        </button>
+        <button
           onClick={() => openApp('hubchat')}
           title="Mensajes"
           className="h-10 w-10 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/5 transition-colors"
@@ -171,6 +179,8 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
           </div>
         )}
       </div>
+
+      {tutorialOpen && <TutorialModal startAt={HUBSOCIAL_TUTORIAL_START} onClose={() => setTutorialOpen(false)} />}
     </div>
   );
 }

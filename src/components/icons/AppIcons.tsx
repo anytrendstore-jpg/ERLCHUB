@@ -277,25 +277,17 @@ export const RadioIcon: React.FC<IconProps> = ({ className = '', size = 24, acti
 );
 
 // SocialHub - Icono de red social (burbuja + corazón)
+// Logo real de HubSocial (public/hubsocial.png): silueta blanca sobre fondo negro.
+// El negro se vuelve transparente con mix-blend-mode "screen" sobre el degradé
+// morado de la app, así queda como una marca blanca limpia sin editar el archivo.
 export const SocialHubIcon: React.FC<IconProps> = ({ className = '', size = 24, active = false }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    className={`transition-all duration-300 ${active ? 'scale-110' : 'hover:scale-105'} ${className}`}
+  <div
+    className={`relative overflow-hidden rounded-[22%] flex-shrink-0 transition-all duration-300 ${active ? 'scale-110' : 'hover:scale-105'} ${className}`}
+    style={{ width: size, height: size, background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}
   >
-    <defs>
-      <linearGradient id="social-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#F472B6" />
-        <stop offset="50%" stopColor="#A855F7" />
-        <stop offset="100%" stopColor="#6366F1" />
-      </linearGradient>
-    </defs>
-    <rect x="2" y="3" width="20" height="15" rx="4" fill="url(#social-grad)" />
-    <path d="M6 21L9 18H6V21Z" fill="#6366F1" />
-    <path d="M12 8.5C12 8.5 10.8 7 9.3 7C8 7 7 8 7 9.3C7 11.3 12 14 12 14C12 14 17 11.3 17 9.3C17 8 16 7 14.7 7C13.2 7 12 8.5 12 8.5Z" fill="white" />
-  </svg>
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/hubsocial.png" alt="" className="absolute inset-0 w-full h-full object-cover" style={{ mixBlendMode: 'screen' }} />
+  </div>
 );
 
 // Casino - Icono de dados
