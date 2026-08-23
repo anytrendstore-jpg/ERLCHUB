@@ -14,6 +14,10 @@ const FLAG_BY_CODE: Record<string, string> = {
   CLP: "chile-bandera",
 };
 
+export function flagSrc(code: string): string {
+  return `/banderas/${FLAG_BY_CODE[code] || "usa-bandera"}.png`;
+}
+
 interface CurrencySelectorProps {
   value: CurrencyRate;
   onChange: (currency: CurrencyRate) => void;

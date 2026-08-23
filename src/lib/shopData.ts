@@ -281,3 +281,19 @@ export const convertPrice = (usd: number, currency: CurrencyRate): string => {
 export const formatNumber = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+/**
+ * Ahorro real de KIT FULL comparado con comprar dinero + autos + personajes por separado
+ * (los 3 componentes que sí calzan uno a uno con lo que ya trae el bundle) — no es un
+ * número inventado. Reusado tanto en el listado de la tienda como en el detalle del kit.
+ */
+export function kitFullBundleSavings(): { amount: number; pct: number } | null {
+  const kitFull = kits.find((k) => k.id === "kit-full");
+  if (!kitFull) return null;
+  const bundleParts = ["kit-dinero", "kit-autos", "kit-personajes"]
+    .map((id) => kits.find((k) => k.id === id)?.priceHubCoins || 0)
+    .reduce((a, b) => a + b, 0);
+  if (bundleParts <= 0) return null;
+  const amount = bundleParts - kitFull.priceHubCoins;
+  return { amount, pct: Math.round((amount / bundleParts) * 100) };
+}

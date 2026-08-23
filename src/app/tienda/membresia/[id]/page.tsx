@@ -6,10 +6,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
-import { Crown, Check, ChevronRight, Shield, Zap, CreditCard, ShoppingCart } from "lucide-react";
+import { Crown, Check, ChevronRight, Shield, Zap, ArrowLeft, Star } from "lucide-react";
 import { memberships, currencies, convertPrice } from "@/lib/shopData";
 import type { CurrencyRate } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
+import { useCardTilt } from "@/hooks/useCardTilt";
 import AddToCartButton from "@/components/AddToCartButton";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
 
@@ -19,6 +20,7 @@ export default function MembershipPage() {
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const [paymentType, setPaymentType] = useState<"monthly" | "permanent">("permanent");
   const { addItem } = useCart();
+  const tilt = useCardTilt<HTMLDivElement>();
 
   if (!membership) {
     return (
@@ -34,6 +36,8 @@ export default function MembershipPage() {
   }
 
   const currentPrice = paymentType === "monthly" ? membership.priceMonthly : membership.pricePermanent;
+  const breakEvenMonths = Math.ceil(membership.pricePermanent / membership.priceMonthly);
+  const isElite = membership.id === "mem-elite";
 
   const handleAddToCart = () => {
     addItem({
@@ -54,9 +58,11 @@ export default function MembershipPage() {
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/tienda" className="hover:text-white">Tienda</Link>
+            <Link href="/tienda" className="hover:text-white flex items-center gap-1">
+              <ArrowLeft className="h-3.5 w-3.5" /> Tienda
+            </Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href="/tienda#memberships" className="hover:text-white">Membresías</Link>
+            <Link href="/tienda#membresias" className="hover:text-white">Membresías</Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-white">{membership.name}</span>
           </div>
@@ -64,16 +70,23 @@ export default function MembershipPage() {
           <div className="grid lg:grid-cols-2 gap-10">
             <div>
               <div
-                className="aspect-video rounded-2xl overflow-hidden relative"
-                style={{ background: `linear-gradient(135deg, ${membership.color}30, ${membership.color}60)` }}
+                ref={tilt.ref}
+                onMouseMove={tilt.onMouseMove}
+                onMouseLeave={tilt.onMouseLeave}
+                style={{ transform: 'rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))' }}
+                className="group aspect-video rounded-2xl overflow-hidden relative border border-white/10 [transform-style:preserve-3d] transition-transform duration-300"
               >
-                <Image
-                  src={membership.image}
-                  alt={membership.name}
-                  fill
-                  className="object-cover"
+                <Image src={membership.image} alt={membership.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: 'radial-gradient(320px circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,255,255,0.12), transparent 60%)' }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                {isElite && (
+                  <div className="absolute top-4 right-4 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-black px-3 py-1.5 rounded-full shadow-lg" style={{ backgroundColor: membership.color }}>
+                    <Star className="h-3.5 w-3.5 fill-black" /> Recomendado
+                  </div>
+                )}
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Crown className="h-8 w-8" style={{ color: membership.color }} />
                   <span className="text-2xl font-bold text-white">{membership.name}</span>
@@ -120,7 +133,10 @@ export default function MembershipPage() {
                 </button>
               </div>
 
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-6">
+              <div
+                className="relative rounded-2xl p-6 mb-6 overflow-hidden border"
+                style={{ borderColor: `${membership.color}40`, background: `linear-gradient(135deg, ${membership.color}12, transparent 60%)` }}
+              >
                 <div className="mb-4">
                   <span className="text-gray-400 block mb-2">Moneda</span>
                   <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} />
@@ -133,7 +149,7 @@ export default function MembershipPage() {
                 </div>
                 {selectedCurrency.code !== "USD" && (
                   <div className="text-gray-500">
-                    ${currentPrice} 
+                    ${currentPrice}
                     <div className="w-5 h-3 rounded-sm overflow-hidden inline-block ml-1">
                       <Image
                         src="/banderas/usa-bandera.png"
@@ -145,21 +161,26 @@ export default function MembershipPage() {
                     </div>
                   </div>
                 )}
+                {paymentType === "permanent" && (
+                  <p className="text-xs text-emerald-400 mt-2">Se paga solo — el mensual lo iguala recién al mes {breakEvenMonths}</p>
+                )}
               </div>
 
-              <AddToCartButton 
-                onClick={handleAddToCart}
-                text="Agregar al Carrito"
-                requireAuth={true}
-              />
+              <div className="mb-4">
+                <AddToCartButton
+                  onClick={handleAddToCart}
+                  text="Agregar al Carrito"
+                  requireAuth={true}
+                />
+              </div>
 
               <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-1">
-                  <Shield className="h-4 w-4 text-[#8e00f7]" />
+                  <Shield className="h-4 w-4" style={{ color: membership.color }} />
                   Pago seguro
                 </div>
                 <div className="flex items-center gap-1">
-                  <Zap className="h-4 w-4 text-[#8e00f7]" />
+                  <Zap className="h-4 w-4" style={{ color: membership.color }} />
                   Activación instantánea
                 </div>
               </div>
@@ -172,10 +193,10 @@ export default function MembershipPage() {
               {membership.benefits.map((benefit, index) => (
                 <div
                   key={index}
-                  className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 flex items-center gap-3"
+                  className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:-translate-y-0.5"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#8e00f7]/20 flex items-center justify-center flex-shrink-0">
-                    <Check className="h-4 w-4 text-[#8e00f7]" />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${membership.color}20` }}>
+                    <Check className="h-4 w-4" style={{ color: membership.color }} />
                   </div>
                   <span className="text-white">{benefit}</span>
                 </div>
@@ -183,14 +204,31 @@ export default function MembershipPage() {
             </div>
           </div>
 
-          <div className="mt-12 bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
-            <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li>Las membresías mensuales se renuevan automáticamente. Puedes cancelar en cualquier momento.</li>
-              <li>Las membresías permanentes son de un solo pago y no requieren renovación.</li>
-              <li>Los beneficios se activan inmediatamente después de confirmar el pago.</li>
-              <li>No se realizan reembolsos una vez activada la membresía.</li>
-            </ul>
+          <div className="mt-10 grid sm:grid-cols-2 gap-4">
+            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-5">
+              <h3 className="text-white font-semibold mb-2 text-sm">Otros niveles de membresía</h3>
+              <div className="space-y-2">
+                {memberships.filter((m) => m.id !== membership.id).map((m) => (
+                  <Link key={m.id} href={`/tienda/membresia/${m.id}`} className="flex items-center justify-between gap-2 text-sm text-gray-400 hover:text-white transition-colors group">
+                    <span className="truncate">{m.name}</span>
+                    <span className="flex items-center gap-1 text-xs flex-shrink-0" style={{ color: m.color }}>
+                      ${m.pricePermanent} único pago
+                      <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+              <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li>Las membresías mensuales se renuevan automáticamente. Puedes cancelar en cualquier momento.</li>
+                <li>Las membresías permanentes son de un solo pago y no requieren renovación.</li>
+                <li>Los beneficios se activan inmediatamente después de confirmar el pago.</li>
+                <li>No se realizan reembolsos una vez activada la membresía.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ import {
   Clock,
   ShoppingCart
 } from "lucide-react";
-import { memberships, kits, currencies, convertPrice, formatNumber } from "@/lib/shopData";
+import { memberships, kits, currencies, convertPrice, formatNumber, kitFullBundleSavings } from "@/lib/shopData";
 import { useReviews } from "@/hooks/useReviews";
 import { useCart } from "@/contexts/CartContext";
 import { useTiendaStats } from "@/hooks/useTiendaStats";
@@ -47,14 +47,7 @@ export default function TiendaPage() {
 
   const kitCategories = Array.from(new Set(kits.map((k) => k.category)));
   const visibleKits = kitCategory ? kits.filter((k) => k.category === kitCategory) : kits;
-
-  // Ahorro real de KIT FULL comparado con comprar dinero + autos + personajes por separado
-  // (los 3 componentes que sí calzan uno a uno con lo que ya trae el bundle) — no es un número inventado.
-  const kitFull = kits.find((k) => k.id === "kit-full");
-  const bundleParts = ["kit-dinero", "kit-autos", "kit-personajes"]
-    .map((id) => kits.find((k) => k.id === id)?.priceHubCoins || 0)
-    .reduce((a, b) => a + b, 0);
-  const bundleSavingsPct = kitFull ? Math.round(((bundleParts - kitFull.priceHubCoins) / bundleParts) * 100) : 0;
+  const bundleSavings = kitFullBundleSavings();
   const tiendaRating = reviewStats.tienda.avgRating > 0 ? reviewStats.tienda.avgRating.toFixed(1) : "0";
   const handleAddWhitelistFastToCart = () => {
     addItem({
@@ -360,9 +353,9 @@ export default function TiendaPage() {
                   name={kit.name}
                   description={kit.description}
                   color={kit.color}
-                  badge={kit.id === "kit-full" && bundleSavingsPct > 0 ? (
+                  badge={kit.id === "kit-full" && bundleSavings && bundleSavings.pct > 0 ? (
                     <span className="text-[10px] font-bold uppercase tracking-wide bg-emerald-500 text-black px-2 py-1 rounded-full">
-                      Ahorrás {bundleSavingsPct}%
+                      Ahorrás {bundleSavings.pct}%
                     </span>
                   ) : undefined}
                   priceLabel={

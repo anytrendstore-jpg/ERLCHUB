@@ -25,16 +25,7 @@ import { useHubCoins } from "@/hooks/useHubCoins";
 import AddToCartButton from "@/components/AddToCartButton";
 import { hubCoinsPackages, currencies, formatNumber, convertPrice } from "@/lib/shopData";
 import { CurrencyRate } from "@/lib/types";
-
-const recentPurchases = [
-  { user: "Jo***", amount: 2000, time: "hace 5m" },
-  { user: "Ma***", amount: 1000, time: "hace 12m" },
-  { user: "Ca***", amount: 4000, time: "hace 25m" },
-  { user: "Lu***", amount: 500, time: "hace 1h" },
-  { user: "An***", amount: 10000, time: "hace 1h" },
-  { user: "Di***", amount: 2000, time: "hace 2h" },
-  { user: "Pa***", amount: 6000, time: "hace 3h" },
-];
+import CurrencySelector, { flagSrc } from "@/components/tienda/CurrencySelector";
 
 export default function HubCoinsPage() {
   const [selectedPackage, setSelectedPackage] = useState(hubCoinsPackages[2].id);
@@ -67,8 +58,15 @@ export default function HubCoinsPage() {
 
   const currentPackage = hubCoinsPackages.find(p => p.id === selectedPackage) || hubCoinsPackages[2];
   const totalCoins = currentPackage.coins + currentPackage.bonus;
-  
+
   const discountedPrice = currentPackage.priceUSD;
+
+  // Mejor valor real = menor costo por HC (coins + bonus incluido), no una etiqueta puesta a mano.
+  const bestValuePackageId = hubCoinsPackages.reduce((best, pkg) => {
+    const ratio = pkg.priceUSD / (pkg.coins + pkg.bonus);
+    const bestRatio = best.priceUSD / (best.coins + best.bonus);
+    return ratio < bestRatio ? pkg : best;
+  }, hubCoinsPackages[0]).id;
 
   const renderStarsManual = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -148,20 +146,27 @@ export default function HubCoinsPage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {hubCoinsPackages.map((pkg) => (
+                  {hubCoinsPackages.map((pkg) => {
+                    const isBestValue = pkg.id === bestValuePackageId;
+                    return (
                     <button
                       key={pkg.id}
                       type="button"
                       onClick={() => setSelectedPackage(pkg.id)}
-                      className={`relative bg-[#12121c] border-2 rounded-xl p-4 text-left transition-all duration-200 ${
+                      className={`relative bg-[#12121c] border-2 rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 ${
                         selectedPackage === pkg.id
-                          ? "border-[#8e00f7] bg-[#8e00f7]/10"
+                          ? "border-[#8e00f7] bg-[#8e00f7]/10 shadow-[0_15px_35px_-15px_rgba(142,0,247,0.5)]"
                           : "border-[#1a1a28] hover:border-[#3a3a4a]"
                       }`}
                     >
                       {pkg.popular && (
-                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#8e00f7] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#8e00f7] text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
                           Popular
+                        </div>
+                      )}
+                      {!pkg.popular && isBestValue && (
+                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                          Mejor valor
                         </div>
                       )}
 
@@ -189,7 +194,8 @@ export default function HubCoinsPage() {
                         {convertPrice(pkg.priceUSD, selectedCurrency)}
                       </div>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -213,16 +219,7 @@ export default function HubCoinsPage() {
                     >
                       <div className="w-5 h-3 rounded-sm overflow-hidden">
                         <Image
-                          src={`/banderas/${
-                            currency.code === "USD" ? "usa-bandera" :
-                            currency.code === "EUR" ? "eu-bandera" :
-                            currency.code === "MXN" ? "mexico-bandera" :
-                            currency.code === "COP" ? "colombia-bandera" :
-                            currency.code === "ARS" ? "argentina-bandera" :
-                            currency.code === "PEN" ? "peru-bandera" :
-                            currency.code === "CLP" ? "chile-bandera" :
-                            "usa-bandera"
-                          }.png`}
+                          src={flagSrc(currency.code)}
                           alt={currency.name}
                           width={20}
                           height={12}
@@ -302,7 +299,7 @@ export default function HubCoinsPage() {
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-4">
 
-                <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+                <div className="relative rounded-2xl p-6 overflow-hidden border border-[#8e00f7]/30" style={{ background: 'linear-gradient(135deg, #8e00f712, #12121c 60%)' }}>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-gray-400 text-sm uppercase tracking-wider">Resumen</h3>
                     <div className="w-10 h-10 rounded-full bg-[#8e00f7] flex items-center justify-center">
@@ -357,16 +354,7 @@ export default function HubCoinsPage() {
                       <span className="text-white flex items-center gap-1">
                         <div className="w-5 h-3 rounded-sm overflow-hidden">
                           <Image
-                            src={`/banderas/${
-                              selectedCurrency.code === "USD" ? "usa-bandera" :
-                              selectedCurrency.code === "EUR" ? "eu-bandera" :
-                              selectedCurrency.code === "MXN" ? "mexico-bandera" :
-                              selectedCurrency.code === "COP" ? "colombia-bandera" :
-                              selectedCurrency.code === "ARS" ? "argentina-bandera" :
-                              selectedCurrency.code === "PEN" ? "peru-bandera" :
-                              selectedCurrency.code === "CLP" ? "chile-bandera" :
-                              "usa-bandera"
-                            }.png`}
+                            src={flagSrc(selectedCurrency.code)}
                             alt={selectedCurrency.name}
                             width={20}
                             height={12}
@@ -431,7 +419,7 @@ export default function HubCoinsPage() {
                       <div className="flex items-start gap-2">
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-white font-medium text-sm">{review.name}</span>
+                            <span className="text-white font-medium text-sm">{review.username || review.name || "Usuario"}</span>
                             <div className="flex items-center gap-1">
                               {review.rating && (
                                 <>
