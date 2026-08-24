@@ -4,6 +4,7 @@ import { currentDiscordUser, resolvePlayerIdentity } from '@/lib/whitelistServer
 import type { SocialPost, SocialProfile, SocialFollow, SocialStory, SocialReport } from '@/lib/socialTypes';
 import type { SocialPage } from '@/lib/socialPageTypes';
 import type { SocialGroup, SocialGroupMember } from '@/lib/socialGroupTypes';
+import type { SocialEvent } from '@/lib/socialEventTypes';
 
 /** username = Roblox verificado (@handle) · displayName = nombre del personaje (RP). */
 export async function currentSocialUser(): Promise<{ id: string; username: string; displayName: string; avatar?: string } | null> {
@@ -106,6 +107,14 @@ export async function socialGroupMembersCollection(): Promise<Collection<SocialG
 /** ¿Puede este jugador administrar el grupo (editarlo, aprobar miembros)? */
 export function isGroupAdmin(member: SocialGroupMember | null | undefined): boolean {
   return Boolean(member && member.status === 'active' && (member.role === 'owner' || member.role === 'admin'));
+}
+
+export async function socialEventsCollection(): Promise<Collection<SocialEvent>> {
+  const db = await connectToDatabase();
+  const col = db.collection<SocialEvent>('social_events');
+  await col.createIndex({ id: 1 }, { unique: true }).catch(() => {});
+  await col.createIndex({ date: 1 }).catch(() => {});
+  return col;
 }
 
 /** Límite de publicaciones por jugador en la última hora, para frenar el spam. */

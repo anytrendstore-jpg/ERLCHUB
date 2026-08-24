@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { socialFollowsCollection, socialProfilesCollection, socialPagesCollection, socialGroupsCollection, socialGroupMembersCollection, currentSocialUser } from '@/lib/socialServer';
+import { socialFollowsCollection, socialProfilesCollection, socialPagesCollection, socialGroupsCollection, socialGroupMembersCollection, socialEventsCollection, currentSocialUser } from '@/lib/socialServer';
+import { pageVerificationPriority } from '@/lib/socialPageTypes';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,9 +8,7 @@ const SUGGESTIONS_LIMIT = 5;
 
 /**
  * "Personas que quizás conozcas" + páginas/grupos/eventos sugeridos para el panel
- * derecho de HubSocial. Eventos todavía no existe como entidad (llega en una fase
- * posterior del rediseño) — se devuelve vacío a propósito en vez de inventar filas,
- * y el cliente muestra un estado vacío honesto para ese.
+ * derecho de HubSocial — todas reales desde el día uno.
  */
 export async function GET() {
   const me = await currentSocialUser();
@@ -70,7 +69,7 @@ export async function GET() {
     const pageDocs = await pagesCol.find({ followers: { $ne: me.id } }).toArray();
     const pages = pageDocs
       .map((p) => ({ id: p.id, name: p.name, category: p.category, avatarUrl: p.avatarUrl, verified: p.verified, verificationType: p.verificationType, followersCount: p.followers.length }))
-      .sort((a, b) => b.followersCount - a.followersCount)
+      .sort((a, b) => pageVerificationPriority(b.verificationType) - pageVerificationPriority(a.verificationType) || b.followersCount - a.followersCount)
       .slice(0, SUGGESTIONS_LIMIT);
 
     // Grupos con más miembros de los que el jugador todavía no forma parte — reales desde el día uno.
@@ -92,7 +91,13 @@ export async function GET() {
       .sort((a, b) => b.memberCount - a.memberCount)
       .slice(0, SUGGESTIONS_LIMIT);
 
-    return NextResponse.json({ success: true, people, pages, groups, events: [] });
+    // Próximos eventos (fecha >= hoy) que el jugador todavía no marcó como asistiendo.
+    const eventsCol = await socialEventsCollection();
+    const today = new Date().toISOString().slice(0, 10);
+    const eventDocs = await eventsCol.find({ date: { $gte: today }, attending: { $ne: me.id } }).sort({ date: 1 }).limit(SUGGESTIONS_LIMIT).toArray();
+    const events = eventDocs.map((e) => ({ id: e.id, name: e.name, date: e.date, location: e.location, attendingCount: e.attending.length }));
+
+    return NextResponse.json({ success: true, people, pages, groups, events });
   } catch (error) {
     console.error('Error obteniendo sugerencias:', error);
     return NextResponse.json({ success: false, error: 'No se pudo conectar con la base de datos' }, { status: 500 });

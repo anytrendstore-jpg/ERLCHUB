@@ -1,13 +1,23 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Building2, Phone, Mail, Globe, MapPin, Users } from 'lucide-react';
+import { ArrowLeft, Building2, Phone, Mail, Globe, MapPin, Users, ShoppingBag, Instagram, Music2, LifeBuoy, Link as LinkIcon, type LucideIcon } from 'lucide-react';
 import { EmptyState, Skeleton, useToast } from '@/components/os/ui';
 import type { Page, Profile } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import Composer from './Composer';
 import PostCard from './PostCard';
 import VerifiedBadge from './VerifiedBadge';
+
+/** Elige un ícono para un botón anclado según palabras clave en su etiqueta (Tienda, Instagram, TikTok, Soporte...). */
+function pinnedLinkIcon(label: string): LucideIcon {
+  const l = label.toLowerCase();
+  if (l.includes('tienda') || l.includes('store') || l.includes('shop')) return ShoppingBag;
+  if (l.includes('instagram')) return Instagram;
+  if (l.includes('tiktok')) return Music2;
+  if (l.includes('soporte') || l.includes('support') || l.includes('ayuda')) return LifeBuoy;
+  return LinkIcon;
+}
 
 export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
   pageId: string;
@@ -154,6 +164,25 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
           <span className="text-white flex items-center gap-1"><Users className="w-3.5 h-3.5 text-white/40" /> <b>{page.followersCount}</b> <span className="text-white/50">seguidores</span></span>
           <span className="text-white"><b>{page.postsCount ?? posts.length}</b> <span className="text-white/50">publicaciones</span></span>
         </div>
+
+        {!editing && page.pinnedLinks && page.pinnedLinks.length > 0 && (
+          <div className="grid gap-2 mt-4" style={{ gridTemplateColumns: `repeat(${Math.min(page.pinnedLinks.length, 3)}, minmax(0, 1fr))` }}>
+            {page.pinnedLinks.map((link, i) => {
+              const Icon = pinnedLinkIcon(link.label);
+              return (
+                <a
+                  key={i}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 text-white text-xs font-semibold transition-colors"
+                >
+                  <Icon className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" /> {link.label}
+                </a>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="mt-6">

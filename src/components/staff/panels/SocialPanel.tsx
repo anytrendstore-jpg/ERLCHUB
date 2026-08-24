@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Heart, MessageSquare, Star, Trash2, RotateCcw, Search, Flag, CheckCheck, X,
-  BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2, Building2, Plus, UserPlus, UserMinus, Pencil,
+  BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2, Building2, Plus, UserPlus, UserMinus, Pencil, Image as ImageIcon,
 } from "lucide-react";
 import { PanelHeader, Card, LoadingBlock, EmptyState, Chip, TextInput, TextArea, Select, Button, IconButton, Modal, formatDate, useToast } from "@/components/staff/ui";
 
@@ -518,12 +518,19 @@ function AccountsTab() {
 
 /* ------------------------------------------------------------------ */
 
+interface StaffPageLink {
+  label: string;
+  url: string;
+}
+
 interface StaffPage {
   id: string;
   name: string;
   category: string;
   bio?: string;
   avatarUrl?: string;
+  coverUrl?: string;
+  pinnedLinks?: StaffPageLink[];
   verified: boolean;
   verificationType?: "business" | "organization" | "government" | "official";
   ownerId: string;
@@ -543,6 +550,9 @@ function PagesTab() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [adminDraftByPage, setAdminDraftByPage] = useState<Record<string, string>>({});
+  const [editingLinks, setEditingLinks] = useState<StaffPage | null>(null);
+  const [coverDraft, setCoverDraft] = useState("");
+  const [linksDraft, setLinksDraft] = useState<StaffPageLink[]>([{ label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -580,6 +590,31 @@ function PagesTab() {
     if (!discordId) return;
     await act(pageId, "addAdmin", { discordId });
     setAdminDraftByPage((prev) => ({ ...prev, [pageId]: "" }));
+  };
+
+  const openLinksEditor = (p: StaffPage) => {
+    setEditingLinks(p);
+    setCoverDraft(p.coverUrl || "");
+    const existing = p.pinnedLinks || [];
+    setLinksDraft([0, 1, 2].map((i) => existing[i] || { label: "", url: "" }));
+  };
+
+  const confirmLinks = async () => {
+    if (!editingLinks) return;
+    setBusyId(editingLinks.id);
+    try {
+      await Promise.all([
+        fetch("/api/staff/social/pages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId: editingLinks.id, action: "setCoverUrl", coverUrl: coverDraft }) }),
+        fetch("/api/staff/social/pages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId: editingLinks.id, action: "setPinnedLinks", pinnedLinks: linksDraft }) }),
+      ]);
+      toast.success("Página actualizada");
+      await load();
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setBusyId(null);
+    }
+    setEditingLinks(null);
   };
 
   return (
@@ -632,6 +667,10 @@ function PagesTab() {
                         className={p.verified ? "text-blue-400" : "text-slate-600"}
                         onClick={() => act(p.id, p.verified ? "unverify" : "verify")}
                       />
+                      <IconButton
+                        icon={ImageIcon} label="Portada y botones anclados" variant="ghost" size="sm" className="text-slate-500"
+                        onClick={() => openLinksEditor(p)}
+                      />
                       <Select
                         value={p.verificationType || "organization"}
                         onChange={(e) => act(p.id, "setVerificationType", { verificationType: e.target.value })}
@@ -673,6 +712,38 @@ function PagesTab() {
       )}
 
       {showCreate && <CreateOfficialPageModal onClose={() => setShowCreate(false)} onCreated={() => { setShowCreate(false); load(); }} />}
+
+      {editingLinks && (
+        <Modal
+          title={`Portada y accesos de "${editingLinks.name}"`}
+          onClose={() => setEditingLinks(null)}
+          size="sm"
+          footer={<Button variant="primary" onClick={confirmLinks} className="w-full">Guardar</Button>}
+        >
+          <label className="text-[11px] text-slate-500 mb-1 block">URL de portada</label>
+          <TextInput value={coverDraft} onChange={(e) => setCoverDraft(e.target.value)} placeholder="/bannererlchub.png" className="w-full mb-3" />
+
+          <label className="text-[11px] text-slate-500 mb-1 block">Botones anclados (hasta 3)</label>
+          <div className="space-y-2">
+            {linksDraft.map((link, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <TextInput
+                  value={link.label}
+                  onChange={(e) => setLinksDraft((prev) => prev.map((l, j) => j === i ? { ...l, label: e.target.value } : l))}
+                  placeholder="Etiqueta (ej: Tienda)"
+                  className="w-28 text-xs"
+                />
+                <TextInput
+                  value={link.url}
+                  onChange={(e) => setLinksDraft((prev) => prev.map((l, j) => j === i ? { ...l, url: e.target.value } : l))}
+                  placeholder="URL"
+                  className="flex-1 text-xs"
+                />
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

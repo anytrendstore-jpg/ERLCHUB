@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { socialPagesCollection, currentSocialUser } from '@/lib/socialServer';
+import { pageVerificationPriority } from '@/lib/socialPageTypes';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,12 +24,15 @@ export async function GET(request: NextRequest) {
     const col = await socialPagesCollection();
     const docs = await col.find(filter).sort({ createdAt: -1 }).limit(50).toArray();
 
-    const pages = docs.map(({ _id, ...p }: any) => ({
-      ...p,
-      followersCount: (p.followers || []).length,
-      isFollowing: (p.followers || []).includes(user.id),
-      isAdmin: p.ownerId === user.id || (p.admins || []).includes(user.id),
-    }));
+    const pages = docs
+      .map(({ _id, ...p }: any) => ({
+        ...p,
+        followersCount: (p.followers || []).length,
+        isFollowing: (p.followers || []).includes(user.id),
+        isAdmin: p.ownerId === user.id || (p.admins || []).includes(user.id),
+      }))
+      // Las páginas oficiales/gubernamentales siempre aparecen primero en el listado.
+      .sort((a, b) => pageVerificationPriority(b.verificationType) - pageVerificationPriority(a.verificationType) || b.followersCount - a.followersCount);
 
     return NextResponse.json({ success: true, pages });
   } catch (error) {

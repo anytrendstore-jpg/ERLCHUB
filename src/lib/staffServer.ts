@@ -40,6 +40,7 @@ export type StaffActionType =
   | 'social_page_type_changed'
   | 'social_page_admin_added'
   | 'social_page_admin_removed'
+  | 'social_page_details_changed'
   | 'hubpay_account_frozen'
   | 'hubpay_account_unfrozen'
   | 'inventory_item_transferred'

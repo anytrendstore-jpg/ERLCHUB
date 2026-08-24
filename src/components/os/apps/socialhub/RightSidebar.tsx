@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { UserPlus, Building2, Users, CalendarDays } from 'lucide-react';
 import { EmptyState, Skeleton } from '@/components/os/ui';
 import VerifiedBadge from './VerifiedBadge';
+import { formatEventDate } from './types';
 
 interface SuggestedPerson {
   discordId: string;
@@ -31,19 +32,26 @@ interface SuggestedGroup {
   memberCount: number;
 }
 
-/** Panel derecho: personas/páginas/grupos/eventos sugeridos. Eventos todavía no existe
- * como entidad real (llega en una fase posterior) — se muestra con un estado vacío
- * honesto en vez de contenido inventado. Páginas y grupos ya son reales. */
-export default function RightSidebar({ onOpenProfile, onOpenPage, onOpenGroup }: { onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void; onOpenGroup: (groupId: string) => void }) {
+interface SuggestedEvent {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  attendingCount: number;
+}
+
+/** Panel derecho: personas/páginas/grupos/eventos sugeridos, todos con datos reales. */
+export default function RightSidebar({ onOpenProfile, onOpenPage, onOpenGroup, onOpenEvent }: { onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void; onOpenGroup: (groupId: string) => void; onOpenEvent: (eventId: string) => void }) {
   const [people, setPeople] = useState<SuggestedPerson[]>([]);
   const [pages, setPages] = useState<SuggestedPage[]>([]);
   const [groups, setGroups] = useState<SuggestedGroup[]>([]);
+  const [events, setEvents] = useState<SuggestedEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/social/suggestions', { cache: 'no-store' })
       .then((r) => r.json())
-      .then((d) => { if (d.success) { setPeople(d.people); setPages(d.pages || []); setGroups(d.groups || []); } })
+      .then((d) => { if (d.success) { setPeople(d.people); setPages(d.pages || []); setGroups(d.groups || []); setEvents(d.events || []); } })
       .finally(() => setLoading(false));
   }, []);
 
@@ -185,7 +193,26 @@ export default function RightSidebar({ onOpenProfile, onOpenPage, onOpenGroup }:
 
       <section>
         <h3 className="text-white text-sm font-bold mb-3">Eventos próximos</h3>
-        <EmptyState icon={CalendarDays} title="Sin eventos por ahora" />
+        {loading ? (
+          <Skeleton className="h-9" />
+        ) : events.length === 0 ? (
+          <EmptyState icon={CalendarDays} title="Sin eventos por ahora" />
+        ) : (
+          <div className="space-y-3">
+            {events.map((e) => (
+              <button key={e.id} onClick={() => onOpenEvent(e.id)} className="w-full flex items-center gap-2.5 text-left">
+                <div className="flex flex-col items-center justify-center w-9 h-9 rounded-lg bg-violet-600/20 flex-shrink-0">
+                  <span className="text-white text-xs font-bold leading-none">{formatEventDate(e.date).split(' ')[0]}</span>
+                  <span className="text-violet-300 text-[8px] font-semibold uppercase">{formatEventDate(e.date).split(' ')[1]}</span>
+                </div>
+                <span className="min-w-0">
+                  <span className="block text-white text-xs font-medium truncate">{e.name}</span>
+                  <span className="block text-white/40 text-[10px] truncate">{e.location}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

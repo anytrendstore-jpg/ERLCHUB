@@ -38,6 +38,11 @@ export interface Reaction {
   type: ReactionType;
 }
 
+export interface PageLink {
+  label: string;
+  url: string;
+}
+
 export interface Page {
   id: string;
   name: string;
@@ -51,6 +56,7 @@ export interface Page {
   location?: string;
   verified: boolean;
   verificationType?: 'business' | 'organization' | 'government';
+  pinnedLinks?: PageLink[];
   ownerId: string;
   admins: string[];
   followersCount: number;
@@ -88,6 +94,30 @@ export interface GroupMember {
   role: GroupRole;
   status: 'active' | 'pending';
   joinedAt: string;
+}
+
+export type EventOrganizerType = 'user' | 'page' | 'group';
+export type EventRsvpStatus = 'interested' | 'attending' | 'not_attending';
+
+export interface SocialEvent {
+  id: string;
+  name: string;
+  description?: string;
+  coverImage?: string;
+  date: string;
+  time?: string;
+  location: string;
+  organizerId: string;
+  organizerName: string;
+  organizerAvatar?: string;
+  organizerType: EventOrganizerType;
+  groupId?: string;
+  pageId?: string;
+  interestedCount: number;
+  attendingCount: number;
+  myStatus?: EventRsvpStatus;
+  isOrganizer?: boolean;
+  createdAt: string;
 }
 
 export interface Post {
@@ -137,9 +167,9 @@ export interface Profile {
   accountType?: 'personal' | 'business' | 'organization';
 }
 
-/** Pestañas de nivel superior de HubSocial. Las que todavía no tienen datos reales (eventos,
- * marketplace, videos) se agregan en fases posteriores del rediseño — mientras tanto muestran
- * un estado "Próximamente" honesto, nunca contenido inventado. */
+/** Pestañas de nivel superior de HubSocial. Las que todavía no tienen datos reales (marketplace,
+ * videos) se agregan en fases posteriores del rediseño — mientras tanto muestran un estado
+ * "Próximamente" honesto, nunca contenido inventado. */
 export type SocialView =
   | { mode: 'feed' }
   | { mode: 'explore' }
@@ -150,8 +180,17 @@ export type SocialView =
   | { mode: 'pages' }
   | { mode: 'page'; pageId: string }
   | { mode: 'events' }
+  | { mode: 'event'; eventId: string }
   | { mode: 'profile'; discordId: string }
   | { mode: 'saved' };
+
+const SHORT_MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+/** Formatea una fecha ISO (YYYY-MM-DD) de evento como "23 ago 2026", en horario local del jugador. */
+export function formatEventDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return `${d} ${SHORT_MONTHS[m - 1]} ${y}`;
+}
 
 export function timeAgo(iso: string): string {
   const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);

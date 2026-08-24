@@ -47,7 +47,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ success: false, error: 'Solo el dueño o administradores pueden editar la página' }, { status: 403 });
     }
 
-    const { bio, avatarUrl, coverUrl, phone, email, website, location } = await request.json();
+    const { bio, avatarUrl, coverUrl, phone, email, website, location, pinnedLinks } = await request.json();
     const update: Record<string, unknown> = {};
     if (bio !== undefined) update.bio = String(bio).trim().slice(0, BIO_MAX);
     if (avatarUrl !== undefined) update.avatarUrl = String(avatarUrl).trim().slice(0, 1000);
@@ -56,6 +56,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (email !== undefined) update.email = String(email).trim().slice(0, 100);
     if (website !== undefined) update.website = String(website).trim().slice(0, 200);
     if (location !== undefined) update.location = String(location).trim().slice(0, 100);
+    if (Array.isArray(pinnedLinks)) {
+      update.pinnedLinks = pinnedLinks
+        .filter((l: any) => l && String(l.label || '').trim() && String(l.url || '').trim())
+        .slice(0, 4)
+        .map((l: any) => ({ label: String(l.label).trim().slice(0, 30), url: String(l.url).trim().slice(0, 500) }));
+    }
 
     await col.updateOne({ id: params.id }, { $set: update });
     return NextResponse.json({ success: true });

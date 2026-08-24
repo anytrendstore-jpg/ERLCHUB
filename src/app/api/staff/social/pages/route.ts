@@ -85,7 +85,7 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { pageId, action, verificationType, discordId } = await request.json();
+    const { pageId, action, verificationType, discordId, coverUrl, pinnedLinks } = await request.json();
     if (!pageId || !action) return NextResponse.json({ success: false, error: 'Faltan datos' }, { status: 400 });
 
     const col = await socialPagesCollection();
@@ -118,6 +118,23 @@ export async function PATCH(request: NextRequest) {
       await logStaffAction({
         type: 'social_page_admin_removed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
         target: pageId, description: `${actorName} quitó a ${discordId} como administrador de "${page.name}"`,
+      });
+    } else if (action === 'setCoverUrl') {
+      const trimmed = String(coverUrl || '').trim().slice(0, 1000);
+      await col.updateOne({ id: pageId }, { $set: { coverUrl: trimmed } });
+      await logStaffAction({
+        type: 'social_page_details_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
+        target: pageId, description: `${actorName} cambió la portada de "${page.name}"`,
+      });
+    } else if (action === 'setPinnedLinks') {
+      const cleanLinks = (Array.isArray(pinnedLinks) ? pinnedLinks : [])
+        .filter((l: any) => l && String(l.label || '').trim() && String(l.url || '').trim())
+        .slice(0, 4)
+        .map((l: any) => ({ label: String(l.label).trim().slice(0, 30), url: String(l.url).trim().slice(0, 500) }));
+      await col.updateOne({ id: pageId }, { $set: { pinnedLinks: cleanLinks } });
+      await logStaffAction({
+        type: 'social_page_details_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
+        target: pageId, description: `${actorName} actualizó los botones anclados de "${page.name}"`,
       });
     } else {
       return NextResponse.json({ success: false, error: 'Acción inválida' }, { status: 400 });

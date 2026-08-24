@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Compass, Film, ShoppingBag, CalendarDays } from 'lucide-react';
+import { Compass, Film, ShoppingBag } from 'lucide-react';
 import type { Profile, SocialView } from './socialhub/types';
 import TopBar from './socialhub/TopBar';
 import LeftSidebar from './socialhub/LeftSidebar';
@@ -14,11 +14,13 @@ import PagesTab from './socialhub/PagesTab';
 import PageDetail from './socialhub/PageDetail';
 import GroupsTab from './socialhub/GroupsTab';
 import GroupDetail from './socialhub/GroupDetail';
+import EventsTab from './socialhub/EventsTab';
+import EventDetail from './socialhub/EventDetail';
 import ComingSoon from './socialhub/ComingSoon';
 
 /**
- * HubSocial — identidad morada + feed/historias/perfil/páginas/grupos migrados a componentes
- * propios en socialhub/. Eventos/Marketplace/Videos llegan en fases siguientes con datos
+ * HubSocial — identidad morada + feed/historias/perfil/páginas/grupos/eventos migrados a
+ * componentes propios en socialhub/. Marketplace/Videos llegan en fases siguientes con datos
  * reales — hasta entonces muestran un estado honesto de "Próximamente".
  */
 export default function SocialHubApp() {
@@ -36,8 +38,9 @@ export default function SocialHubApp() {
   const openOwnProfile = () => { if (me) openProfile(me.discordId); };
   const openPage = (pageId: string) => setView({ mode: 'page', pageId });
   const openGroup = (groupId: string) => setView({ mode: 'group', groupId });
+  const openEvent = (eventId: string) => setView({ mode: 'event', eventId });
   const navigate = (mode: SocialView['mode']) => {
-    if (mode === 'profile' || mode === 'page' || mode === 'group') return;
+    if (mode === 'profile' || mode === 'page' || mode === 'group' || mode === 'event') return;
     setView({ mode } as SocialView);
   };
 
@@ -71,12 +74,13 @@ export default function SocialHubApp() {
           {view.mode === 'group' && (
             <GroupDetail groupId={view.groupId} me={me} onBack={() => setView({ mode: 'groups' })} onOpenProfile={openProfile} onOpenPage={openPage} />
           )}
-          {view.mode === 'events' && (
-            <ComingSoon icon={CalendarDays} title="Eventos llega pronto" text="Organiza y confirma asistencia a eventos de la comunidad." />
+          {view.mode === 'events' && <EventsTab onOpenEvent={openEvent} />}
+          {view.mode === 'event' && (
+            <EventDetail eventId={view.eventId} onBack={() => setView({ mode: 'events' })} onOpenProfile={openProfile} />
           )}
         </div>
 
-        <RightSidebar onOpenProfile={openProfile} onOpenPage={openPage} onOpenGroup={openGroup} />
+        <RightSidebar onOpenProfile={openProfile} onOpenPage={openPage} onOpenGroup={openGroup} onOpenEvent={openEvent} />
         <ChatPanel />
       </div>
     </div>
