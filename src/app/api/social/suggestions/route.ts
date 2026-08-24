@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { socialFollowsCollection, socialProfilesCollection, currentSocialUser } from '@/lib/socialServer';
+import { socialFollowsCollection, socialProfilesCollection, socialPagesCollection, currentSocialUser } from '@/lib/socialServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,7 +65,15 @@ export async function GET() {
       })
       .filter((p): p is NonNullable<typeof p> => p !== null);
 
-    return NextResponse.json({ success: true, people, pages: [], groups: [], events: [] });
+    // Páginas más seguidas que el jugador todavía no sigue — reales desde el día uno.
+    const pagesCol = await socialPagesCollection();
+    const pageDocs = await pagesCol.find({ followers: { $ne: me.id } }).toArray();
+    const pages = pageDocs
+      .map((p) => ({ id: p.id, name: p.name, category: p.category, avatarUrl: p.avatarUrl, verified: p.verified, followersCount: p.followers.length }))
+      .sort((a, b) => b.followersCount - a.followersCount)
+      .slice(0, SUGGESTIONS_LIMIT);
+
+    return NextResponse.json({ success: true, people, pages, groups: [], events: [] });
   } catch (error) {
     console.error('Error obteniendo sugerencias:', error);
     return NextResponse.json({ success: false, error: 'No se pudo conectar con la base de datos' }, { status: 500 });

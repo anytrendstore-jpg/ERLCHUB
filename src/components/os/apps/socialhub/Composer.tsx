@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { Image as ImageIcon } from 'lucide-react';
 import type { Profile } from './types';
 
-export default function Composer({ me, onPublish }: {
+export default function Composer({ me, onPublish, postingAs }: {
   me: Profile | null;
   onPublish: (text: string, imageUrl?: string) => Promise<void> | void;
+  /** Si se pasa, el composer publica con esta identidad (una página) en vez de la del jugador. */
+  postingAs?: { name: string; avatarUrl?: string };
 }) {
   const [draftText, setDraftText] = useState('');
   const [draftImage, setDraftImage] = useState('');
@@ -26,17 +28,20 @@ export default function Composer({ me, onPublish }: {
     }
   };
 
+  const avatar = postingAs ? postingAs.avatarUrl : (me?.avatarUrl || me?.avatar);
+  const name = postingAs ? postingAs.name : me?.displayName;
+
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-6">
       <div className="flex items-start gap-3">
-        {me && (
+        {(me || postingAs) && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={me.avatarUrl || me.avatar} alt="" className="w-9 h-9 rounded-full flex-shrink-0" />
+          <img src={avatar} alt="" className="w-9 h-9 rounded-full flex-shrink-0" />
         )}
         <textarea
           value={draftText}
           onChange={(e) => setDraftText(e.target.value)}
-          placeholder={me ? `¿Qué estás pensando, ${me.displayName}?` : '¿Qué está pasando en ERLC?'}
+          placeholder={name ? `¿Qué estás pensando, ${name}?` : '¿Qué está pasando en ERLC?'}
           maxLength={500}
           rows={2}
           className="w-full bg-transparent text-white placeholder-white/30 text-sm resize-none focus:outline-none pt-1.5"

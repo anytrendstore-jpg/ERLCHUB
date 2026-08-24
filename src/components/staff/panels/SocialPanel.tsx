@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Heart, MessageSquare, Star, Trash2, RotateCcw, Search, Flag, CheckCheck, X,
-  BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2,
+  BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2, Building2, Plus, UserPlus, UserMinus,
 } from "lucide-react";
-import { PanelHeader, Card, LoadingBlock, EmptyState, Chip, TextInput, Select, Button, IconButton, Modal, formatDate, useToast } from "@/components/staff/ui";
+import { PanelHeader, Card, LoadingBlock, EmptyState, Chip, TextInput, TextArea, Select, Button, IconButton, Modal, formatDate, useToast } from "@/components/staff/ui";
 
-type Tab = "posts" | "reports" | "accounts";
+type Tab = "posts" | "reports" | "accounts" | "pages";
 
 interface StaffPost {
   id: string;
@@ -55,6 +55,7 @@ const TABS: { id: Tab; label: string; icon: typeof Heart }[] = [
   { id: "posts", label: "Publicaciones", icon: MessageSquare },
   { id: "reports", label: "Reportes", icon: Flag },
   { id: "accounts", label: "Cuentas", icon: UserIcon },
+  { id: "pages", label: "Páginas", icon: Building2 },
 ];
 
 export default function SocialPanel() {
@@ -86,6 +87,7 @@ export default function SocialPanel() {
       {tab === "posts" && <PostsTab />}
       {tab === "reports" && <ReportsTab />}
       {tab === "accounts" && <AccountsTab />}
+      {tab === "pages" && <PagesTab />}
     </div>
   );
 }
@@ -465,5 +467,213 @@ function AccountsTab() {
         </Modal>
       )}
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
+interface StaffPage {
+  id: string;
+  name: string;
+  category: string;
+  bio?: string;
+  avatarUrl?: string;
+  verified: boolean;
+  verificationType?: "business" | "organization" | "government";
+  ownerId: string;
+  admins: string[];
+  followersCount: number;
+  createdAt: string;
+}
+
+const VERIFICATION_TYPE_LABEL: Record<string, string> = { business: "Empresa", organization: "Organización", government: "Gubernamental" };
+
+function PagesTab() {
+  const toast = useToast();
+  const [pages, setPages] = useState<StaffPage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<"all" | "verified" | "unverified">("all");
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [adminDraftByPage, setAdminDraftByPage] = useState<Record<string, string>>({});
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ filter });
+      if (q.trim()) params.set("q", q.trim());
+      const res = await fetch(`/api/staff/social/pages?${params}`, { cache: "no-store" });
+      const data = await res.json();
+      if (data.success) setPages(data.pages);
+    } finally {
+      setLoading(false);
+    }
+  }, [q, filter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const act = async (pageId: string, action: string, extra: Record<string, unknown> = {}) => {
+    setBusyId(pageId);
+    try {
+      const res = await fetch("/api/staff/social/pages", {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId, action, ...extra }),
+      });
+      const data = await res.json();
+      if (data.success) toast.success("Página actualizada"); else toast.error(data.error || "No se pudo completar la acción");
+      await load();
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const addAdmin = async (pageId: string) => {
+    const discordId = (adminDraftByPage[pageId] || "").trim();
+    if (!discordId) return;
+    await act(pageId, "addAdmin", { discordId });
+    setAdminDraftByPage((prev) => ({ ...prev, [pageId]: "" }));
+  };
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <TextInput value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nombre..." className="w-full pl-9" />
+        </div>
+        <Select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+          <option value="all">Todas</option>
+          <option value="verified">Verificadas</option>
+          <option value="unverified">Sin verificar</option>
+        </Select>
+        <Button variant="primary" icon={Plus} onClick={() => setShowCreate(true)}>Crear página oficial</Button>
+      </div>
+
+      {loading ? <LoadingBlock /> : pages.length === 0 ? (
+        <EmptyState icon={Building2} text="No hay páginas que coincidan." />
+      ) : (
+        <div className="space-y-2">
+          {pages.map((p) => (
+            <Card key={p.id} className="p-4">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {p.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white flex-shrink-0">
+                      <Building2 className="h-4 w-4" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-white flex items-center gap-1.5 truncate">
+                      {p.name}
+                      {p.verified && <BadgeCheck className="h-3.5 w-3.5 text-blue-400 flex-shrink-0" />}
+                    </div>
+                    <div className="text-[11px] text-slate-600">{p.category} · {p.followersCount} seguidores</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {busyId === p.id ? (
+                    <Loader2 className="h-4 w-4 text-slate-500 animate-spin" />
+                  ) : (
+                    <>
+                      <IconButton
+                        icon={BadgeCheck} label={p.verified ? "Quitar verificación" : "Verificar página"} variant="ghost" size="sm"
+                        className={p.verified ? "text-blue-400" : "text-slate-600"}
+                        onClick={() => act(p.id, p.verified ? "unverify" : "verify")}
+                      />
+                      <Select
+                        value={p.verificationType || "organization"}
+                        onChange={(e) => act(p.id, "setVerificationType", { verificationType: e.target.value })}
+                        className="h-8 text-xs"
+                      >
+                        <option value="business">Empresa</option>
+                        <option value="organization">Organización</option>
+                        <option value="government">Gubernamental</option>
+                      </Select>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#1F2937]">
+                <span className="text-[11px] text-slate-600 flex-shrink-0">Admins ({p.admins.length}):</span>
+                {p.admins.map((a) => (
+                  <span key={a} className="flex items-center gap-1 text-[11px] text-slate-400 bg-white/5 px-2 py-1 rounded-full">
+                    {a}
+                    <button onClick={() => act(p.id, "removeAdmin", { discordId: a })} className="text-slate-600 hover:text-rose-400">
+                      <UserMinus className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                <div className="flex items-center gap-1 ml-auto">
+                  <TextInput
+                    value={adminDraftByPage[p.id] || ""}
+                    onChange={(e) => setAdminDraftByPage((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                    placeholder="ID de Discord..."
+                    className="h-7 text-xs w-36"
+                  />
+                  <IconButton icon={UserPlus} label="Agregar admin" variant="ghost" size="sm" onClick={() => addAdmin(p.id)} />
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {showCreate && <CreateOfficialPageModal onClose={() => setShowCreate(false)} onCreated={() => { setShowCreate(false); load(); }} />}
+    </div>
+  );
+}
+
+function CreateOfficialPageModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const toast = useToast();
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [verificationType, setVerificationType] = useState<"business" | "organization" | "government">("organization");
+  const [creating, setCreating] = useState(false);
+
+  const submit = async () => {
+    if (!name.trim() || !category.trim()) { toast.error("Nombre y categoría son obligatorios"); return; }
+    setCreating(true);
+    try {
+      const res = await fetch("/api/staff/social/pages", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), category: category.trim(), bio: bio.trim() || undefined, avatarUrl: avatarUrl.trim() || undefined, verificationType }),
+      });
+      const data = await res.json();
+      if (data.success) { toast.success(`${data.page.name} creada y verificada`); onCreated(); }
+      else toast.error(data.error || "No se pudo crear la página");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return (
+    <Modal
+      title="Crear página oficial"
+      description="Se crea ya verificada — usalo para cuentas del servidor (ERLCHUB, departamentos, etc)."
+      onClose={onClose}
+      size="md"
+      footer={<Button variant="primary" onClick={submit} disabled={creating} className="w-full">{creating ? "Creando..." : "Crear página"}</Button>}
+    >
+      <div className="space-y-3">
+        <TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre (ej: Los Santos Police Department)" className="w-full" />
+        <TextInput value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Categoría (ej: Departamento, Servidor oficial)" className="w-full" />
+        <TextArea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Descripción..." rows={3} className="w-full" />
+        <TextInput value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="URL de foto de perfil..." className="w-full" />
+        <Select value={verificationType} onChange={(e) => setVerificationType(e.target.value as any)} className="w-full">
+          <option value="organization">Organización</option>
+          <option value="government">Gubernamental</option>
+          <option value="business">Empresa</option>
+        </Select>
+      </div>
+    </Modal>
   );
 }

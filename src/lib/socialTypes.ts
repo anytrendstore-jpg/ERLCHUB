@@ -25,6 +25,10 @@ export interface SocialPost {
   avatar?: string;
   text: string;
   imageUrl?: string;
+  /** Si está seteado, el post se muestra con la identidad de la página (nombre/avatar
+   * denormalizados en `username`/`displayName`/`avatar` al crearlo), no la del usuario que
+   * publicó — `discordId` sigue siendo quien lo publicó, para saber quién puede borrarlo. */
+  authorPageId?: string;
   /** @deprecated reemplazado por `reactions` — se sigue leyendo para posts creados antes de
    * las multi-reacciones (se tratan como reacciones tipo "like"), pero ya no se escribe. */
   likes: string[];

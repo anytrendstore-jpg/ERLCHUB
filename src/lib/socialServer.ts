@@ -2,6 +2,7 @@ import type { Collection } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import { currentDiscordUser, resolvePlayerIdentity } from '@/lib/whitelistServer';
 import type { SocialPost, SocialProfile, SocialFollow, SocialStory, SocialReport } from '@/lib/socialTypes';
+import type { SocialPage } from '@/lib/socialPageTypes';
 
 /** username = Roblox verificado (@handle) · displayName = nombre del personaje (RP). */
 export async function currentSocialUser(): Promise<{ id: string; username: string; displayName: string; avatar?: string } | null> {
@@ -69,6 +70,20 @@ export async function socialReportsCollection(): Promise<Collection<SocialReport
   const col = db.collection<SocialReport>('social_reports');
   await col.createIndex({ status: 1, createdAt: -1 }).catch(() => {});
   return col;
+}
+
+export async function socialPagesCollection(): Promise<Collection<SocialPage>> {
+  const db = await connectToDatabase();
+  const col = db.collection<SocialPage>('social_pages');
+  await col.createIndex({ id: 1 }, { unique: true }).catch(() => {});
+  await col.createIndex({ name: 'text' }).catch(() => {});
+  await col.createIndex({ category: 1 }).catch(() => {});
+  return col;
+}
+
+/** ¿Puede este jugador administrar la página (publicar como ella, editarla)? */
+export function isPageAdmin(page: SocialPage, discordId: string): boolean {
+  return page.ownerId === discordId || page.admins.includes(discordId);
 }
 
 /** Límite de publicaciones por jugador en la última hora, para frenar el spam. */

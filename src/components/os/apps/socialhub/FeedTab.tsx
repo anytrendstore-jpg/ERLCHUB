@@ -14,7 +14,7 @@ import PostCard from './PostCard';
 const VIOLET_ACCENT = '#8b5cf6';
 const STORY_POLL_MS = 10000;
 
-export default function FeedTab({ me, onOpenProfile }: { me: Profile | null; onOpenProfile: (discordId: string) => void }) {
+export default function FeedTab({ me, onOpenProfile, onOpenPage }: { me: Profile | null; onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void }) {
   const toast = useToast();
   const [feedTab, setFeedTab] = useState<'forYou' | 'following'>('forYou');
   const endpoint = feedTab === 'following' ? '/api/social/posts?feed=following' : '/api/social/posts';
@@ -93,6 +93,7 @@ export default function FeedTab({ me, onOpenProfile }: { me: Profile | null; onO
               post={post}
               me={me}
               onOpenProfile={onOpenProfile}
+              onOpenPage={onOpenPage}
               onReact={react}
               onToggleSave={toggleSave}
               onShare={share}

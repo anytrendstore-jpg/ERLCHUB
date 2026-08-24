@@ -13,12 +13,13 @@ const VIOLET_ACCENT = '#8b5cf6';
 
 type ProfileSubTab = 'posts' | 'photos' | 'info';
 
-export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpenProfile }: {
+export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpenProfile, onOpenPage }: {
   discordId: string;
   me: Profile | null;
   onBack: () => void;
   onUpdatedSelf: (p: Profile) => void;
   onOpenProfile: (discordId: string) => void;
+  onOpenPage: (pageId: string) => void;
 }) {
   const { openApp } = useOS();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -187,6 +188,7 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
                 post={post}
                 me={me}
                 onOpenProfile={onOpenProfile}
+                onOpenPage={onOpenPage}
                 onReact={react}
                 onToggleSave={toggleSave}
                 onShare={share}

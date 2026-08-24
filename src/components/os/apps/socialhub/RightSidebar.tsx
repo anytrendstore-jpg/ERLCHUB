@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { UserPlus, Users, CalendarDays } from 'lucide-react';
+import { UserPlus, Building2, Users, CalendarDays, BadgeCheck } from 'lucide-react';
 import { EmptyState, Skeleton } from '@/components/os/ui';
 
 interface SuggestedPerson {
@@ -12,19 +12,36 @@ interface SuggestedPerson {
   mutualCount: number;
 }
 
-/** Panel derecho: personas/páginas/grupos/eventos sugeridos. Páginas, grupos y eventos
- * todavía no existen como entidades reales (llegan en fases posteriores) — se muestran
- * con un estado vacío honesto en vez de contenido inventado. */
-export default function RightSidebar({ onOpenProfile }: { onOpenProfile: (discordId: string) => void }) {
+interface SuggestedPage {
+  id: string;
+  name: string;
+  category: string;
+  avatarUrl?: string;
+  verified: boolean;
+  followersCount: number;
+}
+
+/** Panel derecho: personas/páginas/grupos/eventos sugeridos. Grupos y eventos todavía no
+ * existen como entidades reales (llegan en fases posteriores) — se muestran con un estado
+ * vacío honesto en vez de contenido inventado. Páginas ya son reales desde la Fase 4. */
+export default function RightSidebar({ onOpenProfile, onOpenPage }: { onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void }) {
   const [people, setPeople] = useState<SuggestedPerson[]>([]);
+  const [pages, setPages] = useState<SuggestedPage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/social/suggestions', { cache: 'no-store' })
       .then((r) => r.json())
-      .then((d) => { if (d.success) setPeople(d.people); })
+      .then((d) => { if (d.success) { setPeople(d.people); setPages(d.pages || []); } })
       .finally(() => setLoading(false));
   }, []);
+
+  const followPage = async (pageId: string) => {
+    setPages((prev) => prev.filter((p) => p.id !== pageId));
+    await fetch('/api/social/pages/follow', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId }),
+    }).catch(() => {});
+  };
 
   const follow = async (discordId: string) => {
     setPeople((prev) => prev.filter((p) => p.discordId !== discordId));
@@ -73,8 +90,47 @@ export default function RightSidebar({ onOpenProfile }: { onOpenProfile: (discor
       </section>
 
       <section>
-        <h3 className="text-white text-sm font-bold mb-3">Páginas y grupos sugeridos</h3>
-        <EmptyState icon={Users} title="Todavía no hay sugerencias" text="Cuando existan páginas y grupos en HubSocial, van a aparecer acá." />
+        <h3 className="text-white text-sm font-bold mb-3">Páginas sugeridas</h3>
+        {loading ? (
+          <Skeleton className="h-9" />
+        ) : pages.length === 0 ? (
+          <p className="text-white/30 text-xs">Todavía no hay páginas para sugerir.</p>
+        ) : (
+          <div className="space-y-3">
+            {pages.map((p) => (
+              <div key={p.id} className="flex items-center gap-2.5">
+                <button onClick={() => onOpenPage(p.id)} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
+                  {p.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.avatarUrl} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-lg bg-violet-600/20 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-4 h-4 text-violet-400" />
+                    </div>
+                  )}
+                  <span className="min-w-0">
+                    <span className="flex items-center gap-1 text-white text-xs font-medium truncate">
+                      {p.name} {p.verified && <BadgeCheck className="w-3 h-3 text-violet-400 flex-shrink-0" />}
+                    </span>
+                    <span className="block text-white/40 text-[10px] truncate">{p.category}</span>
+                  </span>
+                </button>
+                <button
+                  onClick={() => followPage(p.id)}
+                  title="Seguir"
+                  className="p-1.5 rounded-full bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 transition-colors flex-shrink-0"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <h3 className="text-white text-sm font-bold mb-3">Grupos sugeridos</h3>
+        <EmptyState icon={Users} title="Todavía no hay grupos" text="Cuando existan grupos en HubSocial, van a aparecer acá." />
       </section>
 
       <section>

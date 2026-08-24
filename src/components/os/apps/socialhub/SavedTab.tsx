@@ -6,7 +6,7 @@ import type { Profile } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import PostCard from './PostCard';
 
-export default function SavedTab({ me, onOpenProfile }: { me: Profile | null; onOpenProfile: (discordId: string) => void }) {
+export default function SavedTab({ me, onOpenProfile, onOpenPage }: { me: Profile | null; onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void }) {
   const { posts, loading, react, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts('/api/social/posts?saved=1', me);
 
   return (
@@ -27,6 +27,7 @@ export default function SavedTab({ me, onOpenProfile }: { me: Profile | null; on
               post={post}
               me={me}
               onOpenProfile={onOpenProfile}
+              onOpenPage={onOpenPage}
               onReact={react}
               onToggleSave={toggleSave}
               onShare={share}

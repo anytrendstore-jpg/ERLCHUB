@@ -38,12 +38,35 @@ export interface Reaction {
   type: ReactionType;
 }
 
+export interface Page {
+  id: string;
+  name: string;
+  category: string;
+  avatarUrl?: string;
+  coverUrl?: string;
+  bio?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  location?: string;
+  verified: boolean;
+  verificationType?: 'business' | 'organization' | 'government';
+  ownerId: string;
+  admins: string[];
+  followersCount: number;
+  postsCount?: number;
+  isFollowing: boolean;
+  isAdmin: boolean;
+  createdAt: string;
+}
+
 export interface Post {
   id: string;
   discordId: string;
   username: string;
   displayName: string;
   avatar?: string;
+  authorPageId?: string;
   text: string;
   imageUrl?: string;
   /** @deprecated leído para posts viejos sin `reactions` — ver `reactionsOf()` en este archivo. */
@@ -91,6 +114,7 @@ export type SocialView =
   | { mode: 'marketplace' }
   | { mode: 'groups' }
   | { mode: 'pages' }
+  | { mode: 'page'; pageId: string }
   | { mode: 'events' }
   | { mode: 'profile'; discordId: string }
   | { mode: 'saved' };

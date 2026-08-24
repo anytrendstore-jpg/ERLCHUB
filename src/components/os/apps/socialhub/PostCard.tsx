@@ -14,6 +14,7 @@ interface PostCardProps {
   post: Post;
   me: Profile | null;
   onOpenProfile: (discordId: string) => void;
+  onOpenPage?: (pageId: string) => void;
   onReact: (postId: string, type: ReactionType) => void;
   onToggleSave: (postId: string) => void;
   onShare: (postId: string) => void;
@@ -24,7 +25,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({
-  post, me, onOpenProfile, onReact, onToggleSave, onShare, onSendComment, onDelete, onReport, onSaveEdit,
+  post, me, onOpenProfile, onOpenPage, onReact, onToggleSave, onShare, onSendComment, onDelete, onReport, onSaveEdit,
 }: PostCardProps) {
   const toast = useToast();
   const [commentsOpen, setCommentsOpen] = useState(false);
@@ -34,7 +35,10 @@ export default function PostCard({
 
   const saved = me ? post.savedBy.includes(me.discordId) : false;
   const shared = me ? post.shares.includes(me.discordId) : false;
+  // Publicaciones de página: solo la persona que efectivamente publicó puede editar/borrar
+  // desde acá (otros admins de la página pueden hacerlo desde el detalle de la página).
   const isMine = me?.discordId === post.discordId;
+  const openAuthor = () => (post.authorPageId && onOpenPage ? onOpenPage(post.authorPageId) : onOpenProfile(post.discordId));
 
   const submitEdit = () => {
     const text = editDraft.trim();
@@ -46,17 +50,17 @@ export default function PostCard({
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
       <div className="p-4 pb-2 flex items-start gap-3">
-        <button onClick={() => onOpenProfile(post.discordId)}>
+        <button onClick={openAuthor}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={post.avatar} alt={post.username} className="w-9 h-9 rounded-full flex-shrink-0" />
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <button onClick={() => onOpenProfile(post.discordId)} className="text-white text-sm font-semibold truncate hover:underline">
+            <button onClick={openAuthor} className="text-white text-sm font-semibold truncate hover:underline">
               {post.displayName}
             </button>
             <VerifiedBadge verified={post.verified} accountType={post.accountType} />
-            <span className="text-white/40 text-xs truncate">@{post.username}</span>
+            {!post.authorPageId && <span className="text-white/40 text-xs truncate">@{post.username}</span>}
             <span className="text-white/30 text-xs flex-shrink-0">
               · {timeAgo(post.createdAt)}{post.editedAt ? ' · editado' : ''}
             </span>
