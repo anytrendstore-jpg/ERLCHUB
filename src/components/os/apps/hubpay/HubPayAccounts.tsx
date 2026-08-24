@@ -14,6 +14,14 @@ import {
   Wallet
 } from 'lucide-react';
 
+/** Tailwind no puede resolver clases armadas con template strings — necesita ver el
+ * nombre completo de la clase de forma literal en el código fuente. */
+const TYPE_COLOR: Record<string, { selectedBg: string; iconBg: string; iconText: string }> = {
+  green: { selectedBg: 'bg-green-500/20 border-green-500/50', iconBg: 'bg-green-500/20', iconText: 'text-green-400' },
+  blue: { selectedBg: 'bg-blue-500/20 border-blue-500/50', iconBg: 'bg-blue-500/20', iconText: 'text-blue-400' },
+  purple: { selectedBg: 'bg-purple-500/20 border-purple-500/50', iconBg: 'bg-purple-500/20', iconText: 'text-purple-400' },
+};
+
 export default function HubPayAccounts() {
   const { wallet, createAccount } = useHubPay();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -109,7 +117,7 @@ export default function HubPayAccounts() {
         {wallet.accounts.map((account) => (
           <div
             key={account.id}
-            className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/[0.07] transition-colors"
+            className="hs-card hs-card-hover p-6 rounded-2xl"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
@@ -210,19 +218,17 @@ export default function HubPayAccounts() {
                 const Icon = type.icon;
                 const isSelected = selectedType === type.type;
 
+                const c = TYPE_COLOR[type.color];
                 return (
                   <button
                     key={type.type}
                     onClick={() => setSelectedType(type.type)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all
-                      ${isSelected
-                        ? `bg-${type.color}-500/20 border-${type.color}-500/50`
-                        : 'bg-white/5 border-white/10 hover:bg-white/10'
-                      }
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200
+                      ${isSelected ? c.selectedBg : 'bg-white/5 border-white/10 hover:bg-white/10'}
                     `}
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${type.color}-500/20`}>
-                      <Icon className={`w-6 h-6 text-${type.color}-400`} />
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${c.iconBg}`}>
+                      <Icon className={`w-6 h-6 ${c.iconText}`} />
                     </div>
                     <div className="flex-1 text-left">
                       <p className="text-white font-medium">{type.label}</p>

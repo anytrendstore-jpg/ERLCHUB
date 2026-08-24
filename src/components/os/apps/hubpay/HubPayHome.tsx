@@ -15,6 +15,15 @@ import {
   Snowflake,
 } from 'lucide-react';
 
+/** Tailwind no puede resolver clases armadas con template strings (`bg-${color}-500/20`) —
+ * necesita ver el nombre completo de la clase de forma literal en el código fuente. */
+const ACTION_COLOR: Record<string, { bg: string; text: string; ring: string }> = {
+  blue: { bg: 'bg-blue-500/15', text: 'text-blue-400', ring: 'group-hover:shadow-[0_0_16px_-4px_rgba(59,130,246,0.5)]' },
+  purple: { bg: 'bg-purple-500/15', text: 'text-purple-400', ring: 'group-hover:shadow-[0_0_16px_-4px_rgba(168,85,247,0.5)]' },
+  green: { bg: 'bg-green-500/15', text: 'text-green-400', ring: 'group-hover:shadow-[0_0_16px_-4px_rgba(34,197,94,0.5)]' },
+  orange: { bg: 'bg-orange-500/15', text: 'text-orange-400', ring: 'group-hover:shadow-[0_0_16px_-4px_rgba(249,115,22,0.5)]' },
+};
+
 const TYPE_LABEL: Record<string, string> = {
   salary: 'Salario',
   transfer_in: 'Transferencia recibida',
@@ -50,7 +59,7 @@ export default function HubPayHome() {
   const totalExpense = thisMonthTx.filter(t => t.amount < 0).reduce((acc, t) => acc + Math.abs(t.amount), 0);
 
   return (
-    <div className="h-full overflow-y-auto custom-scrollbar p-6">
+    <div className="h-full overflow-y-auto custom-scrollbar p-6 hs-ambient">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-white text-2xl font-bold mb-1">Bienvenido de vuelta</h1>
@@ -58,7 +67,7 @@ export default function HubPayHome() {
       </div>
 
       {wallet.frozen && (
-        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3">
+        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 shadow-lg shadow-red-950/20 flex items-start gap-3">
           <Snowflake className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-red-400 font-semibold text-sm">Tu cuenta de HubPay está congelada por Staff</p>
@@ -71,23 +80,24 @@ export default function HubPayHome() {
       {/* Balance Cards */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         {/* Main Balance */}
-        <div className="col-span-2 p-6 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 relative overflow-hidden">
+        <div className="col-span-2 p-6 rounded-2xl bg-[linear-gradient(135deg,#2563eb,#1d4ed8_55%,#172554)] relative overflow-hidden shadow-xl shadow-blue-950/40 border border-blue-400/20">
+          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-blue-400/20 blur-3xl" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvZz48L3N2Zz4=')] opacity-50" />
           <div className="relative">
             <p className="text-white/70 text-sm mb-2">Saldo Total</p>
-            <p className="text-white text-4xl font-bold mb-4">
+            <p className="text-white text-4xl font-bold mb-4 tabular-nums drop-shadow-sm">
               ${wallet.totalBalance.toLocaleString()}
             </p>
             <div className="flex gap-6">
               <div>
                 <p className="text-white/50 text-xs">Disponible</p>
-                <p className="text-white text-lg font-semibold">
+                <p className="text-white text-lg font-semibold tabular-nums">
                   ${wallet.availableBalance.toLocaleString()}
                 </p>
               </div>
               <div>
                 <p className="text-white/50 text-xs">Retenido</p>
-                <p className="text-yellow-300 text-lg font-semibold">
+                <p className="text-yellow-300 text-lg font-semibold tabular-nums">
                   ${wallet.retainedBalance.toLocaleString()}
                 </p>
               </div>
@@ -97,21 +107,21 @@ export default function HubPayHome() {
 
         {/* Stats */}
         <div className="flex flex-col gap-4">
-          <div className="flex-1 p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+          <div className="flex-1 p-4 rounded-xl bg-green-500/[0.08] border border-green-500/20 shadow-lg shadow-green-950/10 hover:border-green-500/30 transition-colors duration-200">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-green-400" />
               <span className="text-green-400 text-xs">Ingresos del mes</span>
             </div>
-            <p className="text-white text-xl font-bold">
+            <p className="text-white text-xl font-bold tabular-nums">
               +${totalIncome.toLocaleString()}
             </p>
           </div>
-          <div className="flex-1 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+          <div className="flex-1 p-4 rounded-xl bg-red-500/[0.08] border border-red-500/20 shadow-lg shadow-red-950/10 hover:border-red-500/30 transition-colors duration-200">
             <div className="flex items-center gap-2 mb-2">
               <TrendingDown className="w-4 h-4 text-red-400" />
               <span className="text-red-400 text-xs">Gastos del mes</span>
             </div>
-            <p className="text-white text-xl font-bold">
+            <p className="text-white text-xl font-bold tabular-nums">
               -${totalExpense.toLocaleString()}
             </p>
           </div>
@@ -127,24 +137,25 @@ export default function HubPayHome() {
           { icon: ArrowDownLeft, label: 'Retirar', view: 'withdraw', color: 'orange' }
         ].map((action) => {
           const Icon = action.icon;
+          const c = ACTION_COLOR[action.color];
           return (
             <button
               key={action.view}
               onClick={() => setActiveView(action.view as 'transfer' | 'pockets' | 'cards' | 'withdraw')}
-              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all duration-200 group"
+              className="hs-card hs-card-hover flex flex-col items-center gap-2 p-4 rounded-xl group"
             >
-              <div className={`w-12 h-12 rounded-xl bg-${action.color}-500/20 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                <Icon className={`w-6 h-6 text-${action.color}-400`} />
+              <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center group-hover:scale-110 transition-all duration-200 ${c.ring}`}>
+                <Icon className={`w-6 h-6 ${c.text}`} />
               </div>
-              <span className="text-white/70 text-sm">{action.label}</span>
+              <span className="text-white/70 text-sm group-hover:text-white transition-colors">{action.label}</span>
             </button>
           );
         })}
       </div>
 
       {/* Recent Transactions */}
-      <div className="rounded-2xl bg-white/5 border border-white/5 overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-white/5">
+      <div className="hs-card rounded-2xl overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
           <h2 className="text-white font-semibold">Movimientos Recientes</h2>
           <button
             onClick={() => setActiveView('history')}
@@ -154,15 +165,15 @@ export default function HubPayHome() {
           </button>
         </div>
 
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-white/[0.06]">
           {wallet.transactions.length === 0 && (
             <p className="text-white/40 text-sm text-center py-8">Sin movimientos todavía.</p>
           )}
           {wallet.transactions.slice(0, 5).map((transaction) => {
             const isPositive = transaction.amount >= 0;
             return (
-              <div key={transaction.id} className="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isPositive ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+              <div key={transaction.id} className="flex items-center gap-4 p-4 hover:bg-white/[0.04] transition-colors">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ring-1 ${isPositive ? 'bg-green-500/15 ring-green-500/20' : 'bg-red-500/15 ring-red-500/20'}`}>
                   {getTransactionIcon(transaction.type, isPositive)}
                 </div>
 
@@ -176,7 +187,7 @@ export default function HubPayHome() {
                 </div>
 
                 <div className="text-right flex-shrink-0">
-                  <p className={`font-semibold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                  <p className={`font-semibold tabular-nums ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                     {isPositive ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString('es-CO')}
                   </p>
                   <span className={`text-xs px-2 py-0.5 rounded-full

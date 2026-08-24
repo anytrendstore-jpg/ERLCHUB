@@ -13,6 +13,14 @@ import {
   AlertCircle
 } from 'lucide-react';
 
+/** Tailwind no puede resolver clases armadas con template strings — necesita ver el
+ * nombre completo de la clase de forma literal en el código fuente. */
+const METHOD_COLOR: Record<string, { bg: string; text: string }> = {
+  blue: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+  orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+  green: { bg: 'bg-green-500/20', text: 'text-green-400' },
+};
+
 export default function HubPayWithdraw() {
   const { wallet, requestWithdrawal, setActiveView } = useHubPay();
   const [step, setStep] = useState<'method' | 'amount' | 'confirm' | 'processing' | 'success'>('method');
@@ -123,14 +131,15 @@ export default function HubPayWithdraw() {
 
             {methods.map((method) => {
               const Icon = method.icon;
+              const c = METHOD_COLOR[method.color];
               return (
                 <button
                   key={method.id}
                   onClick={() => handleSelectMethod(method.id)}
-                  className="w-full flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                  className="hs-card hs-card-hover w-full flex items-center gap-4 p-5 rounded-2xl group"
                 >
-                  <div className={`w-14 h-14 rounded-xl bg-${method.color}-500/20 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-7 h-7 text-${method.color}-400`} />
+                  <div className={`w-14 h-14 rounded-xl ${c.bg} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                    <Icon className={`w-7 h-7 ${c.text}`} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-white font-semibold">{method.label}</p>
@@ -150,9 +159,9 @@ export default function HubPayWithdraw() {
         {step === 'amount' && selectedMethodData && (
           <div className="space-y-6">
             {/* Selected Method */}
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
-              <div className={`w-12 h-12 rounded-xl bg-${selectedMethodData.color}-500/20 flex items-center justify-center`}>
-                <selectedMethodData.icon className={`w-6 h-6 text-${selectedMethodData.color}-400`} />
+            <div className="hs-card flex items-center gap-4 p-4 rounded-xl">
+              <div className={`w-12 h-12 rounded-xl ${METHOD_COLOR[selectedMethodData.color].bg} flex items-center justify-center`}>
+                <selectedMethodData.icon className={`w-6 h-6 ${METHOD_COLOR[selectedMethodData.color].text}`} />
               </div>
               <div>
                 <p className="text-white font-medium">{selectedMethodData.label}</p>
@@ -176,7 +185,7 @@ export default function HubPayWithdraw() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-colors"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
                 />
               </div>
               <p className="text-white/40 text-sm mt-2">
@@ -211,9 +220,9 @@ export default function HubPayWithdraw() {
 
         {step === 'confirm' && selectedMethodData && (
           <div className="space-y-6">
-            <div className="p-6 bg-white/5 rounded-2xl border border-white/10 text-center">
+            <div className="hs-card p-6 rounded-2xl text-center">
               <p className="text-white/50 text-sm mb-2">Vas a retirar</p>
-              <p className="text-white text-4xl font-bold mb-2">
+              <p className="text-white text-4xl font-bold mb-2 tabular-nums">
                 ${Number.parseFloat(amount).toLocaleString()}
               </p>
               <p className="text-white/50 text-sm">vía {selectedMethodData.label}</p>
@@ -237,7 +246,7 @@ export default function HubPayWithdraw() {
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-white font-medium">Recibirás</span>
-                <span className="text-green-400 font-bold text-lg">${total.toLocaleString()}</span>
+                <span className="text-green-400 font-bold text-lg tabular-nums">${total.toLocaleString()}</span>
               </div>
             </div>
 

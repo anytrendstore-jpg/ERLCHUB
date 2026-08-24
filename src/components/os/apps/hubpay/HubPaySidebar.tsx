@@ -30,11 +30,11 @@ export default function HubPaySidebar() {
   const { activeView, setActiveView, wallet } = useHubPay();
 
   return (
-    <div className="w-64 h-full bg-[#0d0d14] border-r border-white/5 flex flex-col">
+    <div className="w-64 h-full bg-[#0d0d14]/90 backdrop-blur-xl border-r border-white/[0.06] flex flex-col relative z-10">
       {/* Logo */}
-      <div className="p-6 border-b border-white/5">
+      <div className="p-6 border-b border-white/[0.06]">
         <div className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-600/30 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
             <HubPayIcon size={28} />
           </div>
           <div>
@@ -45,9 +45,9 @@ export default function HubPaySidebar() {
       </div>
 
       {/* Balance Quick View */}
-      <div className="p-4 mx-3 mt-4 rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-800/10 border border-blue-500/20">
+      <div className="p-4 mx-3 mt-4 rounded-xl bg-[linear-gradient(140deg,rgba(37,99,235,0.25),rgba(29,78,216,0.08))] border border-blue-500/20 shadow-lg shadow-blue-950/20">
         <p className="text-white/60 text-xs mb-1">Saldo disponible</p>
-        <p className="text-white text-2xl font-bold">
+        <p className="text-white text-2xl font-bold tabular-nums">
           ${wallet.availableBalance.toLocaleString()}
         </p>
         <div className="flex items-center gap-1 mt-2 text-green-400 text-xs">
@@ -67,10 +67,10 @@ export default function HubPaySidebar() {
               <button
                 key={item.id}
                 onClick={() => setActiveView(item.id as typeof activeView)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group
                   ${isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-600/30'
+                    : 'text-white/60 hover:text-white hover:bg-white/[0.05]'
                   }
                 `}
               >
@@ -78,7 +78,7 @@ export default function HubPaySidebar() {
                 <span className="text-sm font-medium">{item.label}</span>
 
                 {item.id === 'history' && (
-                  <span className="ml-auto bg-white/20 text-[10px] px-2 py-0.5 rounded-full">
+                  <span className="ml-auto bg-white/15 text-[10px] px-2 py-0.5 rounded-full tabular-nums">
                     {wallet.transactions.length}
                   </span>
                 )}

@@ -80,9 +80,9 @@ export default function HubPayCards() {
       {/* Cards Grid */}
       <div className="grid grid-cols-2 gap-6">
         {wallet.cards.map((card) => (
-          <div key={card.id} className="space-y-4">
+          <div key={card.id} className="space-y-4 group">
             {/* Card Visual */}
-            <div className={`relative aspect-[1.586/1] rounded-2xl p-6 ${getCardBg(card.color)} shadow-xl overflow-hidden`}>
+            <div className={`relative aspect-[1.586/1] rounded-2xl p-6 ${getCardBg(card.color)} shadow-xl shadow-black/40 overflow-hidden ring-1 ring-white/10 transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl`}>
               {/* Pattern overlay */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/20 -translate-y-1/2 translate-x-1/2" />
@@ -112,7 +112,7 @@ export default function HubPayCards() {
                 <div>
                   <p className="text-white/60 text-xs mb-1">Número de tarjeta</p>
                   <div className="flex items-center gap-2">
-                    <p className="text-white text-xl font-mono tracking-wider">{card.cardNumber}</p>
+                    <p className="text-white text-xl font-mono tracking-wider tabular-nums">{card.cardNumber}</p>
                     <button
                       onClick={() => handleCopy(card.cardNumber, card.id)}
                       className="p-1 hover:bg-white/20 rounded transition-colors"
@@ -187,18 +187,20 @@ export default function HubPayCards() {
         {/* Add New Card */}
         <button
           onClick={() => setShowCreateModal(true)}
-          className="aspect-[1.586/1] rounded-2xl border-2 border-dashed border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all flex flex-col items-center justify-center gap-3"
+          className="aspect-[1.586/1] rounded-2xl border-2 border-dashed border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all flex flex-col items-center justify-center gap-3 group"
         >
-          <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
             <CreditCard className="w-8 h-8 text-blue-400" />
           </div>
-          <p className="text-white/60">Crear nueva tarjeta</p>
+          <p className="text-white/60 group-hover:text-white transition-colors">Crear nueva tarjeta</p>
         </button>
       </div>
 
       {wallet.cards.length === 0 && (
         <div className="text-center py-16">
-          <CreditCard className="w-16 h-16 text-white/20 mx-auto mb-4" />
+          <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto mb-4">
+            <CreditCard className="w-8 h-8 text-white/20" />
+          </div>
           <p className="text-white/40 mb-4">No tienes tarjetas de débito</p>
           <button
             onClick={() => setShowCreateModal(true)}
@@ -230,8 +232,8 @@ export default function HubPayCards() {
                 <button
                   key={color.id}
                   onClick={() => setSelectedColor(color.id)}
-                  className={`aspect-[1.586/1] rounded-xl ${color.bg} transition-all relative
-                    ${selectedColor === color.id ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-[#12121a]' : ''}
+                  className={`aspect-[1.586/1] rounded-xl ${color.bg} transition-all relative hover:scale-[1.03]
+                    ${selectedColor === color.id ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-[#12121a] scale-[1.03]' : ''}
                   `}
                 >
                   {selectedColor === color.id && (

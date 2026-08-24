@@ -93,17 +93,17 @@ export default function HubPayPockets() {
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="hs-card hs-card-hover p-4 rounded-xl">
           <p className="text-white/50 text-sm mb-1">Total en bolsillos</p>
-          <p className="text-white text-2xl font-bold">${totalPocketsBalance.toLocaleString()}</p>
+          <p className="text-white text-2xl font-bold tabular-nums">${totalPocketsBalance.toLocaleString()}</p>
         </div>
-        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="hs-card hs-card-hover p-4 rounded-xl">
           <p className="text-white/50 text-sm mb-1">Saldo principal</p>
-          <p className="text-white text-2xl font-bold">${wallet.availableBalance.toLocaleString()}</p>
+          <p className="text-white text-2xl font-bold tabular-nums">${wallet.availableBalance.toLocaleString()}</p>
         </div>
-        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="hs-card hs-card-hover p-4 rounded-xl">
           <p className="text-white/50 text-sm mb-1">Bolsillos activos</p>
-          <p className="text-white text-2xl font-bold">{wallet.pockets.length}</p>
+          <p className="text-white text-2xl font-bold tabular-nums">{wallet.pockets.length}</p>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export default function HubPayPockets() {
           return (
             <div
               key={pocket.id}
-              className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/[0.07] transition-colors group"
+              className="hs-card hs-card-hover p-5 rounded-2xl group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function HubPayPockets() {
                 </button>
               </div>
 
-              <p className="text-white text-2xl font-bold mb-2">
+              <p className="text-white text-2xl font-bold mb-2 tabular-nums">
                 ${pocket.balance.toLocaleString()}
               </p>
 
@@ -204,7 +204,7 @@ export default function HubPayPockets() {
           <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
             <Plus className="w-6 h-6 text-blue-400" />
           </div>
-          <p className="text-white/60">Crear nuevo bolsillo</p>
+          <p className="text-white/60 group-hover:text-white transition-colors">Crear nuevo bolsillo</p>
         </button>
       </div>
 
@@ -230,7 +230,7 @@ export default function HubPayPockets() {
                   value={newPocketName}
                   onChange={(e) => setNewPocketName(e.target.value)}
                   placeholder="Ej: Ahorro para vehículo"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
                 />
               </div>
 
@@ -264,7 +264,7 @@ export default function HubPayPockets() {
                     value={newPocketGoal}
                     onChange={(e) => setNewPocketGoal(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
                   />
                 </div>
               </div>
@@ -314,7 +314,7 @@ export default function HubPayPockets() {
                   value={moveAmount}
                   onChange={(e) => setMoveAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-2xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-2xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
                 />
               </div>
               <p className="text-white/40 text-sm mt-2">

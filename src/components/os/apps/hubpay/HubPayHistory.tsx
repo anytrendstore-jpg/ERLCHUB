@@ -202,7 +202,7 @@ export default function HubPayHistory() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por descripción, tipo o número de operación..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
           />
         </div>
         <button
@@ -266,25 +266,25 @@ export default function HubPayHistory() {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-4 gap-3 mb-6">
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-center">
+        <div className="hs-card hs-card-hover p-3 rounded-xl text-center">
           <p className="text-white/40 text-xs mb-1">Total</p>
-          <p className="text-white font-bold">{filteredTransactions.length}</p>
+          <p className="text-white font-bold tabular-nums">{filteredTransactions.length}</p>
         </div>
-        <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
+        <div className="hs-card hs-card-hover p-3 rounded-xl text-center">
           <p className="text-green-400/60 text-xs mb-1">Ingresos</p>
-          <p className="text-green-400 font-bold">
+          <p className="text-green-400 font-bold tabular-nums">
             {filteredTransactions.filter(t => t.amount > 0).length}
           </p>
         </div>
-        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+        <div className="hs-card hs-card-hover p-3 rounded-xl text-center">
           <p className="text-red-400/60 text-xs mb-1">Gastos</p>
-          <p className="text-red-400 font-bold">
+          <p className="text-red-400 font-bold tabular-nums">
             {filteredTransactions.filter(t => t.amount < 0).length}
           </p>
         </div>
-        <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center">
+        <div className="hs-card hs-card-hover p-3 rounded-xl text-center">
           <p className="text-blue-400/60 text-xs mb-1">Transferencias</p>
-          <p className="text-blue-400 font-bold">
+          <p className="text-blue-400 font-bold tabular-nums">
             {filteredTransactions.filter(t => t.type === 'transfer_in' || t.type === 'transfer_out').length}
           </p>
         </div>
@@ -308,9 +308,9 @@ export default function HubPayHistory() {
                     <button
                       key={transaction.id}
                       onClick={() => setReceipt(transaction)}
-                      className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/[0.07] border border-white/5 transition-colors text-left"
+                      className="hs-card hs-card-hover w-full flex items-center gap-4 p-4 rounded-xl text-left"
                     >
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${isPositive ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ring-1 ${isPositive ? 'bg-green-500/20 ring-green-500/20' : 'bg-red-500/20 ring-red-500/20'}`}>
                         {getTransactionIcon(transaction.type)}
                       </div>
 
@@ -328,7 +328,7 @@ export default function HubPayHistory() {
                       </div>
 
                       <div className="text-right flex-shrink-0">
-                        <p className={`text-lg font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                        <p className={`text-lg font-bold tabular-nums ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                           {isPositive ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString('es-CO')}
                         </p>
                         <span className={`text-xs ${transaction.status === 'completed' ? 'text-green-400' : transaction.status === 'pending' ? 'text-yellow-400' : 'text-red-400'}`}>
@@ -344,7 +344,9 @@ export default function HubPayHistory() {
         </div>
       ) : (
         <div className="text-center py-16">
-          <Clock className="w-16 h-16 text-white/20 mx-auto mb-4" />
+          <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto mb-4">
+            <Clock className="w-8 h-8 text-white/20" />
+          </div>
           <p className="text-white/40 mb-2">No se encontraron transacciones</p>
           <p className="text-white/30 text-sm">Intenta cambiar los filtros de búsqueda</p>
         </div>
@@ -363,7 +365,7 @@ export default function HubPayHistory() {
                 <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold mb-3">
                   <Receipt className="w-4 h-4" /> Comprobante HubPay
                 </div>
-                <p className={`text-3xl font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                <p className={`text-3xl font-bold tabular-nums ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                   {isPositive ? '+' : '-'}${Math.abs(receipt.amount).toLocaleString('es-CO')}
                 </p>
                 <p className="text-white/60 text-sm mt-1">{receipt.description}</p>

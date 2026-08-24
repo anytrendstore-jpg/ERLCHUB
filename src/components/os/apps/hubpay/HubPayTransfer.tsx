@@ -146,18 +146,18 @@ export default function HubPayTransfer() {
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
                 placeholder="Buscar por nombre o ID de usuario"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
               />
             </div>
 
             {/* Search Results */}
             {filteredUsers.length > 0 && (
-              <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
+              <div className="hs-card rounded-xl overflow-hidden divide-y divide-white/[0.06]">
                 {filteredUsers.map((user) => (
                   <button
                     key={user.id}
                     onClick={() => handleSelectUser(user)}
-                    className="w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors"
+                    className="w-full flex items-center gap-4 p-4 hover:bg-white/[0.05] transition-colors"
                   >
                     <img
                       src={user.avatar}
@@ -204,7 +204,7 @@ export default function HubPayTransfer() {
         {step === 'amount' && selectedUser && (
           <div className="space-y-6">
             {/* Selected User */}
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+            <div className="hs-card flex items-center gap-4 p-4 rounded-xl">
               <img
                 src={selectedUser.avatar}
                 alt={selectedUser.name}
@@ -232,7 +232,7 @@ export default function HubPayTransfer() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-colors"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
                 />
               </div>
               <p className="text-white/40 text-sm mt-2">
@@ -261,7 +261,7 @@ export default function HubPayTransfer() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ej: Pago de deuda"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
               />
             </div>
 
@@ -278,9 +278,9 @@ export default function HubPayTransfer() {
 
         {step === 'confirm' && selectedUser && (
           <div className="space-y-6">
-            <div className="p-6 bg-white/5 rounded-2xl border border-white/10 text-center">
+            <div className="hs-card p-6 rounded-2xl text-center">
               <p className="text-white/50 text-sm mb-2">Vas a enviar</p>
-              <p className="text-white text-4xl font-bold mb-4">
+              <p className="text-white text-4xl font-bold mb-4 tabular-nums">
                 ${Number.parseFloat(amount).toLocaleString()}
               </p>
               <p className="text-white/50 text-sm">a</p>
@@ -309,7 +309,7 @@ export default function HubPayTransfer() {
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-white font-medium">Total</span>
-                <span className="text-white font-bold">${total.toLocaleString()}</span>
+                <span className="text-white font-bold tabular-nums">${total.toLocaleString()}</span>
               </div>
             </div>
 
