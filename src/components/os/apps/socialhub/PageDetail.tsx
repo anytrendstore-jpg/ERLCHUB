@@ -1,23 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Building2, Phone, Mail, Globe, MapPin, Users, ShoppingBag, Instagram, Music2, LifeBuoy, Link as LinkIcon, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, Building2, Phone, Mail, Globe, MapPin, Users } from 'lucide-react';
 import { EmptyState, Skeleton, useToast } from '@/components/os/ui';
 import type { Page, Profile } from './types';
+import { pinnedLinkIcon } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import Composer from './Composer';
 import PostCard from './PostCard';
 import VerifiedBadge from './VerifiedBadge';
-
-/** Elige un ícono para un botón anclado según palabras clave en su etiqueta (Tienda, Instagram, TikTok, Soporte...). */
-function pinnedLinkIcon(label: string): LucideIcon {
-  const l = label.toLowerCase();
-  if (l.includes('tienda') || l.includes('store') || l.includes('shop')) return ShoppingBag;
-  if (l.includes('instagram')) return Instagram;
-  if (l.includes('tiktok')) return Music2;
-  if (l.includes('soporte') || l.includes('support') || l.includes('ayuda')) return LifeBuoy;
-  return LinkIcon;
-}
 
 export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
   pageId: string;

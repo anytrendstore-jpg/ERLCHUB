@@ -48,6 +48,7 @@ interface StaffProfile {
   avatarUrl?: string;
   bio?: string;
   title?: string;
+  pinnedLinks?: StaffPageLink[];
   verified?: boolean;
   accountType?: "personal" | "business" | "organization" | "government" | "official";
   suspended?: boolean;
@@ -350,6 +351,7 @@ function AccountsTab() {
   const [bioDraft, setBioDraft] = useState("");
   const [titleDraft, setTitleDraft] = useState("");
   const [avatarDraft, setAvatarDraft] = useState("");
+  const [linksDraft, setLinksDraft] = useState<{ label: string; url: string }[]>([{ label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }]);
   const [showCreate, setShowCreate] = useState(false);
 
   const load = useCallback(async () => {
@@ -399,6 +401,7 @@ function AccountsTab() {
         fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setBio", bio: bioDraft }) }),
         fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setTitle", title: titleDraft }) }),
         fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setAvatarUrl", avatarUrl: avatarDraft }) }),
+        fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setPinnedLinks", pinnedLinks: linksDraft }) }),
       ]);
       toast.success("Perfil actualizado");
       await load();
@@ -472,7 +475,11 @@ function AccountsTab() {
                     />
                     <IconButton
                       icon={Pencil} label="Editar perfil" variant="ghost" size="sm" className="text-slate-500"
-                      onClick={() => { setEditingBio(p); setBioDraft(p.bio || ""); setTitleDraft(p.title || ""); setAvatarDraft(p.avatarUrl || p.avatar || ""); }}
+                      onClick={() => {
+                        setEditingBio(p); setBioDraft(p.bio || ""); setTitleDraft(p.title || ""); setAvatarDraft(p.avatarUrl || p.avatar || "");
+                        const existing = p.pinnedLinks || [];
+                        setLinksDraft([0, 1, 2, 3].map((i) => existing[i] || { label: "", url: "" }));
+                      }}
                     />
                     <Select
                       value={p.accountType || "personal"}
@@ -526,7 +533,27 @@ function AccountsTab() {
           <TextInput value={titleDraft} onChange={(e) => setTitleDraft(e.target.value.slice(0, 50))} placeholder="Ej: CEO of ERLCᴴᵁᴮ" className="w-full mb-3" />
           <label className="text-[11px] text-slate-500 mb-1 block">Biografía</label>
           <TextArea value={bioDraft} onChange={(e) => setBioDraft(e.target.value.slice(0, 160))} rows={3} placeholder="Biografía..." className="w-full" />
-          <p className="text-[11px] text-slate-600 mt-1 text-right">{bioDraft.length}/160</p>
+          <p className="text-[11px] text-slate-600 mt-1 text-right mb-3">{bioDraft.length}/160</p>
+
+          <label className="text-[11px] text-slate-500 mb-1 block">Botones anclados (hasta 4)</label>
+          <div className="space-y-2">
+            {linksDraft.map((link, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <TextInput
+                  value={link.label}
+                  onChange={(e) => setLinksDraft((prev) => prev.map((l, j) => j === i ? { ...l, label: e.target.value } : l))}
+                  placeholder="Etiqueta (ej: Tienda)"
+                  className="w-28 text-xs"
+                />
+                <TextInput
+                  value={link.url}
+                  onChange={(e) => setLinksDraft((prev) => prev.map((l, j) => j === i ? { ...l, url: e.target.value } : l))}
+                  placeholder="URL"
+                  className="flex-1 text-xs"
+                />
+              </div>
+            ))}
+          </div>
         </Modal>
       )}
 

@@ -5,6 +5,7 @@ import { ArrowLeft, UserPlus, UserMinus, MessageSquare, Grid3x3, Link as LinkIco
 import { useOS } from '@/contexts/OSContext';
 import { EmptyState, Skeleton } from '@/components/os/ui';
 import type { Post, Profile } from './types';
+import { pinnedLinkIcon } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import VerifiedBadge from './VerifiedBadge';
 import EditProfileModal from './EditProfileModal';
@@ -144,6 +145,25 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
             <a href={profile.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 text-sm mt-1.5 transition-colors">
               <LinkIcon className="w-3.5 h-3.5" /> {profile.website.replace(/^https?:\/\//, '')}
             </a>
+          )}
+
+          {profile.pinnedLinks && profile.pinnedLinks.length > 0 && (
+            <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: `repeat(${Math.min(profile.pinnedLinks.length, 4)}, minmax(0, 1fr))` }}>
+              {profile.pinnedLinks.map((link, i) => {
+                const Icon = pinnedLinkIcon(link.label);
+                return (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 text-white text-xs font-semibold transition-colors"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" /> {link.label}
+                  </a>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>

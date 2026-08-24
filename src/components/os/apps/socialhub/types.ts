@@ -163,6 +163,7 @@ export interface Profile {
   bio?: string;
   title?: string;
   website?: string;
+  pinnedLinks?: PageLink[];
   verified?: boolean;
   accountType?: 'personal' | 'business' | 'organization' | 'government' | 'official';
 }
@@ -183,6 +184,18 @@ export type SocialView =
   | { mode: 'event'; eventId: string }
   | { mode: 'profile'; discordId: string }
   | { mode: 'saved' };
+
+import { ShoppingBag, Instagram, Music2, LifeBuoy, Link2, type LucideIcon } from 'lucide-react';
+
+/** Elige un ícono para un botón anclado según palabras clave en su etiqueta (Tienda, Instagram, TikTok, Soporte...). */
+export function pinnedLinkIcon(label: string): LucideIcon {
+  const l = label.toLowerCase();
+  if (l.includes('tienda') || l.includes('store') || l.includes('shop')) return ShoppingBag;
+  if (l.includes('instagram')) return Instagram;
+  if (l.includes('tiktok')) return Music2;
+  if (l.includes('soporte') || l.includes('support') || l.includes('ayuda')) return LifeBuoy;
+  return Link2;
+}
 
 const SHORT_MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 

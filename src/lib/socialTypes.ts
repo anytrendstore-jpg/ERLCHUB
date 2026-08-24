@@ -51,6 +51,11 @@ export interface SocialPost {
  * LSPD, LSSD) — no requieren una sesión real de Discord, se crean y editan desde el panel staff. */
 export type SocialAccountType = 'personal' | 'business' | 'organization' | 'government' | 'official';
 
+export interface SocialProfileLink {
+  label: string;
+  url: string;
+}
+
 export interface SocialProfile {
   discordId: string;
   username: string;
@@ -62,6 +67,9 @@ export interface SocialProfile {
   /** Sufijo corto junto al nombre, tipo cargo/título (ej: "CEO of ERLCᴴᵁᴮ"). */
   title?: string;
   website?: string;
+  /** Botones anclados de accesos directos junto al perfil (ej: Tienda, Instagram, Soporte) —
+   * solo editables por staff, pensado para cuentas institucionales (ERLCHUB, LSPD, etc). */
+  pinnedLinks?: SocialProfileLink[];
   verified?: boolean;
   accountType?: SocialAccountType;
   suspended?: boolean;

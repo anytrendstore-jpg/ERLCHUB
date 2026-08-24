@@ -95,7 +95,7 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { discordId, action, reason, accountType, bio, title, avatarUrl } = await request.json();
+    const { discordId, action, reason, accountType, bio, title, avatarUrl, pinnedLinks } = await request.json();
     if (!discordId || !action) return NextResponse.json({ success: false, error: 'Faltan datos' }, { status: 400 });
 
     const col = await socialProfilesCollection();
@@ -148,6 +148,16 @@ export async function PATCH(request: NextRequest) {
       await logStaffAction({
         type: 'social_account_bio_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
         target: discordId, description: `${actorName} cambió la foto de perfil de @${profile.username}`,
+      });
+    } else if (action === 'setPinnedLinks') {
+      const cleanLinks = (Array.isArray(pinnedLinks) ? pinnedLinks : [])
+        .filter((l: any) => l && String(l.label || '').trim() && String(l.url || '').trim())
+        .slice(0, 4)
+        .map((l: any) => ({ label: String(l.label).trim().slice(0, 30), url: String(l.url).trim().slice(0, 500) }));
+      await col.updateOne({ discordId }, { $set: { pinnedLinks: cleanLinks } });
+      await logStaffAction({
+        type: 'social_account_bio_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
+        target: discordId, description: `${actorName} actualizó los botones anclados de @${profile.username}`,
       });
     } else {
       return NextResponse.json({ success: false, error: 'Acción inválida' }, { status: 400 });
