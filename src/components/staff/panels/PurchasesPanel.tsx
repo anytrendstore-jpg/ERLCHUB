@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ShoppingBag, Coins } from "lucide-react";
+import { ShoppingBag, Coins, Package } from "lucide-react";
 import { PanelHeader, Card, Chip, Kpi, LoadingBlock, EmptyState, ErrorBlock, formatDate } from "@/components/staff/ui";
 
 interface Purchase { id: string; username: string; amount: number; description: string; status: string; timestamp: string; kitNames?: string[]; }
@@ -48,9 +48,11 @@ export default function PurchasesPanel() {
                 <div className="min-w-0">
                   <div className="text-sm text-white truncate">{p.username}</div>
                   {p.kitNames?.length ? (
-                    <div className="flex flex-wrap gap-1 mt-0.5">
+                    <div className="flex flex-wrap gap-1.5 mt-1">
                       {p.kitNames.map((name, i) => (
-                        <span key={i} className="text-[10px] text-blue-300 bg-blue-500/10 border border-blue-500/20 rounded px-1.5 py-0.5">{name}</span>
+                        <span key={i} className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-600/40 to-purple-600/40 border border-blue-400/30 rounded-lg px-2 py-1 shadow-[0_0_10px_-4px_rgba(59,130,246,0.5)]">
+                          <Package className="h-3 w-3 text-blue-300 flex-shrink-0" /> {name}
+                        </span>
                       ))}
                     </div>
                   ) : (

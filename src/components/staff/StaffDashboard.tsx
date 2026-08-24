@@ -143,15 +143,18 @@ export default function StaffDashboard({ onLogout }: Props) {
       />
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 h-16 bg-[#0E1420]/95 backdrop-blur border-b border-[#1F2937] flex items-center gap-3 px-4 lg:px-8">
+        <header
+          className="sticky top-0 z-20 h-16 bg-[#0E1420]/95 backdrop-blur border-b border-[#1F2937] flex items-center gap-3 px-4 lg:px-8"
+          style={{ boxShadow: "0 1px 0 0 rgba(59,130,246,0.15) inset" }}
+        >
           <button type="button" onClick={() => setMobileOpen(true)} className="lg:hidden h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-[#151C2A] transition">
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
-          <button type="button" onClick={refreshBadges} className="relative h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-[#151C2A] transition">
+          <button type="button" onClick={refreshBadges} className="relative h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-[#151C2A] transition-all duration-150 hover:scale-105 active:scale-95">
             <Bell className="h-4 w-4" />
             {badges.whitelistPending + badges.ticketsOpen + badges.reportsPending > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-blue-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute top-1 right-1 w-4 h-4 bg-blue-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-[0_0_8px_-1px_rgba(37,99,235,0.7)]">
                 {badges.whitelistPending + badges.ticketsOpen + badges.reportsPending}
               </span>
             )}
@@ -160,9 +163,9 @@ export default function StaffDashboard({ onLogout }: Props) {
             <div className="flex items-center gap-2 pl-2 border-l border-[#1F2937]">
               {identity.avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={identity.avatar} alt={identity.name} className="w-8 h-8 rounded-full" />
+                <img src={identity.avatar} alt={identity.name} className="w-8 h-8 rounded-full ring-2 ring-blue-500/30" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-blue-600/30">
                   {identity.name.charAt(0).toUpperCase()}
                 </div>
               )}

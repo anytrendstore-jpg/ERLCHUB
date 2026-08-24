@@ -101,9 +101,11 @@ function SidebarContent({ active, onSelect, badges, identity, isDirector, onLogo
   return (
     <>
       <div className="h-16 px-5 flex items-center gap-3 border-b border-[#1F2937] flex-shrink-0">
-        <Image src="/logo.png" alt="ERLC HUB" width={32} height={32} className="h-8 w-auto" />
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-600/30 p-1.5">
+          <Image src="/logo.png" alt="ERLC HUB" width={24} height={24} className="h-full w-auto object-contain" />
+        </div>
         <div className="leading-tight">
-          <div className="text-sm font-bold text-white tracking-wide">OPS CENTER</div>
+          <div className="text-sm font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent tracking-wide">OPS CENTER</div>
           <div className="text-[10px] text-blue-400 font-semibold tracking-widest uppercase">Network Staff</div>
         </div>
       </div>
@@ -126,24 +128,24 @@ function SidebarContent({ active, onSelect, badges, identity, isDirector, onLogo
                     type="button"
                     onClick={() => onSelect(item.id)}
                     disabled={locked}
-                    className={`relative w-full flex items-center justify-between gap-2 pl-3 pr-2.5 py-2 rounded-lg text-sm transition ${
+                    className={`relative w-full flex items-center justify-between gap-2 pl-3 pr-2.5 py-2 rounded-lg text-sm transition-all duration-150 ${
                       isActive
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                        ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-600/25"
                         : locked
                           ? "text-slate-600 cursor-not-allowed"
-                          : "text-slate-400 hover:bg-[#151C2A] hover:text-white"
+                          : "text-slate-400 hover:bg-[#151C2A] hover:text-white hover:translate-x-0.5"
                     }`}
                   >
                     {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] rounded-full bg-white/90" />}
                     <span className="flex items-center gap-2.5 min-w-0">
-                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <Icon className={`h-4 w-4 flex-shrink-0 transition-transform duration-150 ${isActive ? "scale-110" : ""}`} />
                       <span className="truncate">{item.label}</span>
                     </span>
                     {locked ? (
                       <Lock className="h-3.5 w-3.5 flex-shrink-0 opacity-60" />
                     ) : count > 0 ? (
                       <span className={`relative text-[11px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-                        isActive ? "bg-white/25 text-white" : "bg-blue-600/20 text-blue-400"
+                        isActive ? "bg-white/25 text-white" : "bg-blue-600/20 text-blue-400 shadow-[0_0_8px_-1px_rgba(37,99,235,0.5)]"
                       }`}>
                         {!isActive && <span className="absolute inset-0 rounded-full bg-blue-500/40 animate-ping" />}
                         <span className="relative">{count}</span>
@@ -162,12 +164,12 @@ function SidebarContent({ active, onSelect, badges, identity, isDirector, onLogo
 
       <div className="p-3 border-t border-[#1F2937] space-y-1 flex-shrink-0">
         {identity && (
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#151C2A] mb-1">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-b from-[#161F33] to-[#131A29] ring-1 ring-[#1F2937] shadow-[0_4px_16px_-8px_rgba(0,0,0,0.5)] mb-1">
             {identity.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={identity.avatar} alt={identity.name} className="w-8 h-8 rounded-full" />
+              <img src={identity.avatar} alt={identity.name} className="w-8 h-8 rounded-full ring-2 ring-blue-500/30" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-blue-600/30">
                 {identity.name.charAt(0).toUpperCase()}
               </div>
             )}

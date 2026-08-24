@@ -1,8 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Plus, X, Loader2, Trash2, Power, Store, Handshake, Dices, Building2, Car, Crosshair, Share2, Siren, type LucideIcon } from "lucide-react";
-import { PanelHeader, Card, AccessDenied, TextInput, TextArea, Select, PrimaryButton, LoadingBlock, EmptyState, formatDate, useStaffPermissions, useToast } from "@/components/staff/ui";
+import { Plus, X, Loader2, Trash2, Power, Store, Handshake, Dices, Building2, Car, Crosshair, Share2, Siren, Sparkles, type LucideIcon } from "lucide-react";
+import { PanelHeader, Card, Chip, AccessDenied, TextInput, TextArea, Select, PrimaryButton, LoadingBlock, EmptyState, formatDate, useStaffPermissions, useToast } from "@/components/staff/ui";
+
+/** Estilo llamativo por categoría del catálogo — para que "Membresía" y "Kit" salten a la
+ * vista frente a artículos comunes en la grilla de Tienda. Solo aplica al módulo `catalog`. */
+const CATEGORY_NAME_STYLE: Record<string, string> = {
+  "Membresía": "bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent",
+  "Kit": "bg-gradient-to-r from-sky-300 via-blue-300 to-cyan-300 bg-clip-text text-transparent",
+  "Hub Coins": "bg-gradient-to-r from-amber-300 to-yellow-200 bg-clip-text text-transparent",
+};
+const CATEGORY_CHIP_TONE: Record<string, "amber" | "blue" | "emerald" | "rose" | "orange" | "slate"> = {
+  "Membresía": "amber", "Kit": "blue", "Hub Coins": "orange", "Artículo": "slate",
+};
 
 type FieldType = "text" | "number" | "select" | "boolean";
 interface FieldDef { key: string; label: string; type: FieldType; options?: string[]; suffix?: string; }
@@ -252,25 +263,40 @@ export default function EconomyRegistryPanel({ moduleId }: { moduleId: string; i
         <EmptyState icon={config.icon} text={`Todavía no hay ningún ${config.itemLabel} registrado`} />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item) => (
-            <Card key={item.id} className={`p-4 group relative ${!item.active ? "opacity-50" : ""}`}>
-              <div className="flex items-start justify-between gap-2 mb-1">
-                <div className="text-sm font-semibold text-white truncate">{item.name}</div>
-                {canManage && (
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button type="button" onClick={() => toggle(item.id)} title={item.active ? "Desactivar" : "Activar"} className={`p-1 rounded transition ${item.active ? "text-emerald-400" : "text-slate-600"} hover:bg-[#151C2A]`}>
-                      <Power className="h-3.5 w-3.5" />
-                    </button>
-                    <button type="button" onClick={() => remove(item.id)} className="p-1 rounded text-slate-600 hover:text-rose-400 hover:bg-[#151C2A] transition">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+          {items.map((item) => {
+            const category = moduleId === "catalog" ? String(item.fields?.category || "") : "";
+            const nameStyle = CATEGORY_NAME_STYLE[category];
+            const featured = moduleId === "catalog" && Boolean(item.fields?.featured);
+            return (
+              <Card key={item.id} hoverable className={`p-4 group relative ${!item.active ? "opacity-50" : ""} ${featured ? "ring-1 ring-amber-400/30" : ""}`}>
+                <div className="flex items-start justify-between gap-2 mb-1.5">
+                  <div className="min-w-0">
+                    {category && (
+                      <div className="mb-1.5">
+                        <Chip tone={CATEGORY_CHIP_TONE[category] || "slate"} label={category} />
+                      </div>
+                    )}
+                    <div className={`flex items-center gap-1.5 truncate ${nameStyle ? `text-base font-bold ${nameStyle}` : "text-sm font-semibold text-white"}`}>
+                      {featured && <Sparkles className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />}
+                      <span className="truncate">{item.name}</span>
+                    </div>
                   </div>
-                )}
-              </div>
-              <p className="text-xs text-slate-400">{config.summary(item.fields)}</p>
-              <div className="mt-2 text-[11px] text-slate-600">Actualizado {formatDate(item.updatedAt)} por {item.updatedBy}</div>
-            </Card>
-          ))}
+                  {canManage && (
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button type="button" onClick={() => toggle(item.id)} title={item.active ? "Desactivar" : "Activar"} className={`p-1 rounded transition ${item.active ? "text-emerald-400" : "text-slate-600"} hover:bg-[#151C2A]`}>
+                        <Power className="h-3.5 w-3.5" />
+                      </button>
+                      <button type="button" onClick={() => remove(item.id)} className="p-1 rounded text-slate-600 hover:text-rose-400 hover:bg-[#151C2A] transition">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400">{config.summary(item.fields)}</p>
+                <div className="mt-2 text-[11px] text-slate-600">Actualizado {formatDate(item.updatedAt)} por {item.updatedBy}</div>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

@@ -56,8 +56,17 @@ export function CardTitle({ children, className = "" }: { children: React.ReactN
   return <h3 className={`text-sm font-semibold text-white ${className}`}>{children}</h3>;
 }
 
-export function Card({ children, className = "", ...rest }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode; className?: string }) {
-  return <div {...rest} className={`bg-[#111827] border border-[#1F2937] rounded-xl ${className}`}>{children}</div>;
+export function Card({ children, className = "", hoverable = false, ...rest }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode; className?: string; hoverable?: boolean }) {
+  return (
+    <div
+      {...rest}
+      className={`bg-gradient-to-b from-[#141D30] to-[#0F1523] border border-[#1F2937] rounded-xl shadow-[0_4px_20px_-8px_rgba(0,0,0,0.45)] transition-colors duration-200 hover:border-[#2A3752] ${
+        hoverable ? "hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-8px_rgba(37,99,235,0.25)] transition-transform" : ""
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
 }
 
 // Resplandor de color a juego con el tono del icono (se deduce del nombre del color en `ring`).
@@ -70,12 +79,17 @@ const GLOW_BY_COLOR: Record<string, string> = {
   sky: "hover:shadow-[0_0_24px_-4px_rgba(14,165,233,0.35)] hover:border-sky-500/40",
 };
 
+const TINT_BY_COLOR: Record<string, string> = {
+  blue: "hover:bg-blue-500/[0.025]", emerald: "hover:bg-emerald-500/[0.025]", amber: "hover:bg-amber-500/[0.025]",
+  rose: "hover:bg-rose-500/[0.025]", purple: "hover:bg-purple-500/[0.025]", sky: "hover:bg-sky-500/[0.025]",
+};
+
 export function Kpi({ label, value, icon: Icon, tone, ring }: { label: string; value: number | string; icon: LucideIcon; tone: string; ring: string }) {
   const colorKey = Object.keys(GLOW_BY_COLOR).find((c) => ring.includes(c)) || "blue";
   return (
-    <Card className={`p-4 transition-all duration-200 hover:-translate-y-0.5 ${GLOW_BY_COLOR[colorKey]}`}>
+    <Card className={`p-4 transition-all duration-200 hover:-translate-y-0.5 ${GLOW_BY_COLOR[colorKey]} ${TINT_BY_COLOR[colorKey]}`}>
       <div className="flex items-center justify-between mb-3">
-        <div className={`relative w-9 h-9 rounded-lg ${ring} flex items-center justify-center`}>
+        <div className={`relative w-9 h-9 rounded-lg ${ring} flex items-center justify-center ring-1 ring-white/10`}>
           <div className={`absolute inset-0 rounded-lg ${ring} blur-md opacity-60 -z-10`} aria-hidden="true" />
           <Icon className={`h-4 w-4 ${tone}`} />
         </div>
@@ -97,7 +111,7 @@ export function LoadingBlock() {
 export function EmptyState({ icon: Icon, text, description }: { icon: LucideIcon; text: string; description?: string }) {
   return (
     <div className="py-16 text-center">
-      <div className="w-12 h-12 rounded-full bg-[#151C2A] ring-1 ring-[#1F2937] flex items-center justify-center mx-auto mb-3.5">
+      <div className="w-12 h-12 rounded-full bg-gradient-to-b from-[#1B2436] to-[#151C2A] ring-1 ring-[#1F2937] shadow-[0_4px_16px_-6px_rgba(0,0,0,0.5)] flex items-center justify-center mx-auto mb-3.5">
         <Icon className="h-5 w-5 text-slate-600" />
       </div>
       <p className="text-slate-300 text-sm font-medium">{text}</p>
@@ -157,8 +171,8 @@ export function Chip({ tone, label }: { tone: "amber" | "blue" | "emerald" | "ro
     rose: "bg-rose-400", orange: "bg-orange-400", slate: "bg-slate-400",
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ring-1 ${map[tone]}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${dot[tone]}`} />
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ring-1 shadow-sm ${map[tone]}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot[tone]} shadow-[0_0_5px_currentColor]`} />
       {label}
     </span>
   );
@@ -170,7 +184,7 @@ export function PrimaryButton({ children, onClick, disabled, type = "button" }: 
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="h-10 px-4 flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-semibold shadow-lg shadow-blue-600/25 transition"
+      className="h-10 px-4 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 disabled:opacity-50 text-white text-sm font-semibold shadow-lg shadow-blue-600/25 transition-all duration-150 hover:-translate-y-px active:translate-y-0"
     >
       {children}
     </button>
@@ -222,7 +236,7 @@ export function formatDate(value?: string | Date) {
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "success";
 
 const BUTTON_VARIANT_CLASS: Record<ButtonVariant, string> = {
-  primary: "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25",
+  primary: "bg-gradient-to-b from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white shadow-lg shadow-blue-600/25",
   secondary: "bg-[#151C2A] hover:bg-[#1B2436] text-slate-300 ring-1 ring-[#1F2937]",
   ghost: "bg-transparent hover:bg-white/5 text-slate-400 hover:text-white",
   danger: "bg-rose-600/10 hover:bg-rose-600/20 text-rose-300 ring-1 ring-rose-500/30",
@@ -242,7 +256,7 @@ export function Button({ variant = "primary", size = "md", icon: Icon, loading, 
     <button
       {...rest}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${size === "sm" ? "h-8 px-3 text-xs" : "h-10 px-4 text-sm"} ${BUTTON_VARIANT_CLASS[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${size === "sm" ? "h-8 px-3 text-xs" : "h-10 px-4 text-sm"} ${BUTTON_VARIANT_CLASS[variant]} ${className}`}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : Icon ? <Icon className="h-4 w-4" /> : null}
       {children}
@@ -264,7 +278,7 @@ export function IconButton({ icon: Icon, variant = "secondary", size = "md", lab
       {...rest}
       aria-label={label}
       title={label}
-      className={`inline-flex items-center justify-center rounded-lg transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${size === "sm" ? "h-8 w-8" : "h-10 w-10"} ${BUTTON_VARIANT_CLASS[variant]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${size === "sm" ? "h-8 w-8" : "h-10 w-10"} ${BUTTON_VARIANT_CLASS[variant]} ${className}`}
     >
       <Icon className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
     </button>
@@ -296,8 +310,8 @@ export function Modal({ title, description, onClose, children, footer, size = "m
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 animate-in fade-in duration-150" onClick={onClose}>
-      <Card className={`w-full ${MODAL_WIDTH[size]} max-h-[85vh] overflow-y-auto animate-in zoom-in-95 duration-150`} onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-[3px] z-50 flex items-center justify-center p-4 animate-in fade-in duration-150" onClick={onClose}>
+      <Card className={`w-full ${MODAL_WIDTH[size]} max-h-[85vh] overflow-y-auto shadow-[0_25px_60px_-15px_rgba(0,0,0,0.65),0_0_0_1px_rgba(59,130,246,0.08)] animate-in zoom-in-95 duration-150`} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-4 p-5 border-b border-[#1F2937]">
           <div className="min-w-0">
             <h3 className="text-white font-semibold truncate">{title}</h3>

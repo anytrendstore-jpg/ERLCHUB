@@ -98,12 +98,12 @@ export default function CouponsPanel() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {codes.map((c) => (
-            <Card key={c.code} className="p-4">
+            <Card key={c.code} hoverable className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono font-bold text-white">{c.code}</span>
                 <Chip tone={c.isActive ? "emerald" : "slate"} label={c.isActive ? "Activo" : "Caducado"} />
               </div>
-              <div className="text-2xl font-bold text-blue-400 mb-1">{c.discountPercentage}%</div>
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent mb-1">{c.discountPercentage}%</div>
               {c.description && <p className="text-xs text-slate-500 mb-2">{c.description}</p>}
               <div className="text-[11px] text-slate-600 flex items-center justify-between">
                 <span>{c.usageCount} usos</span>
