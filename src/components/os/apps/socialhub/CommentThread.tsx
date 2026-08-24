@@ -65,7 +65,7 @@ export default function CommentThread({ comments, onSendComment }: {
             onKeyDown={(e) => e.key === 'Enter' && submit()}
             placeholder={replyTo ? `Responder a ${replyTo.displayName}...` : 'Comentar...'}
             maxLength={300}
-            className="flex-1 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+            className="flex-1 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
           />
           <button onClick={submit} className="p-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white transition-colors flex-shrink-0">
             <Send className="w-3.5 h-3.5" />

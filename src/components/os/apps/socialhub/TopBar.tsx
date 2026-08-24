@@ -67,10 +67,10 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
   const activeMode = view.mode === 'profile' ? null : view.mode;
 
   return (
-    <div className="h-14 flex-shrink-0 border-b border-white/5 bg-[#0d0d14] flex items-center gap-4 px-4">
+    <div className="h-14 flex-shrink-0 border-b border-white/[0.06] bg-[#0d0d14]/90 backdrop-blur-xl flex items-center gap-4 px-4 relative z-10">
       <div className="flex items-center gap-2 flex-shrink-0">
         <SocialHubIcon size={32} />
-        <span className="text-white font-bold text-sm hidden lg:inline">HubSocial</span>
+        <span className="hs-text-gradient font-bold text-sm hidden lg:inline tracking-tight">HubSocial</span>
       </div>
 
       <div ref={searchBoxRef} className="relative w-56 xl:w-72 flex-shrink-0">
@@ -80,17 +80,17 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setSearchOpen(true)}
           placeholder="Buscar en HubSocial"
-          className="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50 transition-colors"
+          className="w-full bg-white/[0.04] border border-white/10 rounded-full pl-9 pr-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:bg-white/[0.06] focus:ring-2 focus:ring-violet-500/10 transition-all"
         />
         {searchOpen && (searchResults.length > 0 || searchPostResults.length > 0) && (
-          <div className="absolute top-full left-0 mt-2 w-80 bg-[#12121c] border border-white/10 rounded-xl shadow-2xl shadow-black/50 max-h-96 overflow-y-auto z-50 p-1.5">
+          <div className="absolute top-full left-0 mt-2 w-80 bg-[#12121c]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/60 max-h-96 overflow-y-auto z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
             {searchResults.length > 0 && (
               <>
-                <p className="text-white/30 text-[10px] uppercase tracking-wide px-2 pt-1.5 pb-1">Personas</p>
+                <p className="text-white/30 text-[10px] uppercase tracking-wider px-2 pt-1.5 pb-1 font-semibold">Personas</p>
                 {searchResults.map((u) => (
-                  <button key={u.discordId} onClick={() => selectUser(u.discordId)} className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 text-left">
+                  <button key={u.discordId} onClick={() => selectUser(u.discordId)} className="w-full flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-white/[0.06] transition-colors text-left">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={u.avatar} alt="" className="w-7 h-7 rounded-full" />
+                    <img src={u.avatar} alt="" className="w-7 h-7 rounded-full ring-1 ring-white/10" />
                     <span className="min-w-0 text-left">
                       <span className="block text-white/80 text-xs truncate">{u.displayName}</span>
                       <span className="block text-white/40 text-[10px] truncate">@{u.username}</span>
@@ -101,9 +101,9 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
             )}
             {searchPostResults.length > 0 && (
               <>
-                <p className="text-white/30 text-[10px] uppercase tracking-wide px-2 pt-2 pb-1">Publicaciones</p>
+                <p className="text-white/30 text-[10px] uppercase tracking-wider px-2 pt-2 pb-1 font-semibold">Publicaciones</p>
                 {searchPostResults.map((p) => (
-                  <button key={p.id} onClick={() => selectUser(p.discordId)} className="w-full px-2 py-1.5 rounded-lg hover:bg-white/5 text-left">
+                  <button key={p.id} onClick={() => selectUser(p.discordId)} className="w-full px-2 py-1.5 rounded-xl hover:bg-white/[0.06] transition-colors text-left">
                     <span className="block text-white/70 text-[10px] truncate">{p.displayName}: {p.text}</span>
                   </button>
                 ))}
@@ -121,10 +121,10 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
               key={item.mode}
               onClick={() => onNavigate(item.mode)}
               title={item.label}
-              className={`relative flex items-center justify-center h-11 w-12 rounded-lg transition-colors flex-shrink-0 ${isActive ? 'text-violet-400' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+              className={`relative flex items-center justify-center h-11 w-12 rounded-xl transition-all duration-200 flex-shrink-0 ${isActive ? 'text-violet-300 bg-violet-500/10' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
             >
               <item.icon className="w-5 h-5" />
-              {isActive && <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-violet-500 rounded-full" />}
+              {isActive && <span className="absolute bottom-0 left-2.5 right-2.5 h-[2.5px] bg-gradient-to-r from-violet-400 to-cyan-300 rounded-full shadow-[0_0_8px_rgba(139,92,246,0.6)]" />}
             </button>
           );
         })}
@@ -148,11 +148,11 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
         <button
           onClick={toggleNotificationPanel}
           title="Notificaciones"
-          className={`relative h-10 w-10 flex items-center justify-center rounded-full transition-colors ${isNotificationPanelOpen ? 'bg-violet-600/20 text-violet-400' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+          className={`relative h-10 w-10 flex items-center justify-center rounded-full transition-all duration-200 ${isNotificationPanelOpen ? 'bg-violet-600/15 text-violet-300' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
         >
           <Bell className="w-5 h-5" />
           {unreadNotifications > 0 && (
-            <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-violet-500 text-white text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 text-white text-[9px] font-bold flex items-center justify-center shadow-[0_0_6px_rgba(217,70,239,0.5)]">
               {unreadNotifications > 9 ? '9+' : unreadNotifications}
             </span>
           )}
@@ -162,15 +162,15 @@ export default function TopBar({ view, onNavigate, me, onOpenProfile, onOpenOwnP
           <div ref={profileMenuRef} className="relative ml-1">
             <button onClick={() => setProfileMenuOpen((v) => !v)} className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full hover:bg-white/5 transition-colors">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={me.avatarUrl || me.avatar} alt="" className="w-7 h-7 rounded-full" />
+              <img src={me.avatarUrl || me.avatar} alt="" className="w-7 h-7 rounded-full ring-1 ring-white/15" />
               <span className="text-white text-xs font-medium hidden xl:inline max-w-[80px] truncate">{me.displayName}</span>
               <ChevronDown className="w-3.5 h-3.5 text-white/40 hidden xl:inline" />
             </button>
             {profileMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 w-44 bg-[#12121c] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50 p-1.5">
+              <div className="absolute top-full right-0 mt-2 w-44 bg-[#12121c]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/60 z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
                 <button
                   onClick={() => { setProfileMenuOpen(false); onOpenOwnProfile(); }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+                  className="w-full text-left px-3 py-2 rounded-xl text-sm text-white/80 hover:bg-white/[0.06] hover:text-white transition-colors"
                 >
                   Ver mi perfil
                 </button>

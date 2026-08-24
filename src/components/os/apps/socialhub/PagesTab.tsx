@@ -43,7 +43,7 @@ export default function PagesTab({ onOpenPage }: { onOpenPage: (pageId: string) 
         <h1 className="text-white text-xl font-bold">Páginas</h1>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white text-xs font-semibold transition-opacity"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:shadow-[0_0_18px_-4px_rgba(217,70,239,0.5)] text-white text-xs font-semibold transition-all duration-200"
         >
           <Plus className="w-3.5 h-3.5" /> Crear página
         </button>
@@ -55,7 +55,7 @@ export default function PagesTab({ onOpenPage }: { onOpenPage: (pageId: string) 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar páginas..."
-          className="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+          className="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
         />
       </div>
 
@@ -76,7 +76,7 @@ export default function PagesTab({ onOpenPage }: { onOpenPage: (pageId: string) 
             <button
               key={page.id}
               onClick={() => onOpenPage(page.id)}
-              className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/[0.07] hover:border-white/20 transition-colors text-left"
+              className="hs-card hs-card-hover flex items-center gap-3 p-4 rounded-2xl text-left"
             >
               {page.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element

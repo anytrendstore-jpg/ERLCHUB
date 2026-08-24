@@ -45,7 +45,7 @@ export default function SocialHubApp() {
   };
 
   return (
-    <div className="relative h-full flex flex-col bg-[#0a0a0f]">
+    <div className="relative h-full flex flex-col bg-[#0a0a0f] hs-ambient">
       <TopBar view={view} onNavigate={navigate} me={me} onOpenProfile={openProfile} onOpenOwnProfile={openOwnProfile} />
 
       <div className="flex-1 flex min-h-0">

@@ -84,7 +84,7 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
         <ArrowLeft className="w-4 h-4" /> Volver
       </button>
 
-      <div className="h-28 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600/30 to-purple-700/30 relative">
+      <div className="h-32 rounded-2xl overflow-hidden bg-[linear-gradient(135deg,rgba(139,92,246,0.35),rgba(217,70,239,0.2)_50%,rgba(34,211,238,0.15))] shadow-lg shadow-black/30 relative">
         {page.coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={page.coverUrl} alt="" className="w-full h-full object-cover" />
@@ -94,9 +94,9 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
       <div className="flex items-end justify-between -mt-8 px-4">
         {page.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={page.avatarUrl} alt={page.name} className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] object-cover" />
+          <img src={page.avatarUrl} alt={page.name} className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] object-cover shadow-xl shadow-black/40" />
         ) : (
-          <div className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] bg-violet-600/30 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] bg-gradient-to-br from-violet-600/40 to-fuchsia-600/30 flex items-center justify-center shadow-xl shadow-black/40">
             <Building2 className="w-7 h-7 text-violet-300" />
           </div>
         )}
@@ -108,7 +108,7 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
           <button
             onClick={toggleFollow}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-              following ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:opacity-90'
+              following ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:opacity-90'
             }`}
           >
             {following ? 'Dejar de seguir' : 'Seguir'}
@@ -127,16 +127,16 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
         {editing && (
           <div className="mt-2 space-y-2">
             <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Descripción..." maxLength={300} rows={2}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/50" />
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
             <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Teléfono..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
             <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
             <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="Sitio web..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
             <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ubicación..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
-            <button onClick={saveDetails} className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white text-xs font-semibold transition-opacity">
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
+            <button onClick={saveDetails} className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:shadow-[0_0_18px_-4px_rgba(217,70,239,0.5)] text-white text-xs font-semibold transition-all duration-200">
               Guardar
             </button>
           </div>
@@ -166,9 +166,9 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 text-white text-xs font-semibold transition-colors"
+                  className="hs-card hover:border-violet-500/30 hover:-translate-y-0.5 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-white text-xs font-semibold transition-all duration-200"
                 >
-                  <Icon className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" /> {link.label}
+                  <Icon className="w-3.5 h-3.5 text-violet-300 flex-shrink-0" /> {link.label}
                 </a>
               );
             })}

@@ -778,3 +778,35 @@
 .border-blue-500 {
   border-color: #3b82f6;
 }
+
+/* ---------------------- HubSocial — sistema visual ---------------------- */
+.hs-ambient {
+  background:
+    radial-gradient(ellipse 900px 500px at 10% -15%, rgba(139, 92, 246, 0.12), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 105% 15%, rgba(34, 211, 238, 0.07), transparent 55%),
+    radial-gradient(ellipse 600px 400px at 50% 120%, rgba(217, 70, 239, 0.05), transparent 60%);
+}
+
+.hs-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px -10px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.hs-card-hover:hover {
+  border-color: rgba(139, 92, 246, 0.28);
+  box-shadow: 0 10px 32px -10px rgba(139, 92, 246, 0.18), 0 4px 24px -10px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.hs-text-gradient {
+  background: linear-gradient(135deg, #ddd6fe, #a78bfa 45%, #67e8f9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hs-glow-ring {
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25), 0 0 24px -4px rgba(139, 92, 246, 0.35);
+}

@@ -47,13 +47,14 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
     <Modal title="Editar perfil" onClose={onClose} size="md">
       <div className="flex flex-col items-center mb-5">
         <div className="relative w-20 h-20">
+          <div className="absolute -inset-1.5 rounded-full bg-[conic-gradient(from_0deg,#a78bfa,#d946ef,#67e8f9,#a78bfa)] opacity-50 blur-md" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={previewAvatar} alt="" className="w-20 h-20 rounded-full object-cover ring-2 ring-violet-500/30" />
+          <img src={previewAvatar} alt="" className="relative w-20 h-20 rounded-full object-cover border-2 border-[#0a0a0f] shadow-xl" />
           <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
             <Camera className="w-5 h-5 text-white" />
           </div>
         </div>
-        <p className="text-violet-400 text-xs font-semibold mt-2">Cambiar foto de perfil</p>
+        <p className="text-violet-300 text-xs font-semibold mt-2.5">Cambiar foto de perfil</p>
       </div>
 
       <div className="space-y-4">
@@ -64,7 +65,7 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
               placeholder="https://..."
-              className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+              className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
             />
             <ImageUploadButton aspect={1} shape="circle" onUploaded={setAvatarUrl} onError={toast.error} />
           </div>
@@ -79,7 +80,7 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
             value={title}
             onChange={(e) => setTitle(e.target.value.slice(0, 50))}
             placeholder="Ej: CEO of ERLCᴴᵁᴮ"
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
           />
         </div>
 
@@ -93,7 +94,7 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
             onChange={(e) => setBio(e.target.value.slice(0, BIO_MAX))}
             rows={3}
             placeholder="Contale algo de vos a la comunidad..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
           />
         </div>
 
@@ -103,7 +104,7 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
             placeholder="https://..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
           />
         </div>
       </div>

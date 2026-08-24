@@ -119,7 +119,7 @@ export default function GroupDetail({ groupId, me, onBack, onOpenProfile, onOpen
         <ArrowLeft className="w-4 h-4" /> Volver
       </button>
 
-      <div className="h-28 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600/30 to-purple-700/30 relative">
+      <div className="h-32 rounded-2xl overflow-hidden bg-[linear-gradient(135deg,rgba(139,92,246,0.35),rgba(217,70,239,0.2)_50%,rgba(34,211,238,0.15))] shadow-lg shadow-black/30 relative">
         {group.coverImage && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={group.coverImage} alt="" className="w-full h-full object-cover" />
@@ -129,9 +129,9 @@ export default function GroupDetail({ groupId, me, onBack, onOpenProfile, onOpen
       <div className="flex items-end justify-between -mt-8 px-4">
         {group.icon ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={group.icon} alt={group.name} className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] object-cover" />
+          <img src={group.icon} alt={group.name} className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] object-cover shadow-xl shadow-black/40" />
         ) : (
-          <div className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] bg-violet-600/30 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl border-4 border-[#0a0a0f] bg-gradient-to-br from-violet-600/40 to-fuchsia-600/30 flex items-center justify-center shadow-xl shadow-black/40">
             <Users className="w-7 h-7 text-violet-300" />
           </div>
         )}
@@ -145,7 +145,7 @@ export default function GroupDetail({ groupId, me, onBack, onOpenProfile, onOpen
             <button
               disabled={busy}
               onClick={() => membership('join')}
-              className="px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 disabled:opacity-50 text-white text-xs font-semibold transition-opacity"
+              className="px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:shadow-[0_0_18px_-4px_rgba(217,70,239,0.5)] disabled:opacity-50 disabled:shadow-none text-white text-xs font-semibold transition-all duration-200"
             >
               {group.privacy === 'private' ? 'Solicitar unirme' : 'Unirme'}
             </button>
@@ -176,20 +176,20 @@ export default function GroupDetail({ groupId, me, onBack, onOpenProfile, onOpen
         {editing && (
           <div className="mt-2 space-y-2">
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descripción..." maxLength={300} rows={2}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/50" />
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
             <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Categoría..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
             <div className="flex items-center gap-2">
               <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="URL de ícono..."
-                className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+                className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
               <ImageUploadButton aspect={1} shape="rect" onUploaded={setIcon} onError={toast.error} />
             </div>
             <div className="flex items-center gap-2">
               <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="URL de portada..."
-                className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+                className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10" />
               <ImageUploadButton aspect={3} shape="rect" onUploaded={setCoverImage} onError={toast.error} />
             </div>
-            <button onClick={saveDetails} className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white text-xs font-semibold transition-opacity">
+            <button onClick={saveDetails} className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:shadow-[0_0_18px_-4px_rgba(217,70,239,0.5)] text-white text-xs font-semibold transition-all duration-200">
               Guardar
             </button>
           </div>

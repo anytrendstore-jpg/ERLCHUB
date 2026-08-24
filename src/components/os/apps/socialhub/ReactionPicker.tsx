@@ -42,7 +42,7 @@ export default function ReactionPicker({ reactions, myDiscordId, onReact }: {
     <div className="relative" onMouseEnter={() => { cancelClose(); setOpen(true); }} onMouseLeave={scheduleClose}>
       {open && (
         <div
-          className="absolute bottom-full left-0 mb-1.5 flex items-center gap-1 bg-[#12121c] border border-white/10 rounded-full px-1.5 py-1 shadow-2xl shadow-black/50 z-10"
+          className="absolute bottom-full left-0 mb-2 flex items-center gap-1 bg-[#12121c]/95 backdrop-blur-xl border border-white/10 rounded-full px-1.5 py-1 shadow-2xl shadow-black/60 z-10 animate-in fade-in zoom-in-95 duration-150"
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
         >

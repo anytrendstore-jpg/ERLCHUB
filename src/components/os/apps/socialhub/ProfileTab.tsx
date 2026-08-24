@@ -90,9 +90,9 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
 
       <div className="flex items-start gap-6 sm:gap-10 mb-6">
         <div className="relative flex-shrink-0">
-          <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 opacity-60 blur-md" />
+          <div className="absolute -inset-2 rounded-full bg-[conic-gradient(from_0deg,#a78bfa,#d946ef,#67e8f9,#a78bfa)] opacity-50 blur-lg" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={avatar} alt={profile.username} className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-[#0a0a0f]" />
+          <img src={avatar} alt={profile.username} className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-[#0a0a0f] shadow-2xl shadow-black/50" />
         </div>
 
         <div className="flex-1 min-w-0 pt-1">
@@ -108,15 +108,15 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
             </h1>
 
             {isSelf ? (
-              <button onClick={() => setEditing(true)} className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors">
+              <button onClick={() => setEditing(true)} className="px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/10 hover:bg-white/[0.12] text-white text-xs font-semibold transition-all duration-200">
                 Editar perfil
               </button>
             ) : (
               <div className="flex items-center gap-2">
                 <button
                   onClick={toggleFollow}
-                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                    isFollowing ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:opacity-90'
+                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                    isFollowing ? 'bg-white/[0.07] border border-white/10 hover:bg-white/[0.12] text-white' : 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:shadow-[0_0_20px_-4px_rgba(217,70,239,0.5)]'
                   }`}
                 >
                   {isFollowing ? <><UserMinus className="w-3.5 h-3.5" /> Dejar de seguir</> : <><UserPlus className="w-3.5 h-3.5" /> Seguir</>}
@@ -124,7 +124,7 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
                 <button
                   onClick={messageUser}
                   disabled={messaging}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/10 hover:bg-white/[0.12] disabled:opacity-50 text-white text-xs font-semibold transition-all duration-200"
                 >
                   <MessageSquare className="w-3.5 h-3.5" /> Mensaje
                 </button>
@@ -135,9 +135,9 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
           <p className="text-white/40 text-sm mb-3">@{profile.username}</p>
 
           <div className="flex items-center gap-6 mb-3">
-            <span className="text-sm"><b className="text-white">{stats.postsCount}</b> <span className="text-white/50">publicaciones</span></span>
-            <span className="text-sm"><b className="text-white">{stats.followersCount}</b> <span className="text-white/50">seguidores</span></span>
-            <span className="text-sm"><b className="text-white">{stats.followingCount}</b> <span className="text-white/50">seguidos</span></span>
+            <span className="text-sm"><b className="text-white tabular-nums">{stats.postsCount}</b> <span className="text-white/50">publicaciones</span></span>
+            <span className="text-sm"><b className="text-white tabular-nums">{stats.followersCount}</b> <span className="text-white/50">seguidores</span></span>
+            <span className="text-sm"><b className="text-white tabular-nums">{stats.followingCount}</b> <span className="text-white/50">seguidos</span></span>
           </div>
 
           {profile.bio && <p className="text-white/70 text-sm whitespace-pre-wrap leading-relaxed">{profile.bio}</p>}
@@ -157,9 +157,9 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 text-white text-xs font-semibold transition-colors"
+                    className="hs-card hover:border-violet-500/30 hover:-translate-y-0.5 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-white text-xs font-semibold transition-all duration-200"
                   >
-                    <Icon className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" /> {link.label}
+                    <Icon className="w-3.5 h-3.5 text-violet-300 flex-shrink-0" /> {link.label}
                   </a>
                 );
               })}
@@ -168,7 +168,7 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 py-3 border-t border-b border-white/10 mb-4 text-white/60 text-xs font-semibold uppercase tracking-wider">
+      <div className="flex items-center justify-center gap-1.5 py-3 border-t border-b border-white/[0.08] mb-4 text-white/60 text-xs font-semibold uppercase tracking-wider">
         <Grid3x3 className="w-4 h-4" /> Publicaciones
       </div>
 

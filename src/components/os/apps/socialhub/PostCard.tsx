@@ -48,11 +48,11 @@ export default function PostCard({
   };
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+    <div className="hs-card hs-card-hover rounded-2xl overflow-hidden">
       <div className="p-4 pb-2 flex items-start gap-3">
-        <button onClick={openAuthor}>
+        <button onClick={openAuthor} className="flex-shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.avatar} alt={post.username} className="w-9 h-9 rounded-full flex-shrink-0" />
+          <img src={post.avatar} alt={post.username} className="w-10 h-10 rounded-full ring-1 ring-white/10" />
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -72,7 +72,7 @@ export default function PostCard({
                 onChange={(e) => setEditDraft(e.target.value)}
                 rows={2}
                 maxLength={500}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-sm text-white resize-none focus:outline-none focus:border-violet-500/50"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-sm text-white resize-none focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
               />
               <div className="flex gap-1.5">
                 <button onClick={submitEdit} className="p-1 rounded bg-violet-600 hover:bg-violet-500 text-white"><Check className="w-3.5 h-3.5" /></button>
@@ -108,13 +108,13 @@ export default function PostCard({
       )}
 
       {post.imageUrl && (
-        <div className="w-full max-h-96 overflow-hidden bg-black/30">
+        <div className="w-full max-h-96 overflow-hidden bg-black/30 border-y border-white/[0.06]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={post.imageUrl} alt="" className="w-full h-full object-cover" />
         </div>
       )}
 
-      <div className="px-4 py-2.5 flex items-center gap-4 border-t border-white/5 mt-1">
+      <div className="px-4 py-2.5 flex items-center gap-4 border-t border-white/[0.06] mt-1">
         <ReactionPicker reactions={reactionsOf(post)} myDiscordId={me?.discordId} onReact={(type) => onReact(post.id, type)} />
         <button onClick={() => setCommentsOpen((v) => !v)} className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white/80 transition-colors">
           <MessageCircle className="w-4 h-4" />
@@ -124,7 +124,7 @@ export default function PostCard({
           <Share2 className={`w-4 h-4 ${shared ? 'text-emerald-400' : 'text-white/50 hover:text-white/80'}`} />
           <span className={shared ? 'text-emerald-400' : 'text-white/50'}>{post.shares.length}</span>
         </button>
-        <button onClick={() => onToggleSave(post.id)} className="ml-auto text-white/50 hover:text-violet-400 transition-colors">
+        <button onClick={() => onToggleSave(post.id)} className="ml-auto text-white/50 hover:text-violet-300 transition-colors">
           <Bookmark className={`w-4 h-4 ${saved ? 'fill-violet-400 text-violet-400' : ''}`} />
         </button>
         <span className="flex items-center gap-1 text-white/30 text-xs">

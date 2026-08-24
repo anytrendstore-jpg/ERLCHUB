@@ -29,7 +29,11 @@ function NavSection({ title, items, view, onNavigate }: {
           <button
             key={item.mode}
             onClick={() => onNavigate(item.mode)}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isActive ? 'bg-violet-600/20 text-violet-400' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+              isActive
+                ? 'bg-gradient-to-r from-violet-600/20 to-fuchsia-600/10 text-violet-200 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.25)]'
+                : 'text-white/55 hover:bg-white/[0.05] hover:text-white'
+            }`}
           >
             <item.icon className="w-4 h-4 flex-shrink-0" />
             {item.label}
@@ -47,18 +51,19 @@ export default function LeftSidebar({ me, view, onNavigate, onOpenOwnProfile }: 
   onOpenOwnProfile: () => void;
 }) {
   return (
-    <div className="w-64 h-full bg-[#0d0d14] border-r border-white/5 flex flex-col flex-shrink-0">
+    <div className="w-64 h-full bg-[#0d0d14]/80 backdrop-blur-xl border-r border-white/[0.06] flex flex-col flex-shrink-0 relative z-10">
       {me && (
-        <button onClick={onOpenOwnProfile} className="p-4 border-b border-white/5 flex items-center gap-3 hover:bg-white/5 transition-colors text-left">
+        <button onClick={onOpenOwnProfile} className="p-4 border-b border-white/[0.06] flex items-center gap-3 hover:bg-white/[0.04] transition-colors text-left group">
           <div className="relative flex-shrink-0">
+            <div className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 opacity-0 group-hover:opacity-60 blur transition-opacity duration-300" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={me.avatarUrl || me.avatar} alt="" className="w-11 h-11 rounded-full" />
-            <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d0d14]" />
+            <img src={me.avatarUrl || me.avatar} alt="" className="relative w-11 h-11 rounded-full ring-1 ring-white/10" />
+            <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0d0d14] shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
           </div>
           <div className="min-w-0">
             <p className="text-white text-sm font-semibold truncate">{me.displayName}</p>
             <p className="text-white/40 text-xs truncate">@{me.username}</p>
-            <p className="text-emerald-400 text-[10px] mt-0.5">● En línea</p>
+            <p className="text-emerald-400 text-[10px] mt-0.5 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> En línea</p>
           </div>
         </button>
       )}

@@ -66,7 +66,7 @@ export default function EventDetail({ eventId, onBack, onOpenProfile }: {
         <ArrowLeft className="w-4 h-4" /> Volver
       </button>
 
-      <div className="h-40 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600/30 to-purple-700/30 relative flex items-center justify-center">
+      <div className="h-44 rounded-2xl overflow-hidden bg-[linear-gradient(135deg,rgba(139,92,246,0.35),rgba(217,70,239,0.2)_50%,rgba(34,211,238,0.15))] shadow-lg shadow-black/30 relative flex items-center justify-center">
         {event.coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={event.coverImage} alt="" className="w-full h-full object-cover" />
@@ -103,7 +103,7 @@ export default function EventDetail({ eventId, onBack, onOpenProfile }: {
                 disabled={busy}
                 onClick={() => rsvp(opt.status)}
                 className={`flex flex-col items-center gap-1.5 py-3 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50 ${
-                  active ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white' : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10'
+                  active ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white' : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10'
                 }`}
               >
                 <opt.icon className="w-4 h-4" /> {opt.label}

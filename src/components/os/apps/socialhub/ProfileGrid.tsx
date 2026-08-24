@@ -8,18 +8,18 @@ import { reactionsOf } from './types';
  * posts de solo texto muestran una tarjeta degradada con el texto truncado. */
 export default function ProfileGrid({ posts, onOpenPost }: { posts: Post[]; onOpenPost: (post: Post) => void }) {
   return (
-    <div className="grid grid-cols-3 gap-1">
+    <div className="grid grid-cols-3 gap-1.5">
       {posts.map((post) => (
         <button
           key={post.id}
           onClick={() => onOpenPost(post)}
-          className="group relative aspect-square overflow-hidden rounded-sm bg-white/5"
+          className="group relative aspect-square overflow-hidden rounded-lg bg-white/5 ring-1 ring-white/[0.06]"
         >
           {post.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={post.imageUrl} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center p-3 bg-gradient-to-br from-violet-600/30 via-[#12121c] to-purple-900/30">
+            <div className="w-full h-full flex items-center justify-center p-3 bg-[linear-gradient(135deg,rgba(139,92,246,0.28),rgba(18,18,28,1)_55%,rgba(217,70,239,0.15))]">
               <p className="text-white/70 text-[11px] text-center leading-snug line-clamp-6">{post.text}</p>
             </div>
           )}

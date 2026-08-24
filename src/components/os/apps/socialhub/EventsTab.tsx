@@ -28,7 +28,7 @@ export default function EventsTab({ onOpenEvent }: { onOpenEvent: (eventId: stri
         <h1 className="text-white text-xl font-bold">Eventos</h1>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white text-xs font-semibold transition-opacity"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:shadow-[0_0_18px_-4px_rgba(217,70,239,0.5)] text-white text-xs font-semibold transition-all duration-200"
         >
           <Plus className="w-3.5 h-3.5" /> Crear evento
         </button>
@@ -47,7 +47,7 @@ export default function EventsTab({ onOpenEvent }: { onOpenEvent: (eventId: stri
             <button
               key={event.id}
               onClick={() => onOpenEvent(event.id)}
-              className="w-full flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/[0.07] hover:border-white/20 transition-colors text-left"
+              className="hs-card hs-card-hover w-full flex items-center gap-4 p-4 rounded-2xl text-left"
             >
               <div className="flex flex-col items-center justify-center w-14 h-14 rounded-xl bg-violet-600/20 flex-shrink-0">
                 <span className="text-violet-300 text-[10px] font-semibold uppercase">{formatEventDate(event.date).split(' ')[1]}</span>

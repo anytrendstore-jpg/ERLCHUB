@@ -29,7 +29,7 @@ export default function ReportModal({ onClose, onSubmit }: { onClose: () => void
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
             placeholder="Cuéntanos qué pasó..."
-            className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+            className="w-full mt-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10"
           />
         )}
       </div>

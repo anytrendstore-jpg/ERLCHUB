@@ -49,10 +49,10 @@ export default function ChatPanel() {
   const onlineContacts = conversations.filter((c) => !c.isGroup && c.isOnline);
 
   return (
-    <div className="hidden 2xl:flex w-72 h-full border-l border-white/5 bg-[#0d0d14] flex-shrink-0 flex-col">
-      <div className="p-4 border-b border-white/5 flex items-center justify-between">
-        <h3 className="text-white text-sm font-bold">Chats</h3>
-        <button onClick={() => openApp('hubchat')} title="Abrir HubChat" className="text-white/40 hover:text-white transition-colors">
+    <div className="hidden 2xl:flex w-72 h-full border-l border-white/[0.06] bg-[#0d0d14]/80 backdrop-blur-xl flex-shrink-0 flex-col relative z-10">
+      <div className="p-4 border-b border-white/[0.06] flex items-center justify-between">
+        <h3 className="text-white/90 text-[13px] font-bold uppercase tracking-wide">Chats</h3>
+        <button onClick={() => openApp('hubchat')} title="Abrir HubChat" className="text-white/40 hover:text-violet-300 transition-colors">
           <MessageSquareText className="w-4 h-4" />
         </button>
       </div>
@@ -64,7 +64,7 @@ export default function ChatPanel() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar en Messenger"
-            className="w-full bg-white/5 border border-white/10 rounded-full pl-7 pr-2 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+            className="w-full bg-white/[0.04] border border-white/10 rounded-full pl-7 pr-2 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/10 transition-all"
           />
         </div>
       </div>
@@ -81,18 +81,18 @@ export default function ChatPanel() {
         ) : (
           <div className="space-y-0.5">
             {filtered.map((c) => (
-              <button key={c.id} onClick={() => openConversation(c.id)} className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/5 transition-colors text-left">
+              <button key={c.id} onClick={() => openConversation(c.id)} className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/[0.06] transition-colors text-left">
                 <div className="relative flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.displayAvatar} alt="" className="w-10 h-10 rounded-full" />
-                  {c.isOnline && <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0d0d14]" />}
+                  <img src={c.displayAvatar} alt="" className="w-10 h-10 rounded-full ring-1 ring-white/10" />
+                  {c.isOnline && <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0d0d14] shadow-[0_0_6px_rgba(52,211,153,0.6)]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-xs font-medium truncate">{c.displayName}</p>
                   <p className="text-white/40 text-[10px] truncate">{c.lastMessage?.text || 'Sin mensajes todavía'}</p>
                 </div>
                 {c.unreadCount > 0 && (
-                  <span className="flex-shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-violet-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  <span className="flex-shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 text-white text-[10px] font-bold flex items-center justify-center shadow-[0_0_6px_rgba(217,70,239,0.5)]">
                     {c.unreadCount}
                   </span>
                 )}
@@ -103,14 +103,14 @@ export default function ChatPanel() {
       </div>
 
       {onlineContacts.length > 0 && (
-        <div className="p-4 border-t border-white/5">
-          <p className="text-white/30 text-[10px] font-semibold uppercase tracking-wider mb-2">Contactos en línea</p>
+        <div className="p-4 border-t border-white/[0.06]">
+          <p className="text-white/40 text-[10px] font-semibold uppercase tracking-wider mb-2">Contactos en línea</p>
           <div className="space-y-1.5">
             {onlineContacts.slice(0, 6).map((c) => (
-              <button key={c.id} onClick={() => openConversation(c.id)} className="w-full flex items-center gap-2 hover:bg-white/5 rounded-lg p-1 transition-colors">
+              <button key={c.id} onClick={() => openConversation(c.id)} className="w-full flex items-center gap-2 hover:bg-white/[0.06] rounded-lg p-1 transition-colors">
                 <div className="relative flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.displayAvatar} alt="" className="w-6 h-6 rounded-full" />
+                  <img src={c.displayAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-white/10" />
                   <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-[#0d0d14]" />
                 </div>
                 <span className="text-white/70 text-xs truncate">{c.displayName}</span>
