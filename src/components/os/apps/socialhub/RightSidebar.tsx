@@ -23,18 +23,27 @@ interface SuggestedPage {
   followersCount: number;
 }
 
-/** Panel derecho: personas/páginas/grupos/eventos sugeridos. Grupos y eventos todavía no
- * existen como entidades reales (llegan en fases posteriores) — se muestran con un estado
- * vacío honesto en vez de contenido inventado. Páginas ya son reales desde la Fase 4. */
-export default function RightSidebar({ onOpenProfile, onOpenPage }: { onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void }) {
+interface SuggestedGroup {
+  id: string;
+  name: string;
+  category?: string;
+  icon?: string;
+  memberCount: number;
+}
+
+/** Panel derecho: personas/páginas/grupos/eventos sugeridos. Eventos todavía no existe
+ * como entidad real (llega en una fase posterior) — se muestra con un estado vacío
+ * honesto en vez de contenido inventado. Páginas y grupos ya son reales. */
+export default function RightSidebar({ onOpenProfile, onOpenPage, onOpenGroup }: { onOpenProfile: (discordId: string) => void; onOpenPage: (pageId: string) => void; onOpenGroup: (groupId: string) => void }) {
   const [people, setPeople] = useState<SuggestedPerson[]>([]);
   const [pages, setPages] = useState<SuggestedPage[]>([]);
+  const [groups, setGroups] = useState<SuggestedGroup[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/social/suggestions', { cache: 'no-store' })
       .then((r) => r.json())
-      .then((d) => { if (d.success) { setPeople(d.people); setPages(d.pages || []); } })
+      .then((d) => { if (d.success) { setPeople(d.people); setPages(d.pages || []); setGroups(d.groups || []); } })
       .finally(() => setLoading(false));
   }, []);
 
@@ -42,6 +51,13 @@ export default function RightSidebar({ onOpenProfile, onOpenPage }: { onOpenProf
     setPages((prev) => prev.filter((p) => p.id !== pageId));
     await fetch('/api/social/pages/follow', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId }),
+    }).catch(() => {});
+  };
+
+  const joinGroup = async (groupId: string) => {
+    setGroups((prev) => prev.filter((g) => g.id !== groupId));
+    await fetch('/api/social/groups/membership', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ groupId, action: 'join' }),
     }).catch(() => {});
   };
 
@@ -132,7 +148,39 @@ export default function RightSidebar({ onOpenProfile, onOpenPage }: { onOpenProf
 
       <section>
         <h3 className="text-white text-sm font-bold mb-3">Grupos sugeridos</h3>
-        <EmptyState icon={Users} title="Todavía no hay grupos" text="Cuando existan grupos en HubSocial, van a aparecer acá." />
+        {loading ? (
+          <Skeleton className="h-9" />
+        ) : groups.length === 0 ? (
+          <p className="text-white/30 text-xs">Todavía no hay grupos para sugerir.</p>
+        ) : (
+          <div className="space-y-3">
+            {groups.map((g) => (
+              <div key={g.id} className="flex items-center gap-2.5">
+                <button onClick={() => onOpenGroup(g.id)} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
+                  {g.icon ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={g.icon} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-lg bg-violet-600/20 flex items-center justify-center flex-shrink-0">
+                      <Users className="w-4 h-4 text-violet-400" />
+                    </div>
+                  )}
+                  <span className="min-w-0">
+                    <span className="block text-white text-xs font-medium truncate">{g.name}</span>
+                    <span className="block text-white/40 text-[10px] truncate">{g.category || `${g.memberCount} miembros`}</span>
+                  </span>
+                </button>
+                <button
+                  onClick={() => joinGroup(g.id)}
+                  title="Unirme"
+                  className="p-1.5 rounded-full bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 transition-colors flex-shrink-0"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section>

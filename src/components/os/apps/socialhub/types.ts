@@ -60,6 +60,36 @@ export interface Page {
   createdAt: string;
 }
 
+export type GroupRole = 'owner' | 'admin' | 'moderator' | 'member';
+
+export interface Group {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  coverImage?: string;
+  icon?: string;
+  privacy: 'public' | 'private';
+  ownerId: string;
+  memberCount: number;
+  postsCount?: number;
+  myRole?: GroupRole;
+  isPending: boolean;
+  isAdmin?: boolean;
+  createdAt: string;
+}
+
+export interface GroupMember {
+  groupId: string;
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatar?: string;
+  role: GroupRole;
+  status: 'active' | 'pending';
+  joinedAt: string;
+}
+
 export interface Post {
   id: string;
   discordId: string;
@@ -67,6 +97,7 @@ export interface Post {
   displayName: string;
   avatar?: string;
   authorPageId?: string;
+  groupId?: string;
   text: string;
   imageUrl?: string;
   /** @deprecated leído para posts viejos sin `reactions` — ver `reactionsOf()` en este archivo. */
@@ -106,15 +137,16 @@ export interface Profile {
   accountType?: 'personal' | 'business' | 'organization';
 }
 
-/** Pestañas de nivel superior de HubSocial. Las que todavía no tienen datos reales (grupos,
- * páginas, eventos, marketplace, videos) se agregan en fases posteriores del rediseño —
- * mientras tanto muestran un estado "Próximamente" honesto, nunca contenido inventado. */
+/** Pestañas de nivel superior de HubSocial. Las que todavía no tienen datos reales (eventos,
+ * marketplace, videos) se agregan en fases posteriores del rediseño — mientras tanto muestran
+ * un estado "Próximamente" honesto, nunca contenido inventado. */
 export type SocialView =
   | { mode: 'feed' }
   | { mode: 'explore' }
   | { mode: 'videos' }
   | { mode: 'marketplace' }
   | { mode: 'groups' }
+  | { mode: 'group'; groupId: string }
   | { mode: 'pages' }
   | { mode: 'page'; pageId: string }
   | { mode: 'events' }

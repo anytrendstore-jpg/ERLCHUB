@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { currentDiscordUser, resolvePlayerIdentity } from '@/lib/whitelistServer';
 import type { SocialPost, SocialProfile, SocialFollow, SocialStory, SocialReport } from '@/lib/socialTypes';
 import type { SocialPage } from '@/lib/socialPageTypes';
+import type { SocialGroup, SocialGroupMember } from '@/lib/socialGroupTypes';
 
 /** username = Roblox verificado (@handle) · displayName = nombre del personaje (RP). */
 export async function currentSocialUser(): Promise<{ id: string; username: string; displayName: string; avatar?: string } | null> {
@@ -84,6 +85,27 @@ export async function socialPagesCollection(): Promise<Collection<SocialPage>> {
 /** ¿Puede este jugador administrar la página (publicar como ella, editarla)? */
 export function isPageAdmin(page: SocialPage, discordId: string): boolean {
   return page.ownerId === discordId || page.admins.includes(discordId);
+}
+
+export async function socialGroupsCollection(): Promise<Collection<SocialGroup>> {
+  const db = await connectToDatabase();
+  const col = db.collection<SocialGroup>('social_groups');
+  await col.createIndex({ id: 1 }, { unique: true }).catch(() => {});
+  await col.createIndex({ name: 'text' }).catch(() => {});
+  return col;
+}
+
+export async function socialGroupMembersCollection(): Promise<Collection<SocialGroupMember>> {
+  const db = await connectToDatabase();
+  const col = db.collection<SocialGroupMember>('social_group_members');
+  await col.createIndex({ groupId: 1, discordId: 1 }, { unique: true }).catch(() => {});
+  await col.createIndex({ discordId: 1 }).catch(() => {});
+  return col;
+}
+
+/** ¿Puede este jugador administrar el grupo (editarlo, aprobar miembros)? */
+export function isGroupAdmin(member: SocialGroupMember | null | undefined): boolean {
+  return Boolean(member && member.status === 'active' && (member.role === 'owner' || member.role === 'admin'));
 }
 
 /** Límite de publicaciones por jugador en la última hora, para frenar el spam. */

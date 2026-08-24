@@ -43,9 +43,9 @@ export function useSocialPosts(endpoint: string | null, me: Profile | null) {
     });
   }, [posts]);
 
-  const publish = useCallback(async (text: string, imageUrl?: string, pageId?: string) => {
+  const publish = useCallback(async (text: string, imageUrl?: string, pageId?: string, groupId?: string) => {
     const res = await fetch('/api/social/posts', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, imageUrl, pageId }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, imageUrl, pageId, groupId }),
     });
     const data = await res.json();
     if (data.success) setPosts((prev) => [data.post, ...prev]);

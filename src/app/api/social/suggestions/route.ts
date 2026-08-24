@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { socialFollowsCollection, socialProfilesCollection, socialPagesCollection, currentSocialUser } from '@/lib/socialServer';
+import { socialFollowsCollection, socialProfilesCollection, socialPagesCollection, socialGroupsCollection, socialGroupMembersCollection, currentSocialUser } from '@/lib/socialServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,9 +7,9 @@ const SUGGESTIONS_LIMIT = 5;
 
 /**
  * "Personas que quizás conozcas" + páginas/grupos/eventos sugeridos para el panel
- * derecho de HubSocial. Páginas/grupos/eventos todavía no existen como entidades
- * (llegan en fases posteriores del rediseño) — se devuelven vacíos a propósito en
- * vez de inventar filas, y el cliente muestra un estado vacío honesto para esos.
+ * derecho de HubSocial. Eventos todavía no existe como entidad (llega en una fase
+ * posterior del rediseño) — se devuelve vacío a propósito en vez de inventar filas,
+ * y el cliente muestra un estado vacío honesto para ese.
  */
 export async function GET() {
   const me = await currentSocialUser();
@@ -73,7 +73,26 @@ export async function GET() {
       .sort((a, b) => b.followersCount - a.followersCount)
       .slice(0, SUGGESTIONS_LIMIT);
 
-    return NextResponse.json({ success: true, people, pages, groups: [], events: [] });
+    // Grupos con más miembros de los que el jugador todavía no forma parte — reales desde el día uno.
+    const groupsCol = await socialGroupsCollection();
+    const groupMembersCol = await socialGroupMembersCollection();
+    const myGroupMemberships = await groupMembersCol.find({ discordId: me.id }).toArray();
+    const myGroupIds = myGroupMemberships.map((m) => m.groupId);
+    const groupDocs = await groupsCol.find(myGroupIds.length > 0 ? { id: { $nin: myGroupIds } } : {}).toArray();
+    const groupMemberCounts = groupDocs.length > 0
+      ? await groupMembersCol.aggregate<{ _id: string; count: number }>([
+          { $match: { groupId: { $in: groupDocs.map((g) => g.id) }, status: 'active' } },
+          { $group: { _id: '$groupId', count: { $sum: 1 } } },
+        ]).toArray()
+      : [];
+    const groupMemberCountById = new Map(groupMemberCounts.map((c) => [c._id, c.count]));
+    const groups = groupDocs
+      .filter((g) => g.privacy === 'public')
+      .map((g) => ({ id: g.id, name: g.name, category: g.category, icon: g.icon, privacy: g.privacy, memberCount: groupMemberCountById.get(g.id) || 0 }))
+      .sort((a, b) => b.memberCount - a.memberCount)
+      .slice(0, SUGGESTIONS_LIMIT);
+
+    return NextResponse.json({ success: true, people, pages, groups, events: [] });
   } catch (error) {
     console.error('Error obteniendo sugerencias:', error);
     return NextResponse.json({ success: false, error: 'No se pudo conectar con la base de datos' }, { status: 500 });

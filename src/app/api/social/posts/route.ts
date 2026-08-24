@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { socialPostsCollection, socialProfilesCollection, socialPagesCollection, currentSocialUser, touchSocialProfile, isSocialSuspended, isOverPostRateLimit, resolveMentions, socialFollowsCollection, isPageAdmin } from '@/lib/socialServer';
+import { socialPostsCollection, socialProfilesCollection, socialPagesCollection, socialGroupsCollection, socialGroupMembersCollection, currentSocialUser, touchSocialProfile, isSocialSuspended, isOverPostRateLimit, resolveMentions, socialFollowsCollection, isPageAdmin } from '@/lib/socialServer';
 import { notifyUser } from '@/lib/notificationsServer';
 
 export const dynamic = 'force-dynamic';
@@ -20,12 +20,28 @@ export async function GET(request: NextRequest) {
   try {
     const discordId = request.nextUrl.searchParams.get('discordId');
     const pageId = request.nextUrl.searchParams.get('pageId');
+    const groupId = request.nextUrl.searchParams.get('groupId');
     const savedOnly = request.nextUrl.searchParams.get('saved') === '1';
     const followingOnly = request.nextUrl.searchParams.get('feed') === 'following';
 
     const filter: Record<string, unknown> = { removedByStaff: { $ne: true } };
     if (discordId) filter.discordId = discordId;
     if (pageId) filter.authorPageId = pageId;
+    if (groupId) {
+      const groupsCol = await socialGroupsCollection();
+      const group = await groupsCol.findOne({ id: groupId });
+      if (!group) return NextResponse.json({ success: false, error: 'El grupo no existe' }, { status: 404 });
+      if (group.privacy === 'private') {
+        const membersCol = await socialGroupMembersCollection();
+        const membership = await membersCol.findOne({ groupId, discordId: user.id, status: 'active' });
+        if (!membership) return NextResponse.json({ success: false, error: 'Este grupo es privado' }, { status: 403 });
+      }
+      filter.groupId = groupId;
+    } else {
+      // El feed general y el perfil nunca muestran posts de grupos (pueden ser privados) —
+      // solo aparecen dentro de la pestaña del propio grupo.
+      filter.groupId = { $exists: false };
+    }
     if (savedOnly) filter.savedBy = user.id;
     if (followingOnly) {
       const followsCol = await socialFollowsCollection();
@@ -79,7 +95,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Has alcanzado el límite de publicaciones por hora. Intenta más tarde.' }, { status: 429 });
     }
 
-    const { text, imageUrl, pageId } = await request.json();
+    const { text, imageUrl, pageId, groupId } = await request.json();
     const trimmed = String(text || '').trim().slice(0, 500);
     if (!trimmed && !imageUrl) {
       return NextResponse.json({ success: false, error: 'Escribe algo o agrega una imagen' }, { status: 400 });
@@ -98,12 +114,23 @@ export async function POST(request: NextRequest) {
       authorPageId = page.id;
     }
 
+    let groupPostId: string | undefined;
+    if (groupId) {
+      const membersCol = await socialGroupMembersCollection();
+      const membership = await membersCol.findOne({ groupId, discordId: user.id, status: 'active' });
+      if (!membership) {
+        return NextResponse.json({ success: false, error: 'Solo los miembros del grupo pueden publicar ahí' }, { status: 403 });
+      }
+      groupPostId = groupId;
+    }
+
     const col = await socialPostsCollection();
     const doc = {
       id: crypto.randomUUID(),
       discordId: user.id,
       ...authorIdentity,
       ...(authorPageId ? { authorPageId } : {}),
+      ...(groupPostId ? { groupId: groupPostId } : {}),
       text: trimmed,
       imageUrl: imageUrl ? String(imageUrl).trim().slice(0, 1000) : undefined,
       likes: [],
