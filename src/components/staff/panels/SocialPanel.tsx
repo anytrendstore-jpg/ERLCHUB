@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Heart, MessageSquare, Star, Trash2, RotateCcw, Search, Flag, CheckCheck, X,
-  BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2, Building2, Plus, UserPlus, UserMinus,
+  BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2, Building2, Plus, UserPlus, UserMinus, Pencil,
 } from "lucide-react";
 import { PanelHeader, Card, LoadingBlock, EmptyState, Chip, TextInput, TextArea, Select, Button, IconButton, Modal, formatDate, useToast } from "@/components/staff/ui";
 
@@ -44,6 +44,7 @@ interface StaffProfile {
   username: string;
   displayName: string;
   avatar?: string;
+  bio?: string;
   verified?: boolean;
   accountType?: "personal" | "business" | "organization";
   suspended?: boolean;
@@ -340,6 +341,8 @@ function AccountsTab() {
   const [suspendingId, setSuspendingId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [editingBio, setEditingBio] = useState<StaffProfile | null>(null);
+  const [bioDraft, setBioDraft] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -378,6 +381,13 @@ function AccountsTab() {
     await act(suspendingId, "suspend", { reason });
     setSuspendingId(null);
     setReason("");
+  };
+
+  const confirmBio = async () => {
+    if (!editingBio) return;
+    await act(editingBio.discordId, "setBio", { bio: bioDraft });
+    setEditingBio(null);
+    setBioDraft("");
   };
 
   return (
@@ -420,6 +430,7 @@ function AccountsTab() {
                     )}
                   </div>
                   <div className="text-[11px] text-slate-600">@{p.username} · {p.discordId}</div>
+                  {p.bio && <div className="text-[11px] text-slate-400 mt-0.5 italic">"{p.bio}"</div>}
                   {p.suspended && p.suspendedReason && <div className="text-[11px] text-rose-400/80 mt-0.5">Motivo: {p.suspendedReason}</div>}
                 </div>
               </div>
@@ -433,6 +444,10 @@ function AccountsTab() {
                       icon={BadgeCheck} label={p.verified ? "Quitar verificación" : "Verificar cuenta"} variant="ghost" size="sm"
                       className={p.verified ? "text-blue-400" : "text-slate-600"}
                       onClick={() => act(p.discordId, p.verified ? "unverify" : "verify")}
+                    />
+                    <IconButton
+                      icon={Pencil} label="Editar biografía" variant="ghost" size="sm" className="text-slate-500"
+                      onClick={() => { setEditingBio(p); setBioDraft(p.bio || ""); }}
                     />
                     <Select
                       value={p.accountType || "personal"}
@@ -466,6 +481,18 @@ function AccountsTab() {
           <TextInput value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo (opcional)" className="w-full" />
         </Modal>
       )}
+
+      {editingBio && (
+        <Modal
+          title={`Editar biografía de @${editingBio.username}`}
+          onClose={() => setEditingBio(null)}
+          size="sm"
+          footer={<Button variant="primary" onClick={confirmBio} className="w-full">Guardar</Button>}
+        >
+          <TextArea value={bioDraft} onChange={(e) => setBioDraft(e.target.value.slice(0, 160))} rows={3} placeholder="Ej: CEO of ERLCᴴᵁᴮ" className="w-full" />
+          <p className="text-[11px] text-slate-600 mt-1 text-right">{bioDraft.length}/160</p>
+        </Modal>
+      )}
     </div>
   );
 }
@@ -479,14 +506,14 @@ interface StaffPage {
   bio?: string;
   avatarUrl?: string;
   verified: boolean;
-  verificationType?: "business" | "organization" | "government";
+  verificationType?: "business" | "organization" | "government" | "official";
   ownerId: string;
   admins: string[];
   followersCount: number;
   createdAt: string;
 }
 
-const VERIFICATION_TYPE_LABEL: Record<string, string> = { business: "Empresa", organization: "Organización", government: "Gubernamental" };
+const VERIFICATION_TYPE_LABEL: Record<string, string> = { business: "Empresa", organization: "Organización", government: "Gubernamental", official: "Oficial ERLCHUB" };
 
 function PagesTab() {
   const toast = useToast();
@@ -594,6 +621,7 @@ function PagesTab() {
                         <option value="business">Empresa</option>
                         <option value="organization">Organización</option>
                         <option value="government">Gubernamental</option>
+                        <option value="official">★ Oficial ERLCHUB</option>
                       </Select>
                     </>
                   )}
@@ -636,7 +664,7 @@ function CreateOfficialPageModal({ onClose, onCreated }: { onClose: () => void; 
   const [category, setCategory] = useState("");
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [verificationType, setVerificationType] = useState<"business" | "organization" | "government">("organization");
+  const [verificationType, setVerificationType] = useState<"business" | "organization" | "government" | "official">("organization");
   const [creating, setCreating] = useState(false);
 
   const submit = async () => {
@@ -669,6 +697,7 @@ function CreateOfficialPageModal({ onClose, onCreated }: { onClose: () => void; 
         <TextArea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Descripción..." rows={3} className="w-full" />
         <TextInput value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="URL de foto de perfil..." className="w-full" />
         <Select value={verificationType} onChange={(e) => setVerificationType(e.target.value as any)} className="w-full">
+          <option value="official">★ Oficial ERLCHUB</option>
           <option value="organization">Organización</option>
           <option value="government">Gubernamental</option>
           <option value="business">Empresa</option>

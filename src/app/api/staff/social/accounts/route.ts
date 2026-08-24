@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { discordId, action, reason, accountType } = await request.json();
+    const { discordId, action, reason, accountType, bio } = await request.json();
     if (!discordId || !action) return NextResponse.json({ success: false, error: 'Faltan datos' }, { status: 400 });
 
     const col = await socialProfilesCollection();
@@ -76,6 +76,13 @@ export async function PATCH(request: NextRequest) {
       await logStaffAction({
         type: 'social_account_type_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
         target: discordId, description: `${actorName} cambió el tipo de cuenta de @${profile.username} a ${accountType}`,
+      });
+    } else if (action === 'setBio') {
+      const trimmed = String(bio || '').trim().slice(0, 160);
+      await col.updateOne({ discordId }, { $set: { bio: trimmed } });
+      await logStaffAction({
+        type: 'social_account_bio_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
+        target: discordId, description: `${actorName} cambió la biografía de @${profile.username}`,
       });
     } else {
       return NextResponse.json({ success: false, error: 'Acción inválida' }, { status: 400 });

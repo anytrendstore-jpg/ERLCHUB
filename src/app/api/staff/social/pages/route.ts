@@ -7,7 +7,7 @@ import type { SocialPageVerificationType } from '@/lib/socialPageTypes';
 
 export const dynamic = 'force-dynamic';
 
-const VERIFICATION_TYPES: SocialPageVerificationType[] = ['business', 'organization', 'government'];
+const VERIFICATION_TYPES: SocialPageVerificationType[] = ['business', 'organization', 'government', 'official'];
 
 /** Lista/busca páginas de HubSocial para gestión desde Staff. */
 export async function GET(request: NextRequest) {

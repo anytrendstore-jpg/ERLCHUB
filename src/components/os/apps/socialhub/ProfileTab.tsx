@@ -1,17 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, UserPlus, UserMinus, MessageSquare, Image as ImageIcon, Info } from 'lucide-react';
+import { ArrowLeft, UserPlus, UserMinus, MessageSquare, Grid3x3, Link as LinkIcon } from 'lucide-react';
 import { useOS } from '@/contexts/OSContext';
-import { Tabs, EmptyState, Skeleton } from '@/components/os/ui';
-import type { Profile } from './types';
+import { EmptyState, Skeleton } from '@/components/os/ui';
+import type { Post, Profile } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import VerifiedBadge from './VerifiedBadge';
-import PostCard from './PostCard';
-
-const VIOLET_ACCENT = '#8b5cf6';
-
-type ProfileSubTab = 'posts' | 'photos' | 'info';
+import EditProfileModal from './EditProfileModal';
+import ProfileGrid from './ProfileGrid';
+import PostDetailModal from './PostDetailModal';
 
 export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpenProfile, onOpenPage }: {
   discordId: string;
@@ -27,11 +25,8 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
   const [isFollowing, setIsFollowing] = useState(false);
   const [isSelf, setIsSelf] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [bio, setBio] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [coverUrl, setCoverUrl] = useState('');
   const [messaging, setMessaging] = useState(false);
-  const [subTab, setSubTab] = useState<ProfileSubTab>('posts');
+  const [openPost, setOpenPost] = useState<Post | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/social/profile?discordId=${discordId}`, { cache: 'no-store' });
@@ -41,16 +36,16 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
       setStats(data.stats);
       setIsFollowing(data.isFollowing);
       setIsSelf(data.isSelf);
-      setBio(data.profile.bio || '');
-      setAvatarUrl(data.profile.avatarUrl || '');
-      setCoverUrl(data.profile.coverUrl || '');
     }
   }, [discordId]);
 
   useEffect(() => { load(); }, [load]);
 
   const { posts, loading, react, toggleSave, share, sendComment, deletePost, reportPost, saveEdit } = useSocialPosts(`/api/social/posts?discordId=${discordId}`, me);
-  const photoPosts = posts.filter((p) => p.imageUrl);
+
+  // Mientras el modal de detalle está abierto, seguir mostrando la versión más nueva de ese post
+  // (con reacciones/comentarios actualizados) en vez de la copia congelada del momento del clic.
+  const liveOpenPost = openPost ? posts.find((p) => p.id === openPost.id) || openPost : null;
 
   const toggleFollow = async () => {
     setIsFollowing((v) => !v);
@@ -76,151 +71,119 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
     }
   };
 
-  const saveProfile = async () => {
-    await fetch('/api/social/profile', {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bio, avatarUrl, coverUrl }),
-    });
-    setEditing(false);
-    await load();
-    if (profile) onUpdatedSelf({ ...profile, bio, avatarUrl, coverUrl });
-  };
-
   if (!profile) {
     return (
-      <div className="max-w-xl mx-auto py-6 px-4 space-y-4">
-        <Skeleton className="h-32 rounded-2xl" />
-        <Skeleton className="h-20 rounded-2xl" />
+      <div className="max-w-2xl mx-auto py-6 px-4 space-y-4">
+        <Skeleton className="h-24 rounded-2xl" />
+        <Skeleton className="h-64 rounded-2xl" />
       </div>
     );
   }
   const avatar = profile.avatarUrl || profile.avatar;
 
   return (
-    <div className="max-w-xl mx-auto py-6 px-4">
-      <button onClick={onBack} className="flex items-center gap-1.5 text-white/50 hover:text-white text-sm mb-3 transition-colors">
+    <div className="max-w-2xl mx-auto py-6 px-4">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-white/50 hover:text-white text-sm mb-5 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Volver
       </button>
 
-      <div className="h-32 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600/30 to-purple-700/30 relative">
-        {profile.coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.coverUrl} alt="" className="w-full h-full object-cover" />
-        )}
-      </div>
+      <div className="flex items-start gap-6 sm:gap-10 mb-6">
+        <div className="relative flex-shrink-0">
+          <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 opacity-60 blur-md" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={avatar} alt={profile.username} className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-[#0a0a0f]" />
+        </div>
 
-      <div className="flex items-end justify-between -mt-8 px-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={avatar} alt={profile.username} className="w-16 h-16 rounded-full border-4 border-[#0a0a0f]" />
-        {isSelf ? (
-          <button onClick={() => setEditing((v) => !v)} className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors">
-            {editing ? 'Cancelar' : 'Editar perfil'}
-          </button>
-        ) : (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={messageUser}
-              disabled={messaging}
-              title="Enviar mensaje"
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white transition-colors"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={toggleFollow}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                isFollowing ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:opacity-90'
-              }`}
-            >
-              {isFollowing ? <><UserMinus className="w-3.5 h-3.5" /> Dejar de seguir</> : <><UserPlus className="w-3.5 h-3.5" /> Seguir</>}
-            </button>
+        <div className="flex-1 min-w-0 pt-1">
+          <div className="flex items-center gap-3 flex-wrap mb-3">
+            <h1 className="text-white text-lg font-bold flex items-center gap-1.5">
+              {profile.displayName}
+              <VerifiedBadge verified={profile.verified} accountType={profile.accountType} size="md" />
+            </h1>
+
+            {isSelf ? (
+              <button onClick={() => setEditing(true)} className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors">
+                Editar perfil
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleFollow}
+                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    isFollowing ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:opacity-90'
+                  }`}
+                >
+                  {isFollowing ? <><UserMinus className="w-3.5 h-3.5" /> Dejar de seguir</> : <><UserPlus className="w-3.5 h-3.5" /> Seguir</>}
+                </button>
+                <button
+                  onClick={messageUser}
+                  disabled={messaging}
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" /> Mensaje
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <div className="px-1 mt-2">
-        <p className="text-white font-bold flex items-center gap-1.5">
-          {profile.displayName}
-          <VerifiedBadge verified={profile.verified} accountType={profile.accountType} />
-        </p>
-        <p className="text-white/40 text-sm">@{profile.username}</p>
-        {!editing && profile.bio && <p className="text-white/60 text-sm mt-1">{profile.bio}</p>}
+          <p className="text-white/40 text-sm mb-3">@{profile.username}</p>
 
-        {editing && (
-          <div className="mt-2 space-y-2">
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Biografía..." maxLength={160} rows={2}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/50" />
-            <input value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="URL de foto de perfil..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
-            <input value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="URL de foto de portada..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
-            <button onClick={saveProfile} className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white text-xs font-semibold transition-opacity">
-              Guardar
-            </button>
+          <div className="flex items-center gap-6 mb-3">
+            <span className="text-sm"><b className="text-white">{stats.postsCount}</b> <span className="text-white/50">publicaciones</span></span>
+            <span className="text-sm"><b className="text-white">{stats.followersCount}</b> <span className="text-white/50">seguidores</span></span>
+            <span className="text-sm"><b className="text-white">{stats.followingCount}</b> <span className="text-white/50">seguidos</span></span>
           </div>
-        )}
 
-        <div className="flex items-center gap-4 mt-3 text-sm">
-          <span className="text-white"><b>{stats.postsCount}</b> <span className="text-white/50">publicaciones</span></span>
-          <span className="text-white"><b>{stats.followersCount}</b> <span className="text-white/50">seguidores</span></span>
-          <span className="text-white"><b>{stats.followingCount}</b> <span className="text-white/50">seguidos</span></span>
+          {profile.bio && <p className="text-white/70 text-sm whitespace-pre-wrap leading-relaxed">{profile.bio}</p>}
+          {profile.website && (
+            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 text-sm mt-1.5 transition-colors">
+              <LinkIcon className="w-3.5 h-3.5" /> {profile.website.replace(/^https?:\/\//, '')}
+            </a>
+          )}
         </div>
       </div>
 
-      <div className="mt-5 mb-4">
-        <Tabs
-          tabs={[{ id: 'posts', label: 'Publicaciones' }, { id: 'photos', label: 'Fotos' }, { id: 'info', label: 'Información' }]}
-          active={subTab}
-          onChange={(id) => setSubTab(id as ProfileSubTab)}
-          accent={VIOLET_ACCENT}
-        />
+      <div className="flex items-center justify-center gap-1.5 py-3 border-t border-b border-white/10 mb-4 text-white/60 text-xs font-semibold uppercase tracking-wider">
+        <Grid3x3 className="w-4 h-4" /> Publicaciones
       </div>
 
-      {subTab === 'posts' && (
-        loading ? (
-          <div className="space-y-4"><Skeleton className="h-40 rounded-2xl" /></div>
-        ) : posts.length === 0 ? (
-          <EmptyState icon={ImageIcon} title="Todavía no hay publicaciones" />
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                me={me}
-                onOpenProfile={onOpenProfile}
-                onOpenPage={onOpenPage}
-                onReact={react}
-                onToggleSave={toggleSave}
-                onShare={share}
-                onSendComment={sendComment}
-                onDelete={deletePost}
-                onReport={reportPost}
-                onSaveEdit={saveEdit}
-              />
-            ))}
-          </div>
-        )
+      {loading ? (
+        <div className="grid grid-cols-3 gap-1">
+          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="aspect-square rounded-sm" />)}
+        </div>
+      ) : posts.length === 0 ? (
+        <EmptyState icon={Grid3x3} title="Todavía no hay publicaciones" text={isSelf ? 'Cuando publiques algo, va a aparecer acá.' : undefined} />
+      ) : (
+        <ProfileGrid posts={posts} onOpenPost={setOpenPost} />
       )}
 
-      {subTab === 'photos' && (
-        photoPosts.length === 0 ? (
-          <EmptyState icon={ImageIcon} title="Sin fotos todavía" />
-        ) : (
-          <div className="grid grid-cols-3 gap-1.5">
-            {photoPosts.map((p) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={p.id} src={p.imageUrl} alt="" className="w-full aspect-square object-cover rounded-lg" />
-            ))}
-          </div>
-        )
+      {editing && profile && (
+        <EditProfileModal
+          profile={profile}
+          onClose={() => setEditing(false)}
+          onSaved={(patch) => {
+            const updated = { ...profile, ...patch };
+            setProfile(updated);
+            onUpdatedSelf(updated);
+          }}
+        />
       )}
 
-      {subTab === 'info' && (
-        profile.bio ? (
-          <p className="text-white/70 text-sm">{profile.bio}</p>
-        ) : (
-          <EmptyState icon={Info} title="Sin información adicional" text={isSelf ? 'Agrega una biografía desde "Editar perfil".' : undefined} />
-        )
+      {liveOpenPost && (
+        <PostDetailModal
+          post={liveOpenPost}
+          me={me}
+          onClose={() => setOpenPost(null)}
+          onOpenProfile={onOpenProfile}
+          onOpenPage={onOpenPage}
+          onReact={react}
+          onToggleSave={toggleSave}
+          onShare={share}
+          onSendComment={sendComment}
+          onDelete={(postId) => { deletePost(postId); setOpenPost(null); }}
+          onReport={reportPost}
+          onSaveEdit={saveEdit}
+        />
       )}
     </div>
   );

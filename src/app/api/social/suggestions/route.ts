@@ -69,7 +69,7 @@ export async function GET() {
     const pagesCol = await socialPagesCollection();
     const pageDocs = await pagesCol.find({ followers: { $ne: me.id } }).toArray();
     const pages = pageDocs
-      .map((p) => ({ id: p.id, name: p.name, category: p.category, avatarUrl: p.avatarUrl, verified: p.verified, followersCount: p.followers.length }))
+      .map((p) => ({ id: p.id, name: p.name, category: p.category, avatarUrl: p.avatarUrl, verified: p.verified, verificationType: p.verificationType, followersCount: p.followers.length }))
       .sort((a, b) => b.followersCount - a.followersCount)
       .slice(0, SUGGESTIONS_LIMIT);
 

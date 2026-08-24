@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { UserPlus, Building2, Users, CalendarDays, BadgeCheck } from 'lucide-react';
+import { UserPlus, Building2, Users, CalendarDays } from 'lucide-react';
 import { EmptyState, Skeleton } from '@/components/os/ui';
+import VerifiedBadge from './VerifiedBadge';
 
 interface SuggestedPerson {
   discordId: string;
@@ -18,6 +19,7 @@ interface SuggestedPage {
   category: string;
   avatarUrl?: string;
   verified: boolean;
+  verificationType?: string;
   followersCount: number;
 }
 
@@ -110,7 +112,7 @@ export default function RightSidebar({ onOpenProfile, onOpenPage }: { onOpenProf
                   )}
                   <span className="min-w-0">
                     <span className="flex items-center gap-1 text-white text-xs font-medium truncate">
-                      {p.name} {p.verified && <BadgeCheck className="w-3 h-3 text-violet-400 flex-shrink-0" />}
+                      {p.name} <VerifiedBadge verified={p.verified} accountType={p.verificationType} />
                     </span>
                     <span className="block text-white/40 text-[10px] truncate">{p.category}</span>
                   </span>

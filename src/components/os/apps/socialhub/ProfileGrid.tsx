@@ -1,0 +1,38 @@
+'use client';
+
+import { Heart, MessageCircle } from 'lucide-react';
+import type { Post } from './types';
+import { reactionsOf } from './types';
+
+/** Grilla de 3 columnas al estilo Instagram — posts con imagen muestran la foto,
+ * posts de solo texto muestran una tarjeta degradada con el texto truncado. */
+export default function ProfileGrid({ posts, onOpenPost }: { posts: Post[]; onOpenPost: (post: Post) => void }) {
+  return (
+    <div className="grid grid-cols-3 gap-1">
+      {posts.map((post) => (
+        <button
+          key={post.id}
+          onClick={() => onOpenPost(post)}
+          className="group relative aspect-square overflow-hidden rounded-sm bg-white/5"
+        >
+          {post.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={post.imageUrl} alt="" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center p-3 bg-gradient-to-br from-violet-600/30 via-[#12121c] to-purple-900/30">
+              <p className="text-white/70 text-[11px] text-center leading-snug line-clamp-6">{post.text}</p>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-200 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100">
+            <span className="flex items-center gap-1 text-white text-xs font-semibold">
+              <Heart className="w-4 h-4 fill-white" /> {reactionsOf(post).length}
+            </span>
+            <span className="flex items-center gap-1 text-white text-xs font-semibold">
+              <MessageCircle className="w-4 h-4 fill-white" /> {post.comments.length}
+            </span>
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}

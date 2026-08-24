@@ -100,6 +100,7 @@ export interface Profile {
   avatarUrl?: string;
   coverUrl?: string;
   bio?: string;
+  website?: string;
   verified?: boolean;
   accountType?: 'personal' | 'business' | 'organization';
 }

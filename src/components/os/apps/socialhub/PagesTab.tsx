@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Building2, Plus, Search, BadgeCheck } from 'lucide-react';
+import { Building2, Plus, Search } from 'lucide-react';
 import { EmptyState, Skeleton } from '@/components/os/ui';
 import CreatePageModal from './CreatePageModal';
+import VerifiedBadge from './VerifiedBadge';
 
 interface PageListItem {
   id: string;
@@ -11,6 +12,7 @@ interface PageListItem {
   category: string;
   avatarUrl?: string;
   verified: boolean;
+  verificationType?: string;
   followersCount: number;
 }
 
@@ -87,7 +89,7 @@ export default function PagesTab({ onOpenPage }: { onOpenPage: (pageId: string) 
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
                   <p className="text-white font-semibold text-sm truncate">{page.name}</p>
-                  {page.verified && <BadgeCheck className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" />}
+                  <VerifiedBadge verified={page.verified} accountType={page.verificationType} />
                 </div>
                 <p className="text-white/40 text-xs truncate">{page.category}</p>
                 <p className="text-white/30 text-[11px]">{page.followersCount} seguidores</p>

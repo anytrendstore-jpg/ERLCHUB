@@ -1,4 +1,6 @@
-export type SocialPageVerificationType = 'business' | 'organization' | 'government';
+/** 'official' es exclusivo de la(s) cuenta(s) del propio ERLCHUB — se distingue
+ * visualmente de una organización/empresa/gobierno verificada cualquiera. */
+export type SocialPageVerificationType = 'business' | 'organization' | 'government' | 'official';
 
 export interface SocialPage {
   id: string;

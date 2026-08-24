@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Building2, BadgeCheck, Phone, Mail, Globe, MapPin, Users } from 'lucide-react';
+import { ArrowLeft, Building2, Phone, Mail, Globe, MapPin, Users } from 'lucide-react';
 import { EmptyState, Skeleton, useToast } from '@/components/os/ui';
 import type { Page, Profile } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import Composer from './Composer';
 import PostCard from './PostCard';
+import VerifiedBadge from './VerifiedBadge';
 
 export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
   pageId: string;
@@ -117,7 +118,7 @@ export default function PageDetail({ pageId, me, onBack, onOpenProfile }: {
       <div className="px-1 mt-2">
         <p className="text-white font-bold flex items-center gap-1.5">
           {page.name}
-          {page.verified && <BadgeCheck className="w-4 h-4 text-violet-400" />}
+          <VerifiedBadge verified={page.verified} accountType={page.verificationType} size="md" />
         </p>
         <p className="text-white/40 text-sm">{page.category}</p>
         {!editing && page.bio && <p className="text-white/60 text-sm mt-1.5">{page.bio}</p>}

@@ -54,6 +54,7 @@ export interface SocialProfile {
   avatarUrl?: string;
   coverUrl?: string;
   bio?: string;
+  website?: string;
   verified?: boolean;
   accountType?: SocialAccountType;
   suspended?: boolean;
