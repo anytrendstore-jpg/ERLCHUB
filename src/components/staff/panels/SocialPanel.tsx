@@ -45,6 +45,7 @@ interface StaffProfile {
   displayName: string;
   avatar?: string;
   bio?: string;
+  title?: string;
   verified?: boolean;
   accountType?: "personal" | "business" | "organization";
   suspended?: boolean;
@@ -343,6 +344,7 @@ function AccountsTab() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editingBio, setEditingBio] = useState<StaffProfile | null>(null);
   const [bioDraft, setBioDraft] = useState("");
+  const [titleDraft, setTitleDraft] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -385,9 +387,22 @@ function AccountsTab() {
 
   const confirmBio = async () => {
     if (!editingBio) return;
-    await act(editingBio.discordId, "setBio", { bio: bioDraft });
+    setBusyId(editingBio.discordId);
+    try {
+      await Promise.all([
+        fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setBio", bio: bioDraft }) }),
+        fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setTitle", title: titleDraft }) }),
+      ]);
+      toast.success("Perfil actualizado");
+      await load();
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setBusyId(null);
+    }
     setEditingBio(null);
     setBioDraft("");
+    setTitleDraft("");
   };
 
   return (
@@ -424,6 +439,7 @@ function AccountsTab() {
                   <div className="text-sm font-semibold text-white flex items-center gap-1.5 truncate">
                     {p.displayName}
                     {p.verified && <BadgeCheck className="h-3.5 w-3.5 text-blue-400 flex-shrink-0" />}
+                    {p.title && <span className="text-violet-400 font-normal text-xs">· {p.title}</span>}
                     {p.suspended && <Chip tone="rose" label="Suspendida" />}
                     {p.accountType && p.accountType !== "personal" && (
                       <Chip tone="blue" label={p.accountType === "business" ? "Empresa" : "Organización"} />
@@ -446,8 +462,8 @@ function AccountsTab() {
                       onClick={() => act(p.discordId, p.verified ? "unverify" : "verify")}
                     />
                     <IconButton
-                      icon={Pencil} label="Editar biografía" variant="ghost" size="sm" className="text-slate-500"
-                      onClick={() => { setEditingBio(p); setBioDraft(p.bio || ""); }}
+                      icon={Pencil} label="Editar perfil" variant="ghost" size="sm" className="text-slate-500"
+                      onClick={() => { setEditingBio(p); setBioDraft(p.bio || ""); setTitleDraft(p.title || ""); }}
                     />
                     <Select
                       value={p.accountType || "personal"}
@@ -484,12 +500,15 @@ function AccountsTab() {
 
       {editingBio && (
         <Modal
-          title={`Editar biografía de @${editingBio.username}`}
+          title={`Editar perfil de @${editingBio.username}`}
           onClose={() => setEditingBio(null)}
           size="sm"
           footer={<Button variant="primary" onClick={confirmBio} className="w-full">Guardar</Button>}
         >
-          <TextArea value={bioDraft} onChange={(e) => setBioDraft(e.target.value.slice(0, 160))} rows={3} placeholder="Ej: CEO of ERLCᴴᵁᴮ" className="w-full" />
+          <label className="text-[11px] text-slate-500 mb-1 block">Título o cargo (sufijo junto al nombre)</label>
+          <TextInput value={titleDraft} onChange={(e) => setTitleDraft(e.target.value.slice(0, 50))} placeholder="Ej: CEO of ERLCᴴᵁᴮ" className="w-full mb-3" />
+          <label className="text-[11px] text-slate-500 mb-1 block">Biografía</label>
+          <TextArea value={bioDraft} onChange={(e) => setBioDraft(e.target.value.slice(0, 160))} rows={3} placeholder="Biografía..." className="w-full" />
           <p className="text-[11px] text-slate-600 mt-1 text-right">{bioDraft.length}/160</p>
         </Modal>
       )}

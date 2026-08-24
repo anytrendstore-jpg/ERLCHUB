@@ -50,12 +50,13 @@ export async function PUT(request: NextRequest) {
   if (!me) return NextResponse.json({ success: false, error: 'Sin sesión' }, { status: 401 });
 
   try {
-    const { bio, avatarUrl, coverUrl, website } = await request.json();
+    const { bio, avatarUrl, coverUrl, website, title } = await request.json();
     const update: Record<string, unknown> = { updatedAt: new Date() };
     if (typeof bio === 'string') update.bio = bio.trim().slice(0, 160);
     if (typeof avatarUrl === 'string') update.avatarUrl = avatarUrl.trim().slice(0, 1000) || undefined;
     if (typeof coverUrl === 'string') update.coverUrl = coverUrl.trim().slice(0, 1000) || undefined;
     if (typeof website === 'string') update.website = website.trim().slice(0, 200) || undefined;
+    if (typeof title === 'string') update.title = title.trim().slice(0, 50) || undefined;
 
     const col = await socialProfilesCollection();
     await col.updateOne(

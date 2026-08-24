@@ -54,6 +54,8 @@ export interface SocialProfile {
   avatarUrl?: string;
   coverUrl?: string;
   bio?: string;
+  /** Sufijo corto junto al nombre, tipo cargo/título (ej: "CEO of ERLCᴴᵁᴮ"). */
+  title?: string;
   website?: string;
   verified?: boolean;
   accountType?: SocialAccountType;

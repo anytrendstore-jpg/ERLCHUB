@@ -15,6 +15,7 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
 }) {
   const toast = useToast();
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl || '');
+  const [title, setTitle] = useState(profile.title || '');
   const [bio, setBio] = useState(profile.bio || '');
   const [website, setWebsite] = useState(profile.website || '');
   const [saving, setSaving] = useState(false);
@@ -26,12 +27,12 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
     try {
       const res = await fetch('/api/social/profile', {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bio, avatarUrl, website }),
+        body: JSON.stringify({ bio, avatarUrl, website, title }),
       });
       const data = await res.json();
       if (data.success) {
         toast.success('Perfil actualizado');
-        onSaved({ bio, avatarUrl: avatarUrl || undefined, website: website || undefined });
+        onSaved({ bio, avatarUrl: avatarUrl || undefined, website: website || undefined, title: title || undefined });
         onClose();
       } else {
         toast.error(data.error || 'No se pudo guardar');
@@ -61,6 +62,19 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
             value={avatarUrl}
             onChange={(e) => setAvatarUrl(e.target.value)}
             placeholder="https://..."
+            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-white/50 text-xs">Título o cargo (aparece junto a tu nombre)</label>
+            <span className={`text-[10px] ${title.length >= 50 ? 'text-amber-400' : 'text-white/30'}`}>{title.length}/50</span>
+          </div>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value.slice(0, 50))}
+            placeholder="Ej: CEO of ERLCᴴᵁᴮ"
             className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
           />
         </div>

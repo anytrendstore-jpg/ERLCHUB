@@ -96,9 +96,14 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
 
         <div className="flex-1 min-w-0 pt-1">
           <div className="flex items-center gap-3 flex-wrap mb-3">
-            <h1 className="text-white text-lg font-bold flex items-center gap-1.5">
+            <h1 className="text-white text-lg font-bold flex items-center gap-1.5 flex-wrap">
               {profile.displayName}
               <VerifiedBadge verified={profile.verified} accountType={profile.accountType} size="md" />
+              {profile.title && (
+                <span className="text-violet-400/90 text-sm font-medium">
+                  <span className="text-white/30 font-normal mx-0.5">·</span>{profile.title}
+                </span>
+              )}
             </h1>
 
             {isSelf ? (
