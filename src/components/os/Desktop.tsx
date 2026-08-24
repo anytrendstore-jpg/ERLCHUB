@@ -231,12 +231,14 @@ export default function Desktop() {
                 onMouseDown={handleMouseDown(app.id)}
                 onContextMenu={(e) => { e.preventDefault(); setMenu({ x: e.clientX, y: e.clientY, appId: app.id }); }}
                 style={{ position: 'absolute', left, top, width: CELL_W - 4, height: CELL_H - 4, zIndex: isDragging ? 50 : 1 }}
-                className={`group flex flex-col items-center justify-start pt-2 gap-1.5 rounded-xl transition-colors duration-150 cursor-pointer select-none
-                  hover:bg-white/10 active:bg-white/15
+                className={`group flex flex-col items-center justify-start pt-2 gap-1.5 rounded-xl transition-all duration-200 cursor-pointer select-none
+                  hover:bg-white/[0.08] hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] active:bg-white/15
                   ${isDragging ? 'bg-white/15 shadow-2xl scale-105' : ''}
                 `}
               >
-                <div className="w-12 h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
+                <div
+                  className="w-12 h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-110 group-hover:drop-shadow-[0_0_10px_color-mix(in_srgb,var(--os-accent)_45%,transparent)]"
+                >
                   <AppIcon appId={app.id} size={ICON_SIZE} />
                 </div>
                 <span className="text-white text-[11px] font-medium drop-shadow-lg line-clamp-2 text-center leading-tight px-1">
@@ -254,7 +256,7 @@ export default function Desktop() {
         {isStaff && (
           <Link
             href="/staff"
-            className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600/90 to-blue-500/80 backdrop-blur-xl border border-blue-400/30 shadow-lg shadow-blue-600/20 hover:from-blue-600 hover:to-blue-500 transition-all group"
+            className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600/90 to-blue-500/80 backdrop-blur-xl border border-blue-400/30 shadow-lg shadow-blue-600/20 hover:from-blue-600 hover:to-blue-500 hover:shadow-xl hover:shadow-blue-600/30 hover:-translate-y-0.5 transition-all duration-200 group"
           >
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
               <ShieldCheck className="w-5 h-5 text-white" />
@@ -269,7 +271,7 @@ export default function Desktop() {
         {/* Tienda ERLC quick access — visible para todas las cuentas */}
         <Link
           href="/tienda"
-          className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#8e00f7]/90 to-[#a64dfa]/80 backdrop-blur-xl border border-[#a64dfa]/30 shadow-lg shadow-[#8e00f7]/20 hover:from-[#8e00f7] hover:to-[#a64dfa] transition-all group"
+          className="flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#8e00f7]/90 to-[#a64dfa]/80 backdrop-blur-xl border border-[#a64dfa]/30 shadow-lg shadow-[#8e00f7]/20 hover:from-[#8e00f7] hover:to-[#a64dfa] hover:shadow-xl hover:shadow-[#8e00f7]/30 hover:-translate-y-0.5 transition-all duration-200 group"
         >
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
             <ShoppingBag className="w-5 h-5 text-white" />
@@ -282,7 +284,7 @@ export default function Desktop() {
 
         {/* Time Widget */}
         <div
-          className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10"
+          className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/30 hover:border-white/20 hover:-translate-y-0.5 transition-all duration-200"
           style={{ boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 20%, transparent) inset' }}
         >
           <div className="text-white/60 text-xs sm:text-sm mb-1">
@@ -296,7 +298,7 @@ export default function Desktop() {
         {/* Quick Stats Widget */}
         {isAppInstalled('hubpay') && (
           <div
-            className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10"
+            className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/30 hover:border-white/20 hover:-translate-y-0.5 transition-all duration-200"
             style={{ boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 20%, transparent) inset' }}
           >
             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
@@ -324,7 +326,7 @@ export default function Desktop() {
         {/* Crypto Wallet Widget */}
         {isAppInstalled('crypto') && (
           <div
-            className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10"
+            className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/30 hover:border-white/20 hover:-translate-y-0.5 transition-all duration-200"
             style={{ boxShadow: '0 -1px 0 0 color-mix(in srgb, var(--os-accent) 20%, transparent) inset' }}
           >
             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">

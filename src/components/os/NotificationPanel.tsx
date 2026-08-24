@@ -110,7 +110,9 @@ export default function NotificationPanel() {
         <div className="max-h-[280px] overflow-y-auto custom-scrollbar">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-white/30">
-              <Info className="w-10 h-10 mb-3 opacity-50" />
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mb-3">
+                <Info className="w-6 h-6 opacity-60" />
+              </div>
               <p className="text-sm">No hay notificaciones</p>
             </div>
           ) : (
@@ -133,7 +135,7 @@ export default function NotificationPanel() {
                           {notification.title}
                         </h4>
                         {!notification.read && (
-                          <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5" style={{ backgroundColor: 'var(--os-accent)' }} />
+                          <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5" style={{ backgroundColor: 'var(--os-accent)', boxShadow: '0 0 6px color-mix(in srgb, var(--os-accent) 70%, transparent)' }} />
                         )}
                       </div>
                       <p className="text-white/50 text-sm mt-0.5 line-clamp-2">{notification.message}</p>

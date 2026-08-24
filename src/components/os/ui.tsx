@@ -27,7 +27,7 @@ const DEFAULT_ACCENT = "var(--os-accent, #3B82F6)";
 
 export function Card({ children, className = "", ...rest }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode; className?: string }) {
   return (
-    <div {...rest} className={`bg-white/5 border border-white/10 rounded-xl ${className}`}>
+    <div {...rest} className={`bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl shadow-[0_4px_20px_-8px_rgba(0,0,0,0.5)] ${className}`}>
       {children}
     </div>
   );
@@ -69,7 +69,7 @@ export function Button({ variant = "primary", size = "md", icon: Icon, loading, 
       {...rest}
       disabled={disabled || loading}
       style={isPrimary ? { background: accent || DEFAULT_ACCENT, boxShadow: `0 8px 20px -8px ${accent || DEFAULT_ACCENT}`, ...style } : style}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${size === "sm" ? "h-8 px-3 text-xs" : "h-10 px-4 text-sm"} ${isPrimary ? "text-white" : OS_VARIANT_BASE[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 hover:-translate-y-px active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${size === "sm" ? "h-8 px-3 text-xs" : "h-10 px-4 text-sm"} ${isPrimary ? "text-white" : OS_VARIANT_BASE[variant]} ${className}`}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : Icon ? <Icon className="h-4 w-4" /> : null}
       {children}
@@ -90,7 +90,7 @@ export function IconButton({ icon: Icon, size = "md", label, active, className =
       {...rest}
       aria-label={label}
       title={label}
-      className={`inline-flex items-center justify-center rounded-lg transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${size === "sm" ? "h-8 w-8" : "h-10 w-10"} ${active ? "bg-white/15 text-white" : "bg-white/8 hover:bg-white/14 text-white/70 hover:text-white"} ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${size === "sm" ? "h-8 w-8" : "h-10 w-10"} ${active ? "bg-white/15 text-white" : "bg-white/8 hover:bg-white/14 text-white/70 hover:text-white"} ${className}`}
     >
       <Icon className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
     </button>
@@ -111,7 +111,7 @@ const OS_BADGE_CLASS: Record<OSBadgeTone, string> = {
 
 export function Badge({ tone, label }: { tone: OSBadgeTone; label: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${OS_BADGE_CLASS[tone]}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ring-inset ring-white/5 ${OS_BADGE_CLASS[tone]}`}>
       {label}
     </span>
   );
@@ -269,7 +269,9 @@ export function Tooltip({ label, children }: { label: string; children: React.Re
 export function EmptyState({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text?: string }) {
   return (
     <div className="py-16 text-center">
-      <Icon className="h-10 w-10 text-white/20 mx-auto mb-3" />
+      <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto mb-3.5">
+        <Icon className="h-7 w-7 text-white/25" />
+      </div>
       <h3 className="text-white/80 text-sm font-medium mb-1">{title}</h3>
       {text && <p className="text-white/40 text-xs max-w-xs mx-auto">{text}</p>}
     </div>

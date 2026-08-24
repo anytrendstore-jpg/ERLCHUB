@@ -154,7 +154,12 @@ export default function Window({ window: win, children }: WindowProps) {
         ${isActive ? 'shadow-2xl shadow-black/60' : 'shadow-xl shadow-black/40'}
         ${win.isMaximized && !isMobile ? '!rounded-none' : ''}
       `}
-      style={{ ...windowStyles, outline: isActive ? '1px solid var(--os-selection)' : undefined, outlineOffset: -1 }}
+      style={{
+        ...windowStyles,
+        outline: isActive ? '1px solid var(--os-selection)' : undefined,
+        outlineOffset: -1,
+        boxShadow: isActive ? '0 25px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px color-mix(in srgb, var(--os-accent) 12%, transparent)' : undefined,
+      }}
       onClick={() => focusWindow(win.id)}
     >
       {/* Title Bar - Responsive */}
@@ -181,14 +186,14 @@ export default function Window({ window: win, children }: WindowProps) {
           {/* Minimize - Hidden on mobile */}
           <button
             onClick={() => minimizeWindow(win.id)}
-            className="hidden sm:flex w-10 sm:w-11 h-10 sm:h-11 items-center justify-center hover:bg-white/10 transition-colors"
+            className="hidden sm:flex w-10 sm:w-11 h-10 sm:h-11 items-center justify-center hover:bg-white/10 transition-colors duration-150"
           >
             <Minus className="w-4 h-4 text-white/70" />
           </button>
           {/* Maximize - Hidden on mobile */}
           <button
             onClick={() => maximizeWindow(win.id)}
-            className="hidden sm:flex w-10 sm:w-11 h-10 sm:h-11 items-center justify-center hover:bg-white/10 transition-colors"
+            className="hidden sm:flex w-10 sm:w-11 h-10 sm:h-11 items-center justify-center hover:bg-white/10 transition-colors duration-150"
           >
             {win.isMaximized
               ? <Minimize2 className="w-4 h-4 text-white/70" />

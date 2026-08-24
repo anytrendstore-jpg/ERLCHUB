@@ -48,18 +48,21 @@ export default function Taskbar() {
     <div
       data-tour="taskbar"
       className="absolute bottom-0 left-0 right-0 h-11 sm:h-12 flex items-stretch border-t border-white/10 backdrop-blur-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.4)] z-[1000]"
-      style={{ backgroundColor: 'color-mix(in srgb, var(--os-taskbar) calc(var(--os-transparency) * 1%), transparent)' }}
+      style={{
+        backgroundColor: 'color-mix(in srgb, var(--os-taskbar) calc(var(--os-transparency) * 1%), transparent)',
+        boxShadow: '0 -4px 24px rgba(0,0,0,0.4), 0 1px 0 0 color-mix(in srgb, var(--os-accent) 18%, transparent) inset',
+      }}
     >
       {/* Start Button */}
       <button
         data-tour="start-button"
         onClick={toggleStartMenu}
-        className={`h-full w-11 sm:w-12 flex items-center justify-center transition-colors duration-150 flex-shrink-0
+        className={`h-full w-11 sm:w-12 flex items-center justify-center transition-all duration-200 flex-shrink-0 group
           ${isStartMenuOpen ? 'shadow-lg' : 'hover:bg-white/10'}
         `}
         style={isStartMenuOpen ? { background: 'color-mix(in srgb, var(--os-accent) 30%, transparent)' } : undefined}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white sm:w-5 sm:h-5">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white sm:w-5 sm:h-5 transition-transform duration-200 group-hover:scale-110">
           <rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
           <rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.7"/>
           <rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.7"/>
@@ -109,7 +112,7 @@ export default function Taskbar() {
                 className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full transition-all duration-200
                   ${isActive ? 'w-5 sm:w-7' : 'w-1.5 bg-white/40 group-hover:w-4'}
                 `}
-                style={isActive ? { background: 'var(--os-accent)' } : undefined}
+                style={isActive ? { background: 'var(--os-accent)', boxShadow: '0 0 8px color-mix(in srgb, var(--os-accent) 70%, transparent)' } : undefined}
               />
             </button>
           );
@@ -150,7 +153,10 @@ export default function Taskbar() {
         >
           <Bell className="w-4 h-4 text-white/70" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-blue-500 text-white text-[8px] sm:text-[9px] font-bold rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center">
+            <span
+              className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 text-white text-[8px] sm:text-[9px] font-bold rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center"
+              style={{ background: 'var(--os-accent)', boxShadow: '0 0 6px color-mix(in srgb, var(--os-accent) 60%, transparent)' }}
+            >
               {unreadCount}
             </span>
           )}
