@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { staffIdentity, logStaffAction } from '@/lib/staffServer';
 import { requirePermission } from '@/lib/permissions/engine';
 import { socialProfilesCollection } from '@/lib/socialServer';
@@ -6,7 +7,7 @@ import type { SocialAccountType } from '@/lib/socialTypes';
 
 export const dynamic = 'force-dynamic';
 
-const ACCOUNT_TYPES: SocialAccountType[] = ['personal', 'business', 'organization'];
+const ACCOUNT_TYPES: SocialAccountType[] = ['personal', 'business', 'organization', 'government', 'official'];
 
 /** Lista/busca perfiles de HubSocial para moderación de cuentas. */
 export async function GET(request: NextRequest) {
@@ -38,13 +39,63 @@ export async function GET(request: NextRequest) {
   }
 }
 
+const USERNAME_MAX = 32;
+const DISPLAY_NAME_MAX = 40;
+
+/** Crea una cuenta institucional (ej: ERLCHUB, LSPD, LSSD) gestionada por staff — no requiere
+ * una sesión real de Discord, el discordId es un identificador sintético fijo. */
+export async function POST(request: NextRequest) {
+  const denied = await requirePermission('hubsocial.moderate');
+  if (denied) return denied;
+
+  try {
+    const { username, displayName, avatarUrl, bio, title, accountType } = await request.json();
+    const trimmedUsername = String(username || '').trim().slice(0, USERNAME_MAX);
+    const trimmedDisplayName = String(displayName || '').trim().slice(0, DISPLAY_NAME_MAX);
+    if (!trimmedUsername || !trimmedDisplayName) {
+      return NextResponse.json({ success: false, error: 'Nombre de usuario y nombre a mostrar son obligatorios' }, { status: 400 });
+    }
+
+    const col = await socialProfilesCollection();
+    const slug = trimmedUsername.toLowerCase().replace(/[^a-z0-9]/g, '') || crypto.randomUUID().slice(0, 8);
+    let discordId = `system-${slug}`;
+    if (await col.findOne({ discordId })) discordId = `system-${slug}-${crypto.randomUUID().slice(0, 4)}`;
+
+    const identity = staffIdentity();
+    if (!identity) return NextResponse.json({ success: false, error: 'Sin sesión de staff' }, { status: 401 });
+
+    const doc = {
+      discordId,
+      username: trimmedUsername,
+      displayName: trimmedDisplayName,
+      avatarUrl: avatarUrl ? String(avatarUrl).trim().slice(0, 1000) : undefined,
+      bio: bio ? String(bio).trim().slice(0, 160) : undefined,
+      title: title ? String(title).trim().slice(0, 50) : undefined,
+      verified: true,
+      accountType: ACCOUNT_TYPES.includes(accountType) ? accountType : 'organization',
+      updatedAt: new Date(),
+    };
+    await col.insertOne(doc);
+
+    await logStaffAction({
+      type: 'social_account_created', category: 'SOCIAL', actor: identity.name, actorId: identity.id,
+      target: discordId, description: `${identity.name} creó la cuenta institucional "@${trimmedUsername}"`,
+    });
+
+    return NextResponse.json({ success: true, profile: doc });
+  } catch (error) {
+    console.error('Error creando cuenta institucional de HubSocial:', error);
+    return NextResponse.json({ success: false, error: 'No se pudo crear la cuenta' }, { status: 500 });
+  }
+}
+
 /** action: 'verify' | 'unverify' | 'suspend' | 'unsuspend' | 'setAccountType' */
 export async function PATCH(request: NextRequest) {
   const denied = await requirePermission('hubsocial.moderate');
   if (denied) return denied;
 
   try {
-    const { discordId, action, reason, accountType, bio, title } = await request.json();
+    const { discordId, action, reason, accountType, bio, title, avatarUrl } = await request.json();
     if (!discordId || !action) return NextResponse.json({ success: false, error: 'Faltan datos' }, { status: 400 });
 
     const col = await socialProfilesCollection();
@@ -90,6 +141,13 @@ export async function PATCH(request: NextRequest) {
       await logStaffAction({
         type: 'social_account_bio_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
         target: discordId, description: `${actorName} cambió el título de @${profile.username} a "${trimmed}"`,
+      });
+    } else if (action === 'setAvatarUrl') {
+      const trimmed = String(avatarUrl || '').trim().slice(0, 1000);
+      await col.updateOne({ discordId }, { $set: { avatarUrl: trimmed } });
+      await logStaffAction({
+        type: 'social_account_bio_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
+        target: discordId, description: `${actorName} cambió la foto de perfil de @${profile.username}`,
       });
     } else {
       return NextResponse.json({ success: false, error: 'Acción inválida' }, { status: 400 });

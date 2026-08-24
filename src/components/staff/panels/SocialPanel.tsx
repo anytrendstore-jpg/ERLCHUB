@@ -6,6 +6,7 @@ import {
   BadgeCheck, Ban, ShieldOff, User as UserIcon, Loader2, Building2, Plus, UserPlus, UserMinus, Pencil, Image as ImageIcon,
 } from "lucide-react";
 import { PanelHeader, Card, LoadingBlock, EmptyState, Chip, TextInput, TextArea, Select, Button, IconButton, Modal, formatDate, useToast } from "@/components/staff/ui";
+import ImageUploadButton from "@/components/ImageUploadButton";
 
 type Tab = "posts" | "reports" | "accounts" | "pages";
 
@@ -44,14 +45,17 @@ interface StaffProfile {
   username: string;
   displayName: string;
   avatar?: string;
+  avatarUrl?: string;
   bio?: string;
   title?: string;
   verified?: boolean;
-  accountType?: "personal" | "business" | "organization";
+  accountType?: "personal" | "business" | "organization" | "government" | "official";
   suspended?: boolean;
   suspendedReason?: string;
   updatedAt: string;
 }
+
+const ACCOUNT_TYPE_LABEL: Record<string, string> = { business: "Empresa", organization: "Organización", government: "Gubernamental", official: "★ Oficial ERLCHUB" };
 
 const TABS: { id: Tab; label: string; icon: typeof Heart }[] = [
   { id: "posts", label: "Publicaciones", icon: MessageSquare },
@@ -345,6 +349,8 @@ function AccountsTab() {
   const [editingBio, setEditingBio] = useState<StaffProfile | null>(null);
   const [bioDraft, setBioDraft] = useState("");
   const [titleDraft, setTitleDraft] = useState("");
+  const [avatarDraft, setAvatarDraft] = useState("");
+  const [showCreate, setShowCreate] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -392,6 +398,7 @@ function AccountsTab() {
       await Promise.all([
         fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setBio", bio: bioDraft }) }),
         fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setTitle", title: titleDraft }) }),
+        fetch("/api/staff/social/accounts", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ discordId: editingBio.discordId, action: "setAvatarUrl", avatarUrl: avatarDraft }) }),
       ]);
       toast.success("Perfil actualizado");
       await load();
@@ -403,6 +410,7 @@ function AccountsTab() {
     setEditingBio(null);
     setBioDraft("");
     setTitleDraft("");
+    setAvatarDraft("");
   };
 
   return (
@@ -418,6 +426,7 @@ function AccountsTab() {
           <option value="business">Empresa/Organización</option>
           <option value="suspended">Suspendidas</option>
         </Select>
+        <Button variant="primary" icon={Plus} onClick={() => setShowCreate(true)}>Crear cuenta institucional</Button>
       </div>
 
       {loading ? <LoadingBlock /> : profiles.length === 0 ? (
@@ -427,9 +436,9 @@ function AccountsTab() {
           {profiles.map((p) => (
             <Card key={p.discordId} className="p-4 flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2.5 min-w-0">
-                {p.avatar ? (
+                {p.avatarUrl || p.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.avatar} alt="" className="w-9 h-9 rounded-full flex-shrink-0" />
+                  <img src={p.avatarUrl || p.avatar} alt="" className="w-9 h-9 rounded-full flex-shrink-0 object-cover" />
                 ) : (
                   <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                     {p.displayName.charAt(0).toUpperCase()}
@@ -442,7 +451,7 @@ function AccountsTab() {
                     {p.title && <span className="text-violet-400 font-normal text-xs">· {p.title}</span>}
                     {p.suspended && <Chip tone="rose" label="Suspendida" />}
                     {p.accountType && p.accountType !== "personal" && (
-                      <Chip tone="blue" label={p.accountType === "business" ? "Empresa" : "Organización"} />
+                      <Chip tone="blue" label={ACCOUNT_TYPE_LABEL[p.accountType] || p.accountType} />
                     )}
                   </div>
                   <div className="text-[11px] text-slate-600">@{p.username} · {p.discordId}</div>
@@ -463,7 +472,7 @@ function AccountsTab() {
                     />
                     <IconButton
                       icon={Pencil} label="Editar perfil" variant="ghost" size="sm" className="text-slate-500"
-                      onClick={() => { setEditingBio(p); setBioDraft(p.bio || ""); setTitleDraft(p.title || ""); }}
+                      onClick={() => { setEditingBio(p); setBioDraft(p.bio || ""); setTitleDraft(p.title || ""); setAvatarDraft(p.avatarUrl || p.avatar || ""); }}
                     />
                     <Select
                       value={p.accountType || "personal"}
@@ -473,6 +482,8 @@ function AccountsTab() {
                       <option value="personal">Personal</option>
                       <option value="business">Empresa</option>
                       <option value="organization">Organización</option>
+                      <option value="government">Gubernamental</option>
+                      <option value="official">★ Oficial ERLCHUB</option>
                     </Select>
                     {p.suspended ? (
                       <IconButton icon={ShieldOff} label="Reactivar cuenta" variant="ghost" size="sm" className="text-emerald-400" onClick={() => act(p.discordId, "unsuspend")} />
@@ -505,6 +516,12 @@ function AccountsTab() {
           size="sm"
           footer={<Button variant="primary" onClick={confirmBio} className="w-full">Guardar</Button>}
         >
+          <label className="text-[11px] text-slate-500 mb-1 block">URL de foto de perfil</label>
+          <div className="flex items-center gap-2 mb-3">
+            <TextInput value={avatarDraft} onChange={(e) => setAvatarDraft(e.target.value)} placeholder="/LSPDSOCIAL.png" className="flex-1 min-w-0" />
+            <ImageUploadButton aspect={1} shape="circle" onUploaded={setAvatarDraft} onError={toast.error} className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#0B0F17] border border-[#1F2937] hover:border-blue-500 text-slate-400 hover:text-white transition-colors flex-shrink-0" />
+          </div>
+
           <label className="text-[11px] text-slate-500 mb-1 block">Título o cargo (sufijo junto al nombre)</label>
           <TextInput value={titleDraft} onChange={(e) => setTitleDraft(e.target.value.slice(0, 50))} placeholder="Ej: CEO of ERLCᴴᵁᴮ" className="w-full mb-3" />
           <label className="text-[11px] text-slate-500 mb-1 block">Biografía</label>
@@ -512,7 +529,90 @@ function AccountsTab() {
           <p className="text-[11px] text-slate-600 mt-1 text-right">{bioDraft.length}/160</p>
         </Modal>
       )}
+
+      {showCreate && <CreateOfficialAccountModal onClose={() => setShowCreate(false)} onCreated={() => { setShowCreate(false); load(); }} />}
     </div>
+  );
+}
+
+function CreateOfficialAccountModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const toast = useToast();
+  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [bio, setBio] = useState("");
+  const [title, setTitle] = useState("");
+  const [accountType, setAccountType] = useState<"business" | "organization" | "government" | "official">("organization");
+  const [creating, setCreating] = useState(false);
+
+  const submit = async () => {
+    if (!username.trim() || !displayName.trim()) {
+      toast.error("Nombre de usuario y nombre a mostrar son obligatorios");
+      return;
+    }
+    setCreating(true);
+    try {
+      const res = await fetch("/api/staff/social/accounts", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username.trim(), displayName: displayName.trim(), avatarUrl: avatarUrl.trim() || undefined, bio: bio.trim() || undefined, title: title.trim() || undefined, accountType }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Cuenta "@${data.profile.username}" creada`);
+        onCreated();
+      } else {
+        toast.error(data.error || "No se pudo crear la cuenta");
+      }
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return (
+    <Modal
+      title="Crear cuenta institucional"
+      description="No requiere una sesión real de Discord — se gestiona íntegramente desde este panel."
+      onClose={onClose}
+      size="sm"
+      footer={<Button variant="primary" onClick={submit} loading={creating} className="w-full">Crear cuenta</Button>}
+    >
+      <div className="space-y-3">
+        <div>
+          <label className="text-[11px] text-slate-500 mb-1 block">Nombre de usuario (@) *</label>
+          <TextInput value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Ej: LSPD" className="w-full" />
+        </div>
+        <div>
+          <label className="text-[11px] text-slate-500 mb-1 block">Nombre a mostrar *</label>
+          <TextInput value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Ej: Los Santos Police Department" className="w-full" />
+        </div>
+        <div>
+          <label className="text-[11px] text-slate-500 mb-1 block">URL de foto de perfil</label>
+          <div className="flex items-center gap-2">
+            <TextInput value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="/LSPDSOCIAL.png" className="flex-1 min-w-0" />
+            <ImageUploadButton aspect={1} shape="circle" onUploaded={setAvatarUrl} onError={toast.error} className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#0B0F17] border border-[#1F2937] hover:border-blue-500 text-slate-400 hover:text-white transition-colors flex-shrink-0" />
+          </div>
+        </div>
+        <div>
+          <label className="text-[11px] text-slate-500 mb-1 block">Título o cargo (sufijo junto al nombre)</label>
+          <TextInput value={title} onChange={(e) => setTitle(e.target.value.slice(0, 50))} placeholder="Opcional" className="w-full" />
+        </div>
+        <div>
+          <label className="text-[11px] text-slate-500 mb-1 block">Biografía</label>
+          <TextArea value={bio} onChange={(e) => setBio(e.target.value.slice(0, 160))} rows={2} placeholder="Opcional" className="w-full" />
+        </div>
+        <div>
+          <label className="text-[11px] text-slate-500 mb-1 block">Tipo de cuenta</label>
+          <Select value={accountType} onChange={(e) => setAccountType(e.target.value as typeof accountType)} className="w-full">
+            <option value="business">Empresa</option>
+            <option value="organization">Organización</option>
+            <option value="government">Gubernamental</option>
+            <option value="official">★ Oficial ERLCHUB</option>
+          </Select>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
@@ -551,6 +651,8 @@ function PagesTab() {
   const [showCreate, setShowCreate] = useState(false);
   const [adminDraftByPage, setAdminDraftByPage] = useState<Record<string, string>>({});
   const [editingLinks, setEditingLinks] = useState<StaffPage | null>(null);
+  const [deletingPage, setDeletingPage] = useState<StaffPage | null>(null);
+  const [avatarDraft, setAvatarDraft] = useState("");
   const [coverDraft, setCoverDraft] = useState("");
   const [linksDraft, setLinksDraft] = useState<StaffPageLink[]>([{ label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }]);
 
@@ -585,6 +687,22 @@ function PagesTab() {
     }
   };
 
+  const confirmDeletePage = async () => {
+    if (!deletingPage) return;
+    setBusyId(deletingPage.id);
+    try {
+      const res = await fetch("/api/staff/social/pages", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId: deletingPage.id }) });
+      const data = await res.json();
+      if (data.success) toast.success("Página eliminada"); else toast.error(data.error || "No se pudo eliminar");
+      await load();
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setBusyId(null);
+    }
+    setDeletingPage(null);
+  };
+
   const addAdmin = async (pageId: string) => {
     const discordId = (adminDraftByPage[pageId] || "").trim();
     if (!discordId) return;
@@ -594,6 +712,7 @@ function PagesTab() {
 
   const openLinksEditor = (p: StaffPage) => {
     setEditingLinks(p);
+    setAvatarDraft(p.avatarUrl || "");
     setCoverDraft(p.coverUrl || "");
     const existing = p.pinnedLinks || [];
     setLinksDraft([0, 1, 2].map((i) => existing[i] || { label: "", url: "" }));
@@ -604,6 +723,7 @@ function PagesTab() {
     setBusyId(editingLinks.id);
     try {
       await Promise.all([
+        fetch("/api/staff/social/pages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId: editingLinks.id, action: "setAvatarUrl", avatarUrl: avatarDraft }) }),
         fetch("/api/staff/social/pages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId: editingLinks.id, action: "setCoverUrl", coverUrl: coverDraft }) }),
         fetch("/api/staff/social/pages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pageId: editingLinks.id, action: "setPinnedLinks", pinnedLinks: linksDraft }) }),
       ]);
@@ -671,6 +791,10 @@ function PagesTab() {
                         icon={ImageIcon} label="Portada y botones anclados" variant="ghost" size="sm" className="text-slate-500"
                         onClick={() => openLinksEditor(p)}
                       />
+                      <IconButton
+                        icon={Trash2} label="Eliminar página" variant="ghost" size="sm" className="text-rose-400"
+                        onClick={() => setDeletingPage(p)}
+                      />
                       <Select
                         value={p.verificationType || "organization"}
                         onChange={(e) => act(p.id, "setVerificationType", { verificationType: e.target.value })}
@@ -715,13 +839,22 @@ function PagesTab() {
 
       {editingLinks && (
         <Modal
-          title={`Portada y accesos de "${editingLinks.name}"`}
+          title={`Logo, portada y accesos de "${editingLinks.name}"`}
           onClose={() => setEditingLinks(null)}
           size="sm"
           footer={<Button variant="primary" onClick={confirmLinks} className="w-full">Guardar</Button>}
         >
+          <label className="text-[11px] text-slate-500 mb-1 block">URL de logo (avatar)</label>
+          <div className="flex items-center gap-2 mb-3">
+            <TextInput value={avatarDraft} onChange={(e) => setAvatarDraft(e.target.value)} placeholder="/LogoLSPD.png" className="flex-1 min-w-0" />
+            <ImageUploadButton aspect={1} shape="rect" onUploaded={setAvatarDraft} onError={toast.error} className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#0B0F17] border border-[#1F2937] hover:border-blue-500 text-slate-400 hover:text-white transition-colors flex-shrink-0" />
+          </div>
+
           <label className="text-[11px] text-slate-500 mb-1 block">URL de portada</label>
-          <TextInput value={coverDraft} onChange={(e) => setCoverDraft(e.target.value)} placeholder="/bannererlchub.png" className="w-full mb-3" />
+          <div className="flex items-center gap-2 mb-3">
+            <TextInput value={coverDraft} onChange={(e) => setCoverDraft(e.target.value)} placeholder="/bannererlchub.png" className="flex-1 min-w-0" />
+            <ImageUploadButton aspect={3} shape="rect" onUploaded={setCoverDraft} onError={toast.error} className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#0B0F17] border border-[#1F2937] hover:border-blue-500 text-slate-400 hover:text-white transition-colors flex-shrink-0" />
+          </div>
 
           <label className="text-[11px] text-slate-500 mb-1 block">Botones anclados (hasta 3)</label>
           <div className="space-y-2">
@@ -742,6 +875,17 @@ function PagesTab() {
               </div>
             ))}
           </div>
+        </Modal>
+      )}
+
+      {deletingPage && (
+        <Modal
+          title={`Eliminar página "${deletingPage.name}"`}
+          onClose={() => setDeletingPage(null)}
+          size="sm"
+          footer={<Button variant="danger" onClick={confirmDeletePage} className="w-full">Confirmar eliminación</Button>}
+        >
+          <p className="text-sm text-slate-400">Esta acción no se puede deshacer. Se van a perder sus seguidores y administradores asignados.</p>
         </Modal>
       )}
     </div>
@@ -785,7 +929,10 @@ function CreateOfficialPageModal({ onClose, onCreated }: { onClose: () => void; 
         <TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre (ej: Los Santos Police Department)" className="w-full" />
         <TextInput value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Categoría (ej: Departamento, Servidor oficial)" className="w-full" />
         <TextArea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Descripción..." rows={3} className="w-full" />
-        <TextInput value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="URL de foto de perfil..." className="w-full" />
+        <div className="flex items-center gap-2">
+          <TextInput value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="URL de foto de perfil..." className="flex-1 min-w-0" />
+          <ImageUploadButton aspect={1} shape="rect" onUploaded={setAvatarUrl} onError={toast.error} className="flex items-center justify-center h-10 w-10 rounded-lg bg-[#0B0F17] border border-[#1F2937] hover:border-blue-500 text-slate-400 hover:text-white transition-colors flex-shrink-0" />
+        </div>
         <Select value={verificationType} onChange={(e) => setVerificationType(e.target.value as any)} className="w-full">
           <option value="official">★ Oficial ERLCHUB</option>
           <option value="organization">Organización</option>

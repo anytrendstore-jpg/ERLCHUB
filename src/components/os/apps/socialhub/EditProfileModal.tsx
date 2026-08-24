@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Camera } from 'lucide-react';
 import { Modal, Button, useToast } from '@/components/os/ui';
+import ImageUploadButton from '@/components/ImageUploadButton';
 import type { Profile } from './types';
 
 const VIOLET_ACCENT = '#8b5cf6';
@@ -58,12 +59,15 @@ export default function EditProfileModal({ profile, onClose, onSaved }: {
       <div className="space-y-4">
         <div>
           <label className="text-white/50 text-xs mb-1 block">URL de foto de perfil</label>
-          <input
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            placeholder="https://..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+              placeholder="https://..."
+              className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50"
+            />
+            <ImageUploadButton aspect={1} shape="circle" onUploaded={setAvatarUrl} onError={toast.error} />
+          </div>
         </div>
 
         <div>

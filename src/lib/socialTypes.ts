@@ -47,7 +47,9 @@ export interface SocialPost {
   createdAt: Date;
 }
 
-export type SocialAccountType = 'personal' | 'business' | 'organization';
+/** 'government'/'official' son para cuentas institucionales gestionadas por staff (ej: ERLCHUB,
+ * LSPD, LSSD) — no requieren una sesión real de Discord, se crean y editan desde el panel staff. */
+export type SocialAccountType = 'personal' | 'business' | 'organization' | 'government' | 'official';
 
 export interface SocialProfile {
   discordId: string;

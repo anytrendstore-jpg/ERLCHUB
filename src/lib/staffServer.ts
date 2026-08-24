@@ -35,6 +35,7 @@ export type StaffActionType =
   | 'social_account_suspended'
   | 'social_account_type_changed'
   | 'social_account_bio_changed'
+  | 'social_account_created'
   | 'social_page_created'
   | 'social_page_verified'
   | 'social_page_type_changed'

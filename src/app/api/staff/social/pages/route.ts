@@ -85,7 +85,7 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { pageId, action, verificationType, discordId, coverUrl, pinnedLinks } = await request.json();
+    const { pageId, action, verificationType, discordId, coverUrl, pinnedLinks, avatarUrl } = await request.json();
     if (!pageId || !action) return NextResponse.json({ success: false, error: 'Faltan datos' }, { status: 400 });
 
     const col = await socialPagesCollection();
@@ -119,6 +119,13 @@ export async function PATCH(request: NextRequest) {
         type: 'social_page_admin_removed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
         target: pageId, description: `${actorName} quitó a ${discordId} como administrador de "${page.name}"`,
       });
+    } else if (action === 'setAvatarUrl') {
+      const trimmed = String(avatarUrl || '').trim().slice(0, 1000);
+      await col.updateOne({ id: pageId }, { $set: { avatarUrl: trimmed } });
+      await logStaffAction({
+        type: 'social_page_details_changed', category: 'SOCIAL', actor: actorName, actorId: identity?.id,
+        target: pageId, description: `${actorName} cambió el logo de "${page.name}"`,
+      });
     } else if (action === 'setCoverUrl') {
       const trimmed = String(coverUrl || '').trim().slice(0, 1000);
       await col.updateOne({ id: pageId }, { $set: { coverUrl: trimmed } });
@@ -144,5 +151,33 @@ export async function PATCH(request: NextRequest) {
   } catch (error) {
     console.error('Error gestionando página de HubSocial:', error);
     return NextResponse.json({ success: false, error: 'No se pudo actualizar' }, { status: 500 });
+  }
+}
+
+/** Elimina una página de HubSocial (ej: se reemplaza por una cuenta institucional). */
+export async function DELETE(request: NextRequest) {
+  const denied = await requirePermission('hubsocial.moderate');
+  if (denied) return denied;
+
+  try {
+    const { pageId } = await request.json();
+    if (!pageId) return NextResponse.json({ success: false, error: 'Falta el id' }, { status: 400 });
+
+    const col = await socialPagesCollection();
+    const page = await col.findOne({ id: pageId });
+    if (!page) return NextResponse.json({ success: false, error: 'Página no encontrada' }, { status: 404 });
+
+    await col.deleteOne({ id: pageId });
+
+    const identity = staffIdentity();
+    await logStaffAction({
+      type: 'social_page_details_changed', category: 'SOCIAL', actor: identity?.name || 'Staff', actorId: identity?.id,
+      target: pageId, description: `${identity?.name || 'Staff'} eliminó la página "${page.name}"`,
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error eliminando página de HubSocial:', error);
+    return NextResponse.json({ success: false, error: 'No se pudo eliminar' }, { status: 500 });
   }
 }

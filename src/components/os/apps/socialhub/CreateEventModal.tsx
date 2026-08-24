@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Modal, Button, useToast } from '@/components/os/ui';
+import ImageUploadButton from '@/components/ImageUploadButton';
 
 const VIOLET_ACCENT = '#8b5cf6';
 
@@ -70,7 +71,10 @@ export default function CreateEventModal({ onClose, onCreated }: {
         </div>
         <div>
           <label className="text-white/50 text-xs mb-1 block">URL de portada</label>
-          <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="https://..." className={inputClass} />
+          <div className="flex items-center gap-2">
+            <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="https://..." className={`flex-1 min-w-0 ${inputClass}`} />
+            <ImageUploadButton aspect={3} shape="rect" onUploaded={setCoverImage} onError={toast.error} />
+          </div>
         </div>
       </div>
       <Button onClick={submit} loading={creating} accent={VIOLET_ACCENT} className="w-full mt-4">

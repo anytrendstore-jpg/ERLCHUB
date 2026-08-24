@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Users, Lock, Globe, Check, X, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { EmptyState, Skeleton, useToast } from '@/components/os/ui';
+import ImageUploadButton from '@/components/ImageUploadButton';
 import type { Group, GroupMember, Profile } from './types';
 import { useSocialPosts } from './useSocialPosts';
 import Composer from './Composer';
@@ -178,10 +179,16 @@ export default function GroupDetail({ groupId, me, onBack, onOpenProfile, onOpen
               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-violet-500/50" />
             <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Categoría..."
               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
-            <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="URL de ícono..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
-            <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="URL de portada..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+            <div className="flex items-center gap-2">
+              <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="URL de ícono..."
+                className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+              <ImageUploadButton aspect={1} shape="rect" onUploaded={setIcon} onError={toast.error} />
+            </div>
+            <div className="flex items-center gap-2">
+              <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="URL de portada..."
+                className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-violet-500/50" />
+              <ImageUploadButton aspect={3} shape="rect" onUploaded={setCoverImage} onError={toast.error} />
+            </div>
             <button onClick={saveDetails} className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white text-xs font-semibold transition-opacity">
               Guardar
             </button>

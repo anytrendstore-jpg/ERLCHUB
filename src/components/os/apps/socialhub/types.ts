@@ -139,7 +139,7 @@ export interface Post {
   viewedBy: string[];
   editedAt?: string;
   verified?: boolean;
-  accountType?: 'personal' | 'business' | 'organization';
+  accountType?: 'personal' | 'business' | 'organization' | 'government' | 'official';
   createdAt: string;
 }
 
@@ -164,7 +164,7 @@ export interface Profile {
   title?: string;
   website?: string;
   verified?: boolean;
-  accountType?: 'personal' | 'business' | 'organization';
+  accountType?: 'personal' | 'business' | 'organization' | 'government' | 'official';
 }
 
 /** Pestañas de nivel superior de HubSocial. Las que todavía no tienen datos reales (marketplace,

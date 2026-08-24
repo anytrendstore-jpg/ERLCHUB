@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Modal, Button, useToast } from '@/components/os/ui';
+import ImageUploadButton from '@/components/ImageUploadButton';
 
 const VIOLET_ACCENT = '#8b5cf6';
 
@@ -59,7 +60,10 @@ export default function CreateGroupModal({ onClose, onCreated }: {
         </div>
         <div>
           <label className="text-white/50 text-xs mb-1 block">URL de ícono</label>
-          <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="https://..." className={inputClass} />
+          <div className="flex items-center gap-2">
+            <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="https://..." className={`flex-1 min-w-0 ${inputClass}`} />
+            <ImageUploadButton aspect={1} shape="rect" onUploaded={setIcon} onError={toast.error} />
+          </div>
         </div>
         <div>
           <label className="text-white/50 text-xs mb-1 block">Privacidad</label>
