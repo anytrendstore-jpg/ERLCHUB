@@ -35,6 +35,8 @@ export interface CallSuspect {
   name: string;
 }
 
+export type EmergencyFaction = "Policía" | "Sheriff" | "Bomberos";
+
 export interface Call {
   id: string;
   callNumber: string;
@@ -46,6 +48,12 @@ export interface Call {
   description: string;
   caller?: string;
   assignedUnits: string[];
+  /** Presente cuando la llamada la originó un jugador desde la app 911 (no un despachador a mano). */
+  source?: "citizen" | "dispatch";
+  /** discordId de quien llamó — para que el ciudadano vea el estado de sus propias llamadas. Se guarda incluso si `anonymous` es true, pero nunca se expone al despacho en ese caso. */
+  callerId?: string;
+  faction?: EmergencyFaction;
+  anonymous?: boolean;
   createdAt: Date;
   updatedAt: Date;
   resolvedAt?: Date;

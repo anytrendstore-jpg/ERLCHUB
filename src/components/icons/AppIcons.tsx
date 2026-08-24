@@ -30,6 +30,29 @@ export const HubPayIcon: React.FC<IconProps> = ({ className = '', size = 24, act
   </svg>
 );
 
+// Emergencias 911 - Icono de teléfono de emergencia
+export const Emergency911Icon: React.FC<IconProps> = ({ className = '', size = 24, active = false }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    className={`transition-all duration-300 ${active ? 'scale-110' : 'hover:scale-105'} ${className}`}
+  >
+    <defs>
+      <linearGradient id="emergency911-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#F87171" />
+        <stop offset="100%" stopColor="#DC2626" />
+      </linearGradient>
+    </defs>
+    <circle cx="12" cy="12" r="11" fill="url(#emergency911-grad)" />
+    <path
+      d="M8 7.5c0-.6.4-1 1-1h1.2c.5 0 .9.3 1 .8l.5 2c.1.4 0 .8-.3 1.1l-.9.9c.7 1.4 1.8 2.5 3.2 3.2l.9-.9c.3-.3.7-.4 1.1-.3l2 .5c.5.1.8.5.8 1V16c0 .6-.4 1-1 1h-1c-4.4 0-8-3.6-8-8v-1.5Z"
+      fill="white"
+    />
+  </svg>
+);
+
 // VPS Manager - Icono de servidor/escudo
 export const VPSIcon: React.FC<IconProps> = ({ className = '', size = 24, active = false }) => (
   <svg
@@ -726,6 +749,7 @@ export const AppIcon: React.FC<{
   const icons: Record<string, React.FC<IconProps>> = {
     hubpay: HubPayIcon,
     hubchat: HubChatIcon,
+    emergency911: Emergency911Icon,
     mdt: MDTIcon,
     amazon: AmazonLogoIcon,
     deepweb: OnionIcon,

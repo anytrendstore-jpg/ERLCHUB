@@ -10,6 +10,7 @@ import NotificationPanel from './NotificationPanel';
 import Window from './Window';
 import HubPayApp from './apps/HubPayApp';
 import HubChatApp from './apps/HubChatApp';
+import Emergency911App from './apps/Emergency911App';
 import MDTApp from './apps/MDTApp';
 import { DepartmentProvider } from '@/contexts/DepartmentContext';
 import { DEPARTMENTS, getDepartment, type DepartmentConfig } from '@/lib/departments';
@@ -233,6 +234,8 @@ function OSContent() {
         return <HubPayApp />;
       case 'hubchat':
         return <HubChatApp />;
+      case 'emergency911':
+        return <Emergency911App />;
       case 'mdt':
         return <DepartmentProvider department={DEPARTMENTS.lspd}><MDTApp /></DepartmentProvider>;
       case 'amazon':

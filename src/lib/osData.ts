@@ -78,6 +78,16 @@ export const osApps: OSApp[] = [
     description: 'Mensajería del servidor'
   },
   {
+    id: 'emergency911',
+    name: '911',
+    icon: 'emergency911',
+    component: 'Emergency911App',
+    isLocked: false,
+    requiresStaff: false,
+    category: 'roleplay',
+    description: 'Reporta emergencias a Policía, Sheriff y Bomberos'
+  },
+  {
     id: 'amazon',
     name: 'MercadoLibre',
     icon: 'amazon',

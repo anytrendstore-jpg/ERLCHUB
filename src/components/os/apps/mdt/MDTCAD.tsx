@@ -111,6 +111,9 @@ export function MDTCADContent() {
                     <span className="flex items-center gap-1.5 min-w-0">
                       <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${PRIORITY_DOT[call.priority]}`} />
                       <span className="text-white text-xs font-bold uppercase truncate">{call.title || call.type}</span>
+                      {call.source === "citizen" && (
+                        <span className="flex-shrink-0 text-[9px] font-bold text-red-300 bg-red-500/15 ring-1 ring-red-500/30 rounded px-1 py-0.5">911</span>
+                      )}
                     </span>
                     <span className="text-slate-500 text-[10px] flex-shrink-0">#{call.callNumber.replace(/\D/g, "").slice(-4) || call.callNumber}</span>
                   </div>
