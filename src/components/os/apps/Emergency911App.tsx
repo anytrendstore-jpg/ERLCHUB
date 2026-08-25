@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   PhoneCall,
   Shield,
@@ -17,6 +17,8 @@ import {
   Radio,
   Siren,
   ChevronRight,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
 
 type CallType =
@@ -115,6 +117,9 @@ export default function Emergency911App() {
   const [calls, setCalls] = useState<EmergencyCall[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  const typeMenuRef = useRef<HTMLDivElement>(null);
+
   const loadHistory = useCallback(() => {
     fetch('/api/emergency/calls', { cache: 'no-store' })
       .then((r) => r.json())
@@ -130,7 +135,22 @@ export default function Emergency911App() {
 
   useEffect(() => {
     if (!TYPES_BY_FACTION[faction].includes(type)) setType(TYPES_BY_FACTION[faction][0]);
+    setTypeMenuOpen(false);
   }, [faction]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!typeMenuOpen) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (typeMenuRef.current && !typeMenuRef.current.contains(e.target as Node)) setTypeMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setTypeMenuOpen(false); };
+    document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [typeMenuOpen]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,13 +292,50 @@ export default function Emergency911App() {
                     <span className={`w-1.5 h-1.5 rounded-full ${pStyle.dot} animate-pulse`} /> PRIORIDAD {pStyle.label}
                   </span>
                 </div>
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value as CallType)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 focus:ring-2 focus:ring-red-500/10 transition-colors"
-                >
-                  {TYPES_BY_FACTION[faction].map((t) => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
-                </select>
+                <div className="relative" ref={typeMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setTypeMenuOpen((v) => !v)}
+                    aria-expanded={typeMenuOpen}
+                    className={`w-full flex items-center justify-between gap-3 bg-white/5 border rounded-xl px-4 py-3 text-sm text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/10 ${
+                      typeMenuOpen ? 'border-red-500/50' : 'border-white/10 hover:bg-white/[0.07]'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${pStyle.dot}`} />
+                      {TYPE_LABEL[type]}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-white/40 flex-shrink-0 transition-transform duration-200 ${typeMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {typeMenuOpen && (
+                    <div className="absolute z-20 top-full left-0 right-0 mt-2 rounded-xl border border-white/10 bg-[#160b0e]/98 backdrop-blur-xl shadow-2xl shadow-black/60 overflow-hidden py-1.5 max-h-64 overflow-y-auto custom-scrollbar">
+                      {TYPES_BY_FACTION[faction].map((t) => {
+                        const tStyle = PRIORITY_STYLE[PRIORITY_BY_TYPE[t]];
+                        const isActive = t === type;
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => { setType(t); setTypeMenuOpen(false); }}
+                            className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-left transition-colors ${
+                              isActive ? 'bg-white/[0.08] text-white' : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2.5 min-w-0">
+                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${tStyle.dot}`} />
+                              <span className="truncate">{TYPE_LABEL[t]}</span>
+                            </span>
+                            <span className="flex items-center gap-2 flex-shrink-0">
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${tStyle.bg} ${tStyle.text}`}>{tStyle.label}</span>
+                              {isActive && <Check className="w-3.5 h-3.5 text-red-400" />}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
