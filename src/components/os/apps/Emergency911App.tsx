@@ -374,7 +374,7 @@ export default function Emergency911App() {
                   Llamar de forma anónima
                 </span>
                 <span className={`relative w-10 h-[22px] rounded-full transition-colors duration-200 flex-shrink-0 ${anonymous ? 'bg-red-500' : 'bg-white/15'}`}>
-                  <span className={`absolute top-0.5 w-[18px] h-[18px] rounded-full bg-white shadow transition-transform duration-200 ${anonymous ? 'translate-x-[19px]' : 'translate-x-0.5'}`} />
+                  <span className={`absolute top-0.5 left-0.5 w-[18px] h-[18px] rounded-full bg-white shadow transition-transform duration-200 ${anonymous ? 'translate-x-[18px]' : 'translate-x-0'}`} />
                 </span>
               </button>
 
