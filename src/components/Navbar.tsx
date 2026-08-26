@@ -10,6 +10,7 @@ import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import { useWhitelistStatus } from "@/hooks/useWhitelistStatus";
 import UserProfile from "@/components/UserProfile";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { label: "Inicio", href: "/" },
@@ -100,10 +101,11 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8">
         <nav
           className={`flex items-center justify-between py-3 sm:py-4 transition-all duration-300 ${
-            isScrolled 
-              ? "bg-[#0c0c14]/95 nav-blur rounded-2xl sm:rounded-2xl px-3 sm:px-4 border-0 shadow-xl shadow-black/20" 
+            isScrolled
+              ? "nav-blur rounded-2xl sm:rounded-2xl px-3 sm:px-4 border-0 shadow-xl shadow-black/20"
               : ""
           }`}
+          style={isScrolled ? { background: "color-mix(in srgb, var(--background-alt) 95%, transparent)" } : undefined}
         >
           {/* Logo */}
           <Link
@@ -122,7 +124,10 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1 bg-[#12121c]/80 nav-blur rounded-full px-2 py-1.5 border border-[#1a1a28]">
+          <div
+            className="hidden md:flex items-center gap-1 nav-blur rounded-full px-2 py-1.5 border"
+            style={{ background: "color-mix(in srgb, var(--card-bg) 80%, transparent)", borderColor: "var(--card-border-soft)" }}
+          >
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
               const isClicked = clickedLink === link.href;
@@ -134,9 +139,10 @@ export default function Navbar() {
                   onClick={() => handleLinkClick(link.href)}
                   className={`px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform ${
                     isActive
-                      ? "bg-[#8e00f7] text-white shadow-lg shadow-[#8e00f7]/25"
-                      : "text-gray-400 hover:text-white hover:bg-[#1a1a28]"
+                      ? "bg-[var(--accent-blue)] text-white shadow-lg shadow-[#8e00f7]/25"
+                      : "hover:text-[var(--foreground)] hover:bg-[var(--card-bg-2)]"
                   } ${isClicked ? "scale-90" : "scale-100"} active:scale-90`}
+                  style={!isActive ? { color: "var(--text-muted)" } : undefined}
                 >
                   {link.label}
                 </Link>
@@ -164,8 +170,8 @@ export default function Navbar() {
                 href={primaryAction.href}
                 className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold transition-all hover:scale-[1.02] ${
                   whitelist.completed
-                    ? "bg-[#12121c] border border-[#8e00f7]/40 text-[#c084fc] hover:border-[#8e00f7]"
-                    : "bg-[#12121c] border border-[#1a1a28] text-gray-300 hover:text-white hover:border-[#8e00f7]"
+                    ? "bg-[var(--card-bg)] border border-[#8e00f7]/40 text-[#c084fc] hover:border-[var(--accent-blue)]"
+                    : "bg-[var(--card-bg)] border border-[var(--card-border-soft)] text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[var(--accent-blue)]"
                 }`}
               >
                 <primaryAction.icon className="h-4 w-4" />
@@ -180,7 +186,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setHubCoinsDropdownOpen(!hubCoinsDropdownOpen)}
-                  className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#12121c] border border-[#1a1a28] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#8e00f7] transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[var(--card-bg)] border border-[var(--card-border-soft)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[var(--accent-blue)] transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   <Image
                     src="/hub-coins.png"
@@ -189,16 +195,16 @@ export default function Navbar() {
                     height={36}
                     className="h-8 w-8 sm:h-9 sm:w-9 object-contain"
                   />
-                  <span className="absolute -bottom-1 -right-1 bg-[#8e00f7] text-white text-xs font-bold rounded px-1 py-0.5 min-w-[16px] text-center">
+                  <span className="absolute -bottom-1 -right-1 bg-[var(--accent-blue)] text-white text-xs font-bold rounded px-1 py-0.5 min-w-[16px] text-center">
                     {userHubCoins}
                   </span>
                 </button>
 
                 {/* Hub Coins Dropdown */}
                 {hubCoinsDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-[#1a1a28] border border-[#2a2a38] rounded-lg shadow-xl z-50 overflow-hidden">
-                    <div className="p-3 border-b border-[#2a2a38]">
-                      <div className="flex items-center gap-2 text-white">
+                  <div className="absolute right-0 mt-2 w-48 bg-[var(--card-bg-2)] border border-[var(--card-border-soft)] rounded-lg shadow-xl z-50 overflow-hidden">
+                    <div className="p-3 border-b border-[var(--card-border-soft)]">
+                      <div className="flex items-center gap-2 text-[var(--foreground)]">
                         <Image
                           src="/hub-coins.png"
                           alt="Hub Coins"
@@ -208,13 +214,13 @@ export default function Navbar() {
                         />
                         <span className="font-semibold">Hub Coins</span>
                       </div>
-                      <div className="text-2xl font-bold text-[#8e00f7] mt-1">{userHubCoins}</div>
+                      <div className="text-2xl font-bold text-[var(--accent-blue)] mt-1">{userHubCoins}</div>
                     </div>
                     <div className="p-1">
                       <Link
                         href="/tienda/hub-coins"
                         onClick={() => setHubCoinsDropdownOpen(false)}
-                        className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-[#2a2a38] hover:text-white rounded-md transition-colors"
+                        className="flex items-center gap-3 px-3 py-2 text-[var(--text-muted)] hover:bg-[var(--card-bg-2)] hover:text-[var(--foreground)] rounded-md transition-colors"
                       >
                         <ShoppingBag className="h-4 w-4" />
                         <span>Comprar Hub Coins</span>
@@ -222,7 +228,7 @@ export default function Navbar() {
                       <Link
                         href="/pedidos"
                         onClick={() => setHubCoinsDropdownOpen(false)}
-                        className="flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-[#2a2a38] hover:text-white rounded-md transition-colors"
+                        className="flex items-center gap-3 px-3 py-2 text-[var(--text-muted)] hover:bg-[var(--card-bg-2)] hover:text-[var(--foreground)] rounded-md transition-colors"
                       >
                         <History className="h-4 w-4" />
                         <span>Mis Compras</span>
@@ -233,14 +239,16 @@ export default function Navbar() {
               </div>
             )}
 
+            <ThemeToggle />
+
             {/* Cart Button */}
             <Link
               href="/tienda/carrito"
-              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#12121c] border border-[#1a1a28] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#8e00f7] transition-all duration-200 hover:scale-105 active:scale-95"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[var(--card-bg)] border border-[var(--card-border-soft)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[var(--accent-blue)] transition-all duration-200 hover:scale-105 active:scale-95"
             >
               <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-[#8e00f7] text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-[var(--accent-blue)] text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
                   {totalItems > 9 ? "9+" : totalItems}
                 </span>
               )}
@@ -253,7 +261,7 @@ export default function Navbar() {
                 onClick={() => {
                   window.location.href = discordLoginUrl();
                 }}
-                className="flex items-center gap-1 sm:gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-3 sm:px-4 py-2 rounded-full transition-all shadow-lg shadow-[#8e00f7]/25 hover:shadow-[#8e00f7]/40 transform hover:scale-[1.02] relative overflow-hidden group text-sm sm:text-base"
+                className="flex items-center gap-1 sm:gap-2 bg-[var(--accent-blue)] hover:bg-[#7a00d4] text-white font-semibold px-3 sm:px-4 py-2 rounded-full transition-all shadow-lg shadow-[#8e00f7]/25 hover:shadow-[#8e00f7]/40 transform hover:scale-[1.02] relative overflow-hidden group text-sm sm:text-base"
               >
                 {/* Glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#8e00f7]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -269,17 +277,18 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile - Cart + Menu Button */}
+          {/* Mobile - Theme + Cart + Menu Button */}
           <div className="md:hidden flex items-center gap-1 z-50">
+            <ThemeToggle className="!w-9 !h-9" />
             {/* Mobile Cart Button */}
             <button
               type="button"
               onClick={openCart}
-              className="relative w-9 h-9 rounded-full bg-[#12121c] border border-[#1a1a28] flex items-center justify-center text-gray-400 hover:text-white transition-all"
+              className="relative w-9 h-9 rounded-full bg-[var(--card-bg)] border border-[var(--card-border-soft)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] transition-all"
             >
               <ShoppingCart className="h-4 w-4" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#8e00f7] text-white text-xs font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent-blue)] text-white text-xs font-bold rounded-full flex items-center justify-center">
                   {totalItems > 9 ? "9+" : totalItems}
                 </span>
               )}
@@ -292,9 +301,9 @@ export default function Navbar() {
             >
               <div className={`transition-transform duration-300 ${mobileMenuOpen ? "rotate-90" : "rotate-0"}`}>
                 {mobileMenuOpen ? (
-                  <X className="h-5 w-5 text-white" />
+                  <X className="h-5 w-5 text-[var(--foreground)]" />
                 ) : (
-                  <Menu className="h-5 w-5 text-white" />
+                  <Menu className="h-5 w-5 text-[var(--foreground)]" />
                 )}
               </div>
             </button>
@@ -304,11 +313,12 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed inset-0 bg-[#0c0c14]/98 nav-blur pt-16 px-4 sm:px-6 transition-all duration-300 ${
+        className={`md:hidden fixed inset-0 nav-blur pt-16 px-4 sm:px-6 transition-all duration-300 ${
           mobileMenuOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-4 pointer-events-none"
         }`}
+        style={{ background: "color-mix(in srgb, var(--background-alt) 98%, transparent)" }}
       >
         <div className="flex flex-col gap-2">
           {navLinks.map((link, index) => {
@@ -320,8 +330,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`px-4 py-4 rounded-xl text-lg font-medium transition-all duration-300 transform ${
                   isActive
-                    ? "bg-[#8e00f7] text-white"
-                    : "text-gray-400 hover:bg-[#1a1a28] hover:text-white"
+                    ? "bg-[var(--accent-blue)] text-white"
+                    : "text-[var(--text-muted)] hover:bg-[var(--card-bg-2)] hover:text-[var(--foreground)]"
                 } active:scale-95`}
                 style={{
                   transitionDelay: mobileMenuOpen ? `${index * 50}ms` : "0ms",
@@ -354,7 +364,7 @@ export default function Navbar() {
                   className={`flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-medium transition-all active:scale-95 ${
                     whitelist.completed
                       ? "bg-[#8e00f7]/15 border border-[#8e00f7]/40 text-[#c084fc]"
-                      : "bg-[#1a1a28] text-gray-300"
+                      : "bg-[var(--card-bg-2)] text-[var(--text-muted)]"
                   }`}
                 >
                   <primaryAction.icon className="h-5 w-5" />
@@ -365,7 +375,7 @@ export default function Navbar() {
           )}
 
           <div
-            className="border-t border-[#1a1a28] pt-4 mt-4 flex flex-col gap-3"
+            className="border-t border-[var(--card-border-soft)] pt-4 mt-4 flex flex-col gap-3"
             style={{
               transitionDelay: mobileMenuOpen ? `${navLinks.length * 50}ms` : "0ms",
               transform: mobileMenuOpen ? "translateY(0)" : "translateY(20px)",
@@ -375,7 +385,7 @@ export default function Navbar() {
           >
             {isAuthenticated ? (
               <>
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1a1a28]">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--card-bg-2)]">
                   {user?.avatar && (
                     <img
                       src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=32`}
@@ -384,8 +394,8 @@ export default function Navbar() {
                     />
                   )}
                   <div className="flex-1">
-                    <div className="text-white font-medium">{user?.global_name || user?.username}</div>
-                    <div className="text-gray-400 text-sm">Discord</div>
+                    <div className="text-[var(--foreground)] font-medium">{user?.global_name || user?.username}</div>
+                    <div className="text-[var(--text-muted)] text-sm">Discord</div>
                   </div>
                 </div>
                 <button
@@ -393,7 +403,7 @@ export default function Navbar() {
                     handleLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-3 text-gray-400 text-lg font-medium px-4 py-3 rounded-xl hover:bg-[#1a1a28] hover:text-white transition-all active:scale-95"
+                  className="flex items-center gap-3 text-[var(--text-muted)] text-lg font-medium px-4 py-3 rounded-xl hover:bg-[var(--card-bg-2)] hover:text-[var(--foreground)] transition-all active:scale-95"
                 >
                   <LogOut className="h-5 w-5" />
                   Cerrar sesión
@@ -405,7 +415,7 @@ export default function Navbar() {
                   window.location.href = discordLoginUrl();
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center justify-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-4 py-4 rounded-xl transition-all shadow-lg shadow-[#8e00f7]/25 hover:shadow-[#8e00f7]/40 transform hover:scale-[1.02] relative overflow-hidden group"
+                className="flex items-center justify-center gap-2 bg-[var(--accent-blue)] hover:bg-[#7a00d4] text-white font-semibold px-4 py-4 rounded-xl transition-all shadow-lg shadow-[#8e00f7]/25 hover:shadow-[#8e00f7]/40 transform hover:scale-[1.02] relative overflow-hidden group"
               >
                 {/* Glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#8e00f7]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

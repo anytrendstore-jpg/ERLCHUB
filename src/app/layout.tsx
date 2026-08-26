@@ -28,6 +28,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        {/* Se aplica el tema guardado ANTES del primer paint — si esto se hiciera
+            en un efecto de React, se vería un parpadeo del tema oscuro por defecto
+            justo antes de cambiar al claro guardado. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('erlchub-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}`,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <MDTProvider>
           <CartProvider>

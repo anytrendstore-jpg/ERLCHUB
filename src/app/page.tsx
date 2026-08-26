@@ -232,7 +232,7 @@ export default function Home() {
   const featuredReviews = allReviews.filter((r) => r.rating >= 4).slice(0, 6);
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <section className="relative min-h-screen overflow-hidden">
@@ -244,12 +244,12 @@ export default function Home() {
               <div className="space-y-6 sm:space-y-8">
                 <div className="space-y-2">
                   <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tight leading-none">
-                    <span className="text-white block">ERLC</span>
+                    <span className="text-[var(--foreground)] block">ERLC</span>
                     <span className="text-gradient-blue glow-blue block">HUB</span>
                   </h1>
                 </div>
 
-                <p className="text-gray-400 text-base sm:text-lg max-w-md">
+                <p className="text-[var(--text-muted)] text-base sm:text-lg max-w-md">
                   Somos una comunidad dedicada a ofrecer la mejor experiencia de roleplay en Roblox, con servidores de alta calidad, eventos exclusivos y una comunidad apasionada. Únete a nosotros y vive el roleplay en ERLC nunca antes visto.
                 </p>
 
@@ -271,7 +271,7 @@ export default function Home() {
                     href="https://discord.com/invite/xKJqNX7uC3"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-center gap-2 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300"
+                    className="group flex items-center justify-center gap-2 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-[var(--foreground)] px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-300"
                   >
                     <DiscordIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     UNIRSE A DISCORD
@@ -280,22 +280,22 @@ export default function Home() {
 
                 <div className="flex flex-wrap gap-2 sm:gap-3">
                   {features.map((feature) => (
-                    <div key={feature.label} className="flex items-center gap-1.5 sm:gap-2 bg-[#12121c]/50 border border-[#1a1a28] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm text-gray-400 backdrop-blur-sm">
+                    <div key={feature.label} className="flex items-center gap-1.5 sm:gap-2 border border-[var(--card-border-soft)] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm text-[var(--text-muted)] backdrop-blur-sm" style={{ background: "color-mix(in srgb, var(--card-bg) 50%, transparent)" }}>
                       <feature.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       <span>{feature.label}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-6 pt-4 border-t border-[#1a1a28]/50">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-6 pt-4 border-t" style={{ borderColor: "color-mix(in srgb, var(--card-border-soft) 50%, transparent)" }}>
                   {dynamicStats.map((stat: any, index: number) => (
                     <div key={stat.label} className="flex items-center gap-2 sm:gap-3">
-                      {index > 1 && <div className="h-6 w-px bg-[#1a1a28] hidden sm:block" />}
+                      {index > 1 && <div className="h-6 w-px bg-[var(--card-bg-2)] hidden sm:block" />}
                       <div className="flex items-center gap-1.5 sm:gap-2">
                         <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 text-[#8e00f7]" />
                         <div>
-                          <div className="text-lg sm:text-xl font-bold text-white">{stat.value}</div>
-                          <div className="text-xs text-gray-500 uppercase tracking-wider">{stat.label}</div>
+                          <div className="text-lg sm:text-xl font-bold text-[var(--foreground)]">{stat.value}</div>
+                          <div className="text-xs text-[var(--text-faint)] uppercase tracking-wider">{stat.label}</div>
                         </div>
                       </div>
                     </div>
@@ -303,7 +303,7 @@ export default function Home() {
                 </div>
 
                 <div className="pt-8 hidden lg:block">
-                  <div className="flex flex-col items-center text-gray-500 text-sm gap-2">
+                  <div className="flex flex-col items-center text-[var(--text-faint)] text-sm gap-2">
                     <span className="uppercase tracking-widest">Scroll</span>
                     <ChevronDown className="h-4 w-4 animate-bounce" />
                   </div>
@@ -311,7 +311,7 @@ export default function Home() {
               </div>
 
               <div className="lg:pt-8">
-                <div className="relative bg-[#12121c]/80 backdrop-blur-sm border border-[#1a1a28] rounded-2xl p-6 sm:p-8 overflow-hidden">
+                <div className="relative backdrop-blur-sm border border-[var(--card-border-soft)] rounded-2xl p-6 sm:p-8 overflow-hidden" style={{ background: "color-mix(in srgb, var(--card-bg) 80%, transparent)" }}>
                   <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 100% 0%, rgba(142,0,247,0.15), transparent 60%)' }} />
 
                   <div className="relative flex items-center gap-2 mb-6">
@@ -324,22 +324,22 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <div className="relative flex items-center gap-4 mb-6 pb-6 border-b border-[#1a1a28]">
+                  <div className="relative flex items-center gap-4 mb-6 pb-6 border-b border-[var(--card-border-soft)]">
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star key={i} className={`h-5 w-5 ${i < Math.round(Number(communityRating)) ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
                       ))}
                     </div>
                     <div>
-                      <div className="text-white font-bold leading-none">{communityRating}/5</div>
-                      <div className="text-xs text-gray-500">{communityReviews} reseñas de la comunidad</div>
+                      <div className="text-[var(--foreground)] font-bold leading-none">{communityRating}/5</div>
+                      <div className="text-xs text-[var(--text-faint)]">{communityReviews} reseñas de la comunidad</div>
                     </div>
                   </div>
 
                   {featuredReviews[0] ? (
                     <div className="relative">
                       <Quote className="h-6 w-6 text-[#8e00f7]/40 mb-2" />
-                      <p className="text-gray-300 leading-relaxed mb-4 line-clamp-4">"{featuredReviews[0].comment}"</p>
+                      <p className="text-[var(--text-muted)] leading-relaxed mb-4 line-clamp-4">"{featuredReviews[0].comment}"</p>
                       <div className="flex items-center gap-3">
                         {featuredReviews[0].avatar && featuredReviews[0].userId ? (
                           <img
@@ -352,11 +352,11 @@ export default function Home() {
                             {featuredReviews[0].name.charAt(0).toUpperCase()}
                           </div>
                         )}
-                        <div className="text-sm text-white font-medium">{featuredReviews[0].username || featuredReviews[0].name}</div>
+                        <div className="text-sm text-[var(--foreground)] font-medium">{featuredReviews[0].username || featuredReviews[0].name}</div>
                       </div>
                     </div>
                   ) : (
-                    <p className="relative text-gray-500 text-sm">Sé el primero en dejar una reseña de tu experiencia.</p>
+                    <p className="relative text-[var(--text-faint)] text-sm">Sé el primero en dejar una reseña de tu experiencia.</p>
                   )}
 
                   <a href="#resenas" className="relative mt-6 flex items-center justify-center gap-2 text-sm font-bold text-[#8e00f7] hover:text-[#a64dfa] transition-colors">
@@ -369,10 +369,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0c0c14] to-transparent z-10" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--background-alt)] to-transparent z-10" />
       </section>
 
-      <section className="relative py-24 bg-[#0c0c14] overflow-hidden">
+      <section className="relative py-24 bg-[var(--background-alt)] overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           <div className="absolute inset-0" style={{
             backgroundImage: `
@@ -396,10 +396,10 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+              <h2 className="text-4xl sm:text-5xl font-black text-[var(--foreground)] mb-4">
                 ¿Cómo puedo <span className="text-[#8e00f7]">jugar</span>?
               </h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto">
                 Sigue estos simples pasos para unirte a la mejor comunidad de roleplay en ERLC
               </p>
             </div>
@@ -408,7 +408,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {playSteps.map((step, index) => (
               <AnimatedSection key={step.number} delay={index * 150}>
-                <div className="group relative bg-[#12121c]/80 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl p-8 hover:border-[#8e00f7]/50 transition-all duration-500 hover:-translate-y-2">
+                <div className="group relative backdrop-blur-sm border border-[var(--card-border)] rounded-2xl p-8 hover:border-[#8e00f7]/50 transition-all duration-500 hover:-translate-y-2" style={{ background: "color-mix(in srgb, var(--card-bg) 80%, transparent)" }}>
                   <div className="absolute -top-5 left-8 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg" style={{ backgroundColor: step.color, boxShadow: `0 4px 20px ${step.color}40` }}>
                     {step.number}
                   </div>
@@ -418,9 +418,9 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-500 uppercase tracking-wider">{step.subtitle}</p>
-                    <h3 className="text-xl font-bold text-white">{step.title}</h3>
-                    <p className="text-gray-400 leading-relaxed">{step.description}</p>
+                    <p className="text-sm text-[var(--text-faint)] uppercase tracking-wider">{step.subtitle}</p>
+                    <h3 className="text-xl font-bold text-[var(--foreground)]">{step.title}</h3>
+                    <p className="text-[var(--text-muted)] leading-relaxed">{step.description}</p>
                   </div>
                   {index < playSteps.length - 1 && (
                     <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-[2px] bg-gradient-to-r from-[#1e1e2e] to-transparent" />
@@ -439,7 +439,7 @@ export default function Home() {
                   <ChevronRight className="w-5 h-5" />
                 </a>
               )}
-              <a href="https://discord.gg/xKJqNX7uC3" className="inline-flex items-center gap-3 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-white px-8 py-4 rounded-xl font-bold transition-all duration-300">
+              <a href="https://discord.gg/xKJqNX7uC3" className="inline-flex items-center gap-3 bg-transparent border border-[#2a2a3a] hover:border-[#3a3a4a] text-[var(--foreground)] px-8 py-4 rounded-xl font-bold transition-all duration-300">
                 <DiscordIcon className="w-5 h-5" />
                 Unirse al Discord
               </a>
@@ -448,7 +448,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0c0c14] overflow-hidden">
+      <section className="relative py-24 bg-[var(--background-alt)] overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 opacity-20" style={{
             backgroundImage: `
@@ -512,10 +512,10 @@ export default function Home() {
           <AnimatedSection>
             <div className="text-center mb-8">
               <h2 className="text-4xl sm:text-5xl font-black mb-4">
-                <span className="text-white">Nuestras </span>
-                <span className="text-gray-500">comunidades</span>
+                <span className="text-[var(--foreground)]">Nuestras </span>
+                <span className="text-[var(--text-faint)]">comunidades</span>
               </h2>
-              <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+              <p className="text-[var(--text-faint)] text-lg max-w-2xl mx-auto">
                 ¡Jugadores de todo el mundo están esperándote para jugar!
                 <br />
                 Selecciona un servidor y empieza a jugar.
@@ -528,16 +528,16 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse shadow-lg shadow-[#22c55e]/50" />
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl sm:text-5xl font-black text-white">{serverStatus.online}</span>
-                  <div className="text-gray-500 text-sm uppercase tracking-wider">
+                  <span className="text-4xl sm:text-5xl font-black text-[var(--foreground)]">{serverStatus.online}</span>
+                  <div className="text-[var(--text-faint)] text-sm uppercase tracking-wider">
                     <div>ONLINE</div>
                     <div>AHORA</div>
                   </div>
                 </div>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl sm:text-5xl font-black text-white">{totalMaxPlayers}</span>
-                <div className="text-gray-500 text-sm uppercase tracking-wider">
+                <span className="text-4xl sm:text-5xl font-black text-[var(--foreground)]">{totalMaxPlayers}</span>
+                <div className="text-[var(--text-faint)] text-sm uppercase tracking-wider">
                   <div>MÁXIMO</div>
                   <div>JUGADORES</div>
                 </div>
@@ -549,11 +549,12 @@ export default function Home() {
             {servers.map((server, index) => (
               <AnimatedSection key={server.id} delay={300 + index * 100}>
                 <div
-                  className={`group relative bg-[#12121c]/80 backdrop-blur-sm border rounded-xl p-6 transition-all duration-500 ${
+                  className={`group relative backdrop-blur-sm border rounded-xl p-6 transition-all duration-500 ${
                     server.comingSoon ? "opacity-80" : "cursor-pointer hover:-translate-y-2"
                   } ${
-                    selectedServer === server.id ? "border-[#8e00f7] shadow-lg shadow-[#8e00f7]/20" : "border-[#1e1e2e] hover:border-[#3e3e4e]"
+                    selectedServer === server.id ? "border-[#8e00f7] shadow-lg shadow-[#8e00f7]/20" : "border-[var(--card-border)] hover:border-[#3e3e4e]"
                   }`}
+                  style={{ background: "color-mix(in srgb, var(--card-bg) 80%, transparent)" }}
                   onClick={() => !server.comingSoon && setSelectedServer(selectedServer === server.id ? null : server.id)}
                 >
                   {server.comingSoon && (
@@ -577,23 +578,23 @@ export default function Home() {
                       ) : (
                         <>
                           <div className="w-2 h-2 bg-[#22c55e] rounded-full animate-pulse" />
-                          <span className="text-xs text-gray-500">ONLINE</span>
+                          <span className="text-xs text-[var(--text-faint)]">ONLINE</span>
                         </>
                       )}
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white mb-2">{server.name}</h3>
-                  <p className="text-sm text-gray-500 mb-4">{server.description}</p>
+                  <h3 className="text-xl font-bold text-[var(--foreground)] mb-2">{server.name}</h3>
+                  <p className="text-sm text-[var(--text-faint)] mb-4">{server.description}</p>
 
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">Jugadores</span>
-                      <span className="text-white font-medium">
+                      <span className="text-[var(--text-faint)]">Jugadores</span>
+                      <span className="text-[var(--foreground)] font-medium">
                         {server.comingSoon ? "0" : (serverPlayers[server.id] || 0)}/{server.maxPlayers}
                       </span>
                     </div>
-                    <div className="h-1.5 bg-[#1a1a28] rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-[var(--card-bg-2)] rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all duration-500" style={{
                         width: server.comingSoon ? "0%" : `${((serverPlayers[server.id] || 0) / server.maxPlayers) * 100}%`,
                         backgroundColor: server.color,
@@ -603,7 +604,7 @@ export default function Home() {
 
                   <div className="mt-4">
                     {server.comingSoon ? (
-                      <div className="flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-medium text-gray-400 bg-[#1a1a28] border border-[#2a2a3a]">
+                      <div className="flex items-center justify-center gap-2 w-full py-2 rounded-lg text-sm font-medium text-[var(--text-muted)] bg-[var(--card-bg-2)] border border-[var(--card-border-soft)]">
                         <Globe className="w-4 h-4" />
                         Próximamente
                       </div>
@@ -623,25 +624,25 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0a0a12] overflow-hidden">
+      <section className="relative py-24 bg-[var(--background)] overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#8e00f7]/10 rounded-full blur-3xl" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
               <div>
-                <p className="text-[#8e00f7] font-medium uppercase tracking-wider mb-2">Tienda ERLC HUB</p>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+                <p className="text-[var(--text-faint)] font-medium uppercase tracking-wider mb-2">Tienda ERLC HUB</p>
+                <h2 className="text-4xl sm:text-5xl font-black text-[var(--foreground)] mb-4">
                   Potencia tu <span className="text-[#8e00f7]">experiencia</span>
                 </h2>
-                <p className="text-gray-400 text-lg max-w-xl">
+                <p className="text-[var(--text-muted)] text-lg max-w-xl">
                   Membresías, kits y Hub Coins para llevar tu roleplay al siguiente nivel.
                   {tiendaStats.totalOrders > 0 && (
-                    <span className="text-gray-500"> Ya se completaron {formatNumber(tiendaStats.totalOrders)} pedidos.</span>
+                    <span className="text-[var(--text-faint)]"> Ya se completaron {formatNumber(tiendaStats.totalOrders)} pedidos.</span>
                   )}
                 </p>
               </div>
-              <a href="/tienda" className="group flex items-center gap-2 bg-[#12121c] border border-[#1a1a28] hover:border-[#8e00f7]/50 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap w-fit">
+              <a href="/tienda" className="group flex items-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#8e00f7]/50 text-[var(--foreground)] px-6 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap w-fit">
                 Ver Tienda Completa
                 <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </a>
@@ -705,12 +706,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="resenas" className="relative py-24 bg-[#0c0c14] overflow-hidden">
+      <section id="resenas" className="relative py-24 bg-[var(--background-alt)] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-12">
-              <p className="text-[#8e00f7] font-medium uppercase tracking-wider mb-2">Reseñas</p>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+              <p className="text-[var(--text-faint)] font-medium uppercase tracking-wider mb-2">Reseñas</p>
+              <h2 className="text-4xl sm:text-5xl font-black text-[var(--foreground)] mb-4">
                 Lo que dice <span className="text-[#8e00f7]">nuestra comunidad</span>
               </h2>
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -719,25 +720,25 @@ export default function Home() {
                     <Star key={i} className={`h-5 w-5 ${i < Math.round(overallReviewAvg) ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
                   ))}
                 </div>
-                <span className="text-white font-bold">{overallReviewAvg > 0 ? overallReviewAvg.toFixed(1) : "0"}/5</span>
+                <span className="text-[var(--foreground)] font-bold">{overallReviewAvg > 0 ? overallReviewAvg.toFixed(1) : "0"}/5</span>
               </div>
-              <p className="text-gray-400">{overallReviewCount} reseñas de la comunidad y de la tienda</p>
+              <p className="text-[var(--text-muted)]">{overallReviewCount} reseñas de la comunidad y de la tienda</p>
             </div>
           </AnimatedSection>
 
           {!reviewsLoading && featuredReviews.length === 0 ? (
-            <div className="text-center text-gray-500 py-12">Aún no hay reseñas. Sé el primero en compartir tu experiencia.</div>
+            <div className="text-center text-[var(--text-faint)] py-12">Aún no hay reseñas. Sé el primero en compartir tu experiencia.</div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredReviews.map((review, index) => (
                 <AnimatedSection key={review._id} delay={index * 100}>
-                  <div className="h-full bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 flex flex-col">
+                  <div className="h-full bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 flex flex-col">
                     <div className="flex items-center gap-1 mb-4">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star key={i} className={`h-4 w-4 ${i < review.rating ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
                       ))}
                     </div>
-                    <p className="text-gray-300 leading-relaxed mb-6 flex-1 line-clamp-4">"{review.comment}"</p>
+                    <p className="text-[var(--text-muted)] leading-relaxed mb-6 flex-1 line-clamp-4">"{review.comment}"</p>
                     <div className="flex items-center gap-3">
                       {review.avatar && review.userId ? (
                         <img
@@ -751,8 +752,8 @@ export default function Home() {
                         </div>
                       )}
                       <div>
-                        <div className="text-sm text-white font-medium">{review.username || review.name}</div>
-                        <div className="text-xs text-gray-500">{review.tag}</div>
+                        <div className="text-sm text-[var(--foreground)] font-medium">{review.username || review.name}</div>
+                        <div className="text-xs text-[var(--text-faint)]">{review.tag}</div>
                       </div>
                     </div>
                   </div>
@@ -772,7 +773,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0c0c14]">
+      <section className="relative py-24 bg-[var(--background-alt)]">
         <div className="absolute inset-0 bg-gradient-to-b from-[#8e00f7]/5 via-transparent to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -785,7 +786,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-500" />
                     <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg">
                       <p className="text-white font-medium">Nuestra Comunidad</p>
-                      <p className="text-sm text-gray-300">{serverStatus.online} jugadores conectados ahora</p>
+                      <p className="text-sm text-[var(--text-muted)]">{serverStatus.online} jugadores conectados ahora</p>
                     </div>
                   </div>
                   
@@ -812,14 +813,14 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="absolute -bottom-6 -right-6 bg-[#12121c] border border-[#1e1e2e] rounded-xl p-4 shadow-2xl">
+                <div className="absolute -bottom-6 -right-6 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-4 shadow-2xl">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-[#8e00f7]/20 flex items-center justify-center">
                       <Star className="w-6 h-6 text-[#8e00f7]" />
                     </div>
                     <div>
-                      <div className="text-2xl font-black text-white">{communityRating}</div>
-                      <div className="text-xs text-gray-500">{communityReviews} reseñas</div>
+                      <div className="text-2xl font-black text-[var(--foreground)]">{communityRating}</div>
+                      <div className="text-xs text-[var(--text-faint)]">{communityReviews} reseñas</div>
                     </div>
                   </div>
                 </div>
@@ -829,11 +830,11 @@ export default function Home() {
             <AnimatedSection delay={200}>
               <div className="space-y-8">
                 <div>
-                  <p className="text-[#8e00f7] font-medium uppercase tracking-wider mb-2">Sobre Nosotros</p>
-                  <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
+                  <p className="text-[var(--text-faint)] font-medium uppercase tracking-wider mb-2">Sobre Nosotros</p>
+                  <h2 className="text-4xl sm:text-5xl font-black text-[var(--foreground)] mb-6">
                     La comunidad de roleplay <span className="text-[#8e00f7]">más grande</span> de ERLC
                   </h2>
-                  <p className="text-gray-400 text-lg leading-relaxed">
+                  <p className="text-[var(--text-muted)] text-lg leading-relaxed">
                     ERLC HUB nació con la visión de crear la experiencia de roleplay definitiva en Emergency Response: Liberty County.
                   </p>
                 </div>
@@ -844,8 +845,8 @@ export default function Home() {
                       <Shield className="w-5 h-5 text-[#8e00f7]" />
                     </div>
                     <div>
-                      <h4 className="text-white font-bold mb-1">Comunidad Verificada</h4>
-                      <p className="text-gray-400 text-sm">Todos nuestros miembros pasan por un proceso de whitelist.</p>
+                      <h4 className="text-[var(--foreground)] font-bold mb-1">Comunidad Verificada</h4>
+                      <p className="text-[var(--text-muted)] text-sm">Todos nuestros miembros pasan por un proceso de whitelist.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -853,8 +854,8 @@ export default function Home() {
                       <Headphones className="w-5 h-5 text-[#22c55e]" />
                     </div>
                     <div>
-                      <h4 className="text-white font-bold mb-1">Soporte 24/7</h4>
-                      <p className="text-gray-400 text-sm">Nuestro equipo de staff está disponible las 24 horas.</p>
+                      <h4 className="text-[var(--foreground)] font-bold mb-1">Soporte 24/7</h4>
+                      <p className="text-[var(--text-muted)] text-sm">Nuestro equipo de staff está disponible las 24 horas.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -862,16 +863,16 @@ export default function Home() {
                       <Star className="w-5 h-5 text-[#f59e0b]" />
                     </div>
                     <div>
-                      <h4 className="text-white font-bold mb-1">Eventos Exclusivos</h4>
-                      <p className="text-gray-400 text-sm">Participa en eventos semanales con premios.</p>
+                      <h4 className="text-[var(--foreground)] font-bold mb-1">Eventos Exclusivos</h4>
+                      <p className="text-[var(--text-muted)] text-sm">Participa en eventos semanales con premios.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#1e1e2e]">
-                  <div><div className="text-3xl font-black text-white">{serverStatus.online}</div><div className="text-sm text-gray-500">En línea ahora</div></div>
-                  <div><div className="text-3xl font-black text-white">{communityRating}/5</div><div className="text-sm text-gray-500">Calificación</div></div>
-                  <div><div className="text-3xl font-black text-white">24/7</div><div className="text-sm text-gray-500">Soporte</div></div>
+                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[var(--card-border)]">
+                  <div><div className="text-3xl font-black text-[var(--foreground)]">{serverStatus.online}</div><div className="text-sm text-[var(--text-faint)]">En línea ahora</div></div>
+                  <div><div className="text-3xl font-black text-[var(--foreground)]">{communityRating}/5</div><div className="text-sm text-[var(--text-faint)]">Calificación</div></div>
+                  <div><div className="text-3xl font-black text-[var(--foreground)]">24/7</div><div className="text-sm text-[var(--text-faint)]">Soporte</div></div>
                 </div>
               </div>
             </AnimatedSection>
@@ -879,15 +880,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-[#0c0c14]">
+      <section className="relative py-24 bg-[var(--background-alt)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-16">
-              <p className="text-[#8e00f7] font-medium uppercase tracking-wider mb-2">El Equipo</p>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+              <p className="text-[var(--text-faint)] font-medium uppercase tracking-wider mb-2">El Equipo</p>
+              <h2 className="text-4xl sm:text-5xl font-black text-[var(--foreground)] mb-4">
                 Nuestro <span className="text-[#8e00f7]">Equipo Fundador</span>
               </h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto">
                 Conoce a las personas que hacen posible esta increíble comunidad
               </p>
             </div>
@@ -896,7 +897,7 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {teamMembers.map((member, index) => (
               <AnimatedSection key={member.name} delay={index * 100}>
-                <div className="group relative bg-[#12121c] border border-[#1e1e2e] rounded-2xl p-6 hover:border-[#8e00f7]/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+                <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-6 hover:border-[#8e00f7]/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
                   <div className="absolute top-0 left-0 right-0 h-24 opacity-10 group-hover:opacity-20 transition-opacity" style={{ background: `linear-gradient(180deg, ${member.color} 0%, transparent 100%)` }} />
                   <div className="relative mb-6">
                     <div className="w-20 h-20 rounded-2xl overflow-hidden mx-auto relative" style={{ backgroundColor: member.color }}>
@@ -921,26 +922,26 @@ export default function Home() {
                         {member.avatarFallback}
                       </div>
                     </div>
-                    <div className="absolute bottom-0 right-1/2 translate-x-10 w-5 h-5 bg-[#22c55e] rounded-full border-4 border-[#12121c]" />
+                    <div className="absolute bottom-0 right-1/2 translate-x-10 w-5 h-5 bg-[#22c55e] rounded-full border-4 border-[var(--card-bg)]" />
                   </div>
                   <div className="text-center space-y-2">
-                    <h3 className="text-lg font-bold text-white">{member.name}</h3>
+                    <h3 className="text-lg font-bold text-[var(--foreground)]">{member.name}</h3>
                     <p className="text-sm font-medium" style={{ color: member.color }}>{member.role}</p>
-                    <p className="text-gray-400 text-sm leading-relaxed">{member.description}</p>
+                    <p className="text-[var(--text-muted)] text-sm leading-relaxed">{member.description}</p>
                   </div>
                   <div className="flex items-center justify-center gap-3 mt-6">
                     {member.socials.discord && (
-                      <a href={member.socials.discord} className="w-9 h-9 rounded-lg bg-[#1a1a28] hover:bg-[#5865F2] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                      <a href={member.socials.discord} className="w-9 h-9 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#5865F2] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
                         <DiscordIcon className="w-4 h-4" />
                       </a>
                     )}
                     {member.socials.instagram && (
-                      <a href={member.socials.instagram} className="w-9 h-9 rounded-lg bg-[#1a1a28] hover:bg-[#E4405F] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                      <a href={member.socials.instagram} className="w-9 h-9 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#E4405F] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
                         <Instagram className="w-4 h-4" />
                       </a>
                     )}
                     {member.socials.youtube && member.socials.youtube !== "" && (
-                      <a href={member.socials.youtube} className="w-9 h-9 rounded-lg bg-[#1a1a28] hover:bg-[#FF0000] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                      <a href={member.socials.youtube} className="w-9 h-9 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#FF0000] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
                         <Youtube className="w-4 h-4" />
                       </a>
                     )}
@@ -953,7 +954,7 @@ export default function Home() {
       </section>
 
       <AnimatedSection>
-        <section className="relative py-16 bg-[#0c0c14]">
+        <section className="relative py-16 bg-[var(--background-alt)]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative bg-gradient-to-r from-[#8e00f7] to-[#6b21a8] rounded-3xl p-8 sm:p-12 overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />

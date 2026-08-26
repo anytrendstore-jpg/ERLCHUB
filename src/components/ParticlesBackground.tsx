@@ -40,9 +40,9 @@ export default function ParticlesBackground() {
       <div className="absolute inset-0 hero-grid-pattern opacity-30" />
 
       {/* Purple Glow Effects */}
-      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[#8e00f7]/10 rounded-full blur-[150px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#8e00f7]/8 rounded-full blur-[180px]" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#a64dfa]/5 rounded-full blur-[120px]" />
+      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px]" style={{ background: "var(--accent-blue-wash)" }} />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[180px]" style={{ background: "var(--accent-blue-wash)" }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[120px] opacity-70" style={{ background: "var(--accent-blue-wash)" }} />
 
       {/* Floating Particles */}
       <div className="particles-container">
@@ -61,7 +61,7 @@ export default function ParticlesBackground() {
       </div>
 
       {/* Top gradient fade */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#0c0c14] to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-32" style={{ background: "linear-gradient(to bottom, var(--background-alt), transparent)" }} />
 
       {/* Subtle vignette effect */}
       <div className="absolute inset-0 bg-radial-vignette" />

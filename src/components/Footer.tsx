@@ -83,7 +83,7 @@ const TikTokIcon = () => (
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a0a12] border-t border-[#1a1a28]">
+    <footer className="bg-[var(--background)] border-t border-[var(--card-border-soft)]">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-12">
@@ -97,9 +97,9 @@ export default function Footer() {
                 height={32}
                 className="h-8 w-auto transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
               />
-              <span className="font-bold text-white text-lg tracking-wide transition-colors duration-300 group-hover:text-[#8e00f7]">ERLCᴴᵁᴮ</span>
+              <span className="font-bold text-[var(--foreground)] text-lg tracking-wide transition-colors duration-300 group-hover:text-[#8e00f7]">ERLCᴴᵁᴮ</span>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
+            <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-6 max-w-xs">
               ERLCᴴᵁᴮ es la comunidad de Roleplay más grande y activa de Latinoamérica, ofreciendo una experiencia única y envolvente para jugadores de todos los niveles. Únete a nosotros y descubre un mundo en ERLC.
             </p>
 
@@ -107,21 +107,21 @@ export default function Footer() {
             <div className="flex flex-wrap gap-2">
               <a
                 href="https://discord.com/invite/xKJqNX7uC3"
-                className="group flex items-center gap-2 bg-[#12121c] border border-[#1a1a28] hover:border-[#5865F2] hover:bg-[#5865F2]/10 px-4 py-2 rounded-lg text-gray-400 hover:text-[#5865F2] transition-all duration-300 text-sm"
+                className="group flex items-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#5865F2] hover:bg-[#5865F2]/10 px-4 py-2 rounded-lg text-[var(--text-muted)] hover:text-[#5865F2] transition-all duration-300 text-sm"
               >
                 <DiscordIcon className="group-hover:scale-125 group-hover:animate-pulse" />
                 <span className="transition-transform duration-300 group-hover:translate-x-0.5">Discord</span>
               </a>
               <a
                 href="https://www.instagram.com/erlc_hub?igsh=MXZrMXV5dHVkeTRoeQ=="
-                className="group flex items-center gap-2 bg-[#12121c] border border-[#1a1a28] hover:border-[#E4405F] hover:bg-[#E4405F]/10 px-4 py-2 rounded-lg text-gray-400 hover:text-[#E4405F] transition-all duration-300 text-sm"
+                className="group flex items-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#E4405F] hover:bg-[#E4405F]/10 px-4 py-2 rounded-lg text-[var(--text-muted)] hover:text-[#E4405F] transition-all duration-300 text-sm"
               >
                 <InstagramIcon />
                 <span className="transition-transform duration-300 group-hover:translate-x-0.5">Instagram</span>
               </a>
               <a
                 href="https://www.tiktok.com/@erlchub?_r=1&_t=ZS-94pxHUo80kE"
-                className="group flex items-center gap-2 bg-[#12121c] border border-[#1a1a28] hover:border-white hover:bg-white/5 px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all duration-300 text-sm"
+                className="group flex items-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-white hover:bg-white/5 px-4 py-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--foreground)] transition-all duration-300 text-sm"
               >
                 <TikTokIcon />
                 <span className="transition-transform duration-300 group-hover:translate-x-0.5">TikTok</span>
@@ -131,23 +131,23 @@ export default function Footer() {
 
           {/* TIENDA */}
           <div>
-            <h4 className="font-semibold text-[#8e00f7] mb-4 uppercase tracking-wider text-xs">Tienda</h4>
+            <h4 className="font-semibold text-[var(--text-faint)] mb-4 uppercase tracking-wider text-xs">Tienda</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/tienda" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#8e00f7] transition-colors duration-300"><CatalogIcon /></span>
+                <Link href="/tienda" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#8e00f7] transition-colors duration-300"><CatalogIcon /></span>
                   Catálogo
                 </Link>
               </li>
               <li>
-                <Link href="/tienda/hub-coins" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#8e00f7] transition-colors duration-300"><RobuxIcon /></span>
+                <Link href="/tienda/hub-coins" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#8e00f7] transition-colors duration-300"><RobuxIcon /></span>
                   Hub Coins
                 </Link>
               </li>
               <li>
-                <Link href="/resenas" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#fbbf24] transition-colors duration-300"><ReviewsIcon /></span>
+                <Link href="/resenas" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#fbbf24] transition-colors duration-300"><ReviewsIcon /></span>
                   Reseñas
                 </Link>
               </li>
@@ -157,17 +157,17 @@ export default function Footer() {
 
           {/* CUENTA */}
           <div>
-            <h4 className="font-semibold text-[#8e00f7] mb-4 uppercase tracking-wider text-xs">Cuenta</h4>
+            <h4 className="font-semibold text-[var(--text-faint)] mb-4 uppercase tracking-wider text-xs">Cuenta</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/perfil" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#8e00f7] transition-colors duration-300"><ProfileIcon /></span>
+                <Link href="/perfil" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#8e00f7] transition-colors duration-300"><ProfileIcon /></span>
                   Mi Perfil
                 </Link>
               </li>
               <li>
-                <Link href="/pedidos" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#22c55e] transition-colors duration-300"><OrdersIcon /></span>
+                <Link href="/pedidos" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#22c55e] transition-colors duration-300"><OrdersIcon /></span>
                   Mis Pedidos
                 </Link>
               </li>
@@ -176,17 +176,17 @@ export default function Footer() {
 
           {/* SOPORTE */}
           <div>
-            <h4 className="font-semibold text-[#8e00f7] mb-4 uppercase tracking-wider text-xs">Soporte</h4>
+            <h4 className="font-semibold text-[var(--text-faint)] mb-4 uppercase tracking-wider text-xs">Soporte</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="mailto:support@erlchub.com" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#ef4444] transition-colors duration-300"><EmailIcon /></span>
+                <Link href="mailto:support@erlchub.com" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#ef4444] transition-colors duration-300"><EmailIcon /></span>
                   Email
                 </Link>
               </li>
               <li>
-                <Link href="https://discord.gg/xKJqNX7uC3" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#5865F2] transition-colors duration-300"><DiscordIcon className="group-hover:scale-110" /></span>
+                <Link href="https://discord.gg/xKJqNX7uC3" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#5865F2] transition-colors duration-300"><DiscordIcon className="group-hover:scale-110" /></span>
                   Discord
                 </Link>
               </li>
@@ -195,17 +195,17 @@ export default function Footer() {
 
           {/* LEGAL */}
           <div>
-            <h4 className="font-semibold text-[#8e00f7] mb-4 uppercase tracking-wider text-xs">Legal</h4>
+            <h4 className="font-semibold text-[var(--text-faint)] mb-4 uppercase tracking-wider text-xs">Legal</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/terminos" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#8e00f7] transition-colors duration-300"><TermsIcon /></span>
+                <Link href="/terminos" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#8e00f7] transition-colors duration-300"><TermsIcon /></span>
                   Términos
                 </Link>
               </li>
               <li>
-                <Link href="/privacidad" className="group flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all duration-300 hover:translate-x-1">
-                  <span className="text-gray-500 group-hover:text-[#22c55e] transition-colors duration-300"><PrivacyIcon /></span>
+                <Link href="/privacidad" className="group flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm transition-all duration-300 hover:translate-x-1">
+                  <span className="text-[var(--text-faint)] group-hover:text-[#22c55e] transition-colors duration-300"><PrivacyIcon /></span>
                   Privacidad
                 </Link>
               </li>
@@ -215,11 +215,11 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-[#1a1a28]">
+      <div className="border-t border-[var(--card-border-soft)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             {/* Copyright & Disclaimer */}
-            <div className="text-gray-500 text-xs space-y-1 max-w-2xl">
+            <div className="text-[var(--text-faint)] text-xs space-y-1 max-w-2xl">
               <p>&copy; 2026 ERLCᴴᵁᴮ. Todos los derechos reservados.</p>
               <p>
                Servicio independiente. No estamos afiliados, asociados ni respaldados por Roblox Corporation o Police Roleplay Community. Todas las marcas pertenecen a sus respectivos propietarios.
@@ -228,7 +228,7 @@ export default function Footer() {
 
             {/* Payment Methods */}
             <div className="flex items-center gap-3">
-              <span className="text-gray-500 text-xs uppercase tracking-wider">Pagos seguros</span>
+              <span className="text-[var(--text-faint)] text-xs uppercase tracking-wider">Pagos seguros</span>
               <div className="flex items-center gap-2">
 
                 <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-yellow-500/20 hover: shadow-purple-500/20 cursor-pointer">

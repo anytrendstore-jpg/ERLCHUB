@@ -3,14 +3,51 @@
 @tailwind utilities;
 
 :root {
-  --background: #0c0c14;
-  --foreground: #e8e8e4;
+  /* Oscuro — identidad actual de la marca, sigue siendo el modo por defecto. */
+  --background: #0a0a12;
+  --background-alt: #0c0c14;
+  --foreground: #ffffff;
   --card-bg: #12121c;
-  --card-border: #1a1a28;
+  --card-bg-2: #1a1a28;
+  --card-border: #1e1e2e;
+  --card-border-soft: #1a1a28;
+  --text-muted: #9ca3af;
+  --text-faint: #6b7280;
+
+  /* El morado sigue siendo EL color de marca — nombrado --accent-blue por historia
+     del proyecto, pero su valor siempre fue morado (#8e00f7). Se mantiene el nombre
+     para no romper nada que ya lo referencie; el valor es la fuente de verdad. */
   --accent-blue: #8e00f7;
-  --accent-blue-hover: #8e00f7;
+  --accent-blue-hover: #a64dfa;
+  --accent-blue-wash: rgba(142, 0, 247, 0.14);
+  --grid-line: rgba(142, 0, 247, 0.14);
+  --glow-shadow: 0 0 40px rgba(142, 0, 247, 0.5), 0 0 80px rgba(142, 0, 247, 0.3), 0 0 120px rgba(142, 0, 247, 0.2);
+
   --nav-bg: #0d0d16;
   --muted: #616469;
+}
+
+/* Claro — mismo morado de marca (un tono más profundo para que no vibre sobre
+   blanco), combinado con blancos y grises en vez de los negros del modo oscuro. */
+[data-theme="light"] {
+  --background: #ffffff;
+  --background-alt: #fafafa;
+  --foreground: #101014;
+  --card-bg: #f4f4f6;
+  --card-bg-2: #ececf0;
+  --card-border: #e2e2e8;
+  --card-border-soft: #eaeaef;
+  --text-muted: #55555f;
+  --text-faint: #86868f;
+
+  --accent-blue: #7a00d4;
+  --accent-blue-hover: #8e00f7;
+  --accent-blue-wash: rgba(122, 0, 212, 0.08);
+  --grid-line: rgba(122, 0, 212, 0.10);
+  --glow-shadow: 0 0 24px rgba(122, 0, 212, 0.35), 0 0 48px rgba(122, 0, 212, 0.18);
+
+  --nav-bg: #ffffff;
+  --muted: #8a8a94;
 }
 
 @layer base {
@@ -27,6 +64,7 @@
     color: var(--foreground);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
+    transition: background-color .25s ease, color .25s ease;
   }
 
   /*
@@ -48,16 +86,14 @@
   }
 
   .text-gradient-blue {
-    background: linear-gradient(180deg, #8e00f7 0%, #8e00f7 100%);
+    background: linear-gradient(180deg, var(--accent-blue) 0%, var(--accent-blue) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .glow-blue {
-    text-shadow: 0 0 40px rgba(142, 0, 247, 0.5),
-                 0 0 80px rgba(142, 0, 247, 0.3),
-                 0 0 120px rgba(142, 0, 247, 0.2);
+    text-shadow: var(--glow-shadow);
   }
 
   .card-glow {
@@ -97,8 +133,8 @@
 /* Grid Pattern */
 .hero-grid-pattern {
   background-image:
-    linear-gradient(rgba(142, 0, 247, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(142, 0, 247, 0.08) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
@@ -106,7 +142,7 @@
 
 /* Radial vignette effect */
 .bg-radial-vignette {
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, rgba(12, 12, 20, 0.4) 100%);
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, color-mix(in srgb, var(--background) 55%, transparent) 100%);
 }
 
 /* Particles Container */
@@ -129,10 +165,10 @@
   box-shadow: 0 0 6px rgba(142, 0, 247, 0.5), 0 0 12px rgba(142, 0, 247, 0.3);
 }
 
-/* White particles for variety */
+/* Partículas de contraste — texto (blanco en oscuro, casi negro en claro) para variedad. */
 .particle:nth-child(2n) {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5), 0 0 12px rgba(255, 255, 255, 0.3);
+  background: radial-gradient(circle, color-mix(in srgb, var(--foreground) 90%, transparent) 0%, color-mix(in srgb, var(--foreground) 40%, transparent) 50%, transparent 100%);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--foreground) 50%, transparent), 0 0 12px color-mix(in srgb, var(--foreground) 30%, transparent);
 }
 
 /* Light purple particles */
