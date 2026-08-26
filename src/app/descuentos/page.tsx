@@ -157,10 +157,10 @@ export default function DescuentosPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">Acceso Restringido</h1>
-          <p className="text-gray-400 mb-8">Debes iniciar sesión para acceder a esta página</p>
+          <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">Acceso Restringido</h1>
+          <p className="text-[var(--text-muted)] mb-8">Debes iniciar sesión para acceder a esta página</p>
           <a
             href="/ingresar"
             className="inline-flex items-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-6 py-3 rounded-full transition-all"
@@ -174,11 +174,11 @@ export default function DescuentosPage() {
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
           <XCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-white mb-4">Acceso Denegado</h1>
-          <p className="text-gray-400 mb-8">No tienes permisos para acceder a esta página</p>
+          <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">Acceso Denegado</h1>
+          <p className="text-[var(--text-muted)] mb-8">No tienes permisos para acceder a esta página</p>
           <button
             onClick={() => window.location.href = '/'}
             className="inline-flex items-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-6 py-3 rounded-full transition-all"
@@ -192,62 +192,62 @@ export default function DescuentosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0c14]">
+    <div className="min-h-screen bg-[var(--background-alt)]">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Gestión de Descuentos</h1>
+        <h1 className="text-3xl font-bold text-[var(--foreground)] mb-8">Gestión de Descuentos</h1>
 
         {/* Crear Nuevo Código */}
-        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
+          <h2 className="text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
             <Plus className="h-5 w-5 text-[#8e00f7]" />
             Crear Nuevo Código
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Código de Descuento</label>
+              <label className="block text-[var(--text-muted)] text-sm mb-2">Código de Descuento</label>
               <input
                 type="text"
                 value={newCode.code}
                 onChange={(e) => setNewCode({...newCode, code: e.target.value.toUpperCase()})}
                 placeholder="Ej: VERANO20"
-                className="w-full bg-[#1a1a28] text-white px-4 py-2 rounded-lg font-mono"
+                className="w-full bg-[var(--card-bg-2)] text-[var(--foreground)] px-4 py-2 rounded-lg font-mono"
               />
-              <p className="text-gray-500 text-xs mt-1">Se mostrará automáticamente en mayúsculas</p>
+              <p className="text-[var(--text-faint)] text-xs mt-1">Se mostrará automáticamente en mayúsculas</p>
             </div>
             
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Porcentaje de Descuento (%)</label>
+              <label className="block text-[var(--text-muted)] text-sm mb-2">Porcentaje de Descuento (%)</label>
               <input
                 type="number"
                 value={newCode.discountPercentage}
                 onChange={(e) => setNewCode({...newCode, discountPercentage: parseInt(e.target.value) || 0})}
                 min="1"
                 max="100"
-                className="w-full bg-[#1a1a28] text-white px-4 py-2 rounded-lg"
+                className="w-full bg-[var(--card-bg-2)] text-[var(--foreground)] px-4 py-2 rounded-lg"
               />
             </div>
             
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Días para Vencimiento</label>
+              <label className="block text-[var(--text-muted)] text-sm mb-2">Días para Vencimiento</label>
               <input
                 type="number"
                 value={newCode.daysToExpire}
                 onChange={(e) => setNewCode({...newCode, daysToExpire: parseInt(e.target.value) || 30})}
                 min="1"
                 max="365"
-                className="w-full bg-[#1a1a28] text-white px-4 py-2 rounded-lg"
+                className="w-full bg-[var(--card-bg-2)] text-[var(--foreground)] px-4 py-2 rounded-lg"
               />
             </div>
             
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Descripción</label>
+              <label className="block text-[var(--text-muted)] text-sm mb-2">Descripción</label>
               <input
                 type="text"
                 value={newCode.description}
                 onChange={(e) => setNewCode({...newCode, description: e.target.value})}
                 placeholder="Ej: Descuento de verano"
-                className="w-full bg-[#1a1a28] text-white px-4 py-2 rounded-lg"
+                className="w-full bg-[var(--card-bg-2)] text-[var(--foreground)] px-4 py-2 rounded-lg"
               />
             </div>
           </div>
@@ -266,8 +266,8 @@ export default function DescuentosPage() {
           </button>
         </div>
 
-        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
+          <h2 className="text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
             <Tag className="h-5 w-5 text-[#fbbf24]" />
             Códigos Activos
           </h2>
@@ -275,27 +275,27 @@ export default function DescuentosPage() {
           {loading ? (
             <div className="text-center py-12">
               <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-400">Cargando códigos de descuento...</p>
+              <p className="text-[var(--text-muted)]">Cargando códigos de descuento...</p>
             </div>
           ) : discountCodes.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1a1a28]">
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Código</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Descuento</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Descripción</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Fecha de Creación</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Fecha de Vencimiento</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Estado</th>
-                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Acciones</th>
+                  <tr className="border-b border-[var(--card-border-soft)]">
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Código</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Descuento</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Descripción</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Fecha de Creación</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Fecha de Vencimiento</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Estado</th>
+                    <th className="text-right py-3 px-4 text-[var(--text-muted)] font-medium">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {discountCodes.map((code) => (
-                    <tr key={code.id} className="border-b border-[#1a1a28]/50">
+                    <tr key={code.id} className="border-b" style={{ borderColor: "color-mix(in srgb, var(--card-border-soft) 50%, transparent)" }}>
                       <td className="py-3 px-4">
-                        <span className="font-mono text-white bg-[#1a1a28] px-3 py-1 rounded">
+                        <span className="font-mono text-[var(--foreground)] bg-[var(--card-bg-2)] px-3 py-1 rounded">
                           {formatCode(code.code)}
                         </span>
                       </td>
@@ -305,8 +305,8 @@ export default function DescuentosPage() {
                           <span className="text-green-400 font-bold">{code.discountPercentage}%</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-gray-300">{code.description}</td>
-                      <td className="py-3 px-4 text-gray-400">
+                      <td className="py-3 px-4 text-[var(--text-muted)]">{code.description}</td>
+                      <td className="py-3 px-4 text-[var(--text-muted)]">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
                           {formatDate(code.createdAt)}
@@ -355,9 +355,9 @@ export default function DescuentosPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Gift className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-400">No hay códigos de descuento creados</p>
-              <p className="text-gray-500 text-sm mt-2">Crea tu primer código de descuento para empezar</p>
+              <Gift className="h-12 w-12 text-[var(--text-muted)] mx-auto mb-4" />
+              <p className="text-[var(--text-muted)]">No hay códigos de descuento creados</p>
+              <p className="text-[var(--text-faint)] text-sm mt-2">Crea tu primer código de descuento para empezar</p>
             </div>
           )}
         </div>

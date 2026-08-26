@@ -40,7 +40,7 @@ export default function SoportePage() {
   const [tab, setTab] = useState<"tickets" | "report">("tickets");
 
   return (
-    <div className="min-h-screen bg-[#0c0c14]">
+    <div className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
@@ -51,16 +51,16 @@ export default function SoportePage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Soporte</h1>
-              <p className="text-sm text-gray-400">Abre un ticket o reporta a otro jugador — llega directo al staff</p>
+              <p className="text-sm text-[var(--text-muted)]">Abre un ticket o reporta a otro jugador — llega directo al staff</p>
             </div>
           </div>
 
-          <div className="flex bg-[#12121c] border border-[#1a1a28] rounded-xl p-1 my-6 max-w-md">
+          <div className="flex bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-1 my-6 max-w-md">
             <button
               type="button"
               onClick={() => setTab("tickets")}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition ${
-                tab === "tickets" ? "bg-[#8e00f7] text-white" : "text-gray-400 hover:text-white"
+                tab === "tickets" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-white"
               }`}
             >
               <Ticket className="h-4 w-4" /> Mis Tickets
@@ -69,7 +69,7 @@ export default function SoportePage() {
               type="button"
               onClick={() => setTab("report")}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition ${
-                tab === "report" ? "bg-[#8e00f7] text-white" : "text-gray-400 hover:text-white"
+                tab === "report" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-white"
               }`}
             >
               <Flag className="h-4 w-4" /> Reportar Jugador
@@ -79,10 +79,10 @@ export default function SoportePage() {
           {authLoading ? (
             <div className="py-16 flex justify-center"><Loader2 className="h-6 w-6 text-[#8e00f7] animate-spin" /></div>
           ) : !isAuthenticated ? (
-            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-10 text-center">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-10 text-center">
               <Lock className="h-9 w-9 text-gray-600 mx-auto mb-3" />
               <h2 className="text-white font-semibold mb-1">Inicia sesión para continuar</h2>
-              <p className="text-sm text-gray-400">Necesitas tu cuenta de Discord para abrir tickets o reportar jugadores.</p>
+              <p className="text-sm text-[var(--text-muted)]">Necesitas tu cuenta de Discord para abrir tickets o reportar jugadores.</p>
             </div>
           ) : tab === "tickets" ? (
             <TicketsTab playerName={user?.global_name || user?.username || "Jugador"} />
@@ -174,21 +174,21 @@ function TicketsTab({ playerName }: { playerName: string }) {
 
   if (selected) {
     return (
-      <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl overflow-hidden animate-modal-card">
-        <div className="p-5 border-b border-[#1a1a28] flex items-center justify-between">
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl overflow-hidden animate-modal-card">
+        <div className="p-5 border-b border-[var(--card-border-soft)] flex items-center justify-between">
           <div className="min-w-0">
-            <button type="button" onClick={() => setSelectedId(null)} className="text-xs text-gray-500 hover:text-white transition mb-1">
+            <button type="button" onClick={() => setSelectedId(null)} className="text-xs text-[var(--text-faint)] hover:text-white transition mb-1">
               ← Volver a mis tickets
             </button>
             <h2 className="text-white font-bold truncate">{selected.subject}</h2>
-            <p className="text-xs text-gray-500 font-mono">#{selected.ticketNumber} · {selected.category}</p>
+            <p className="text-xs text-[var(--text-faint)] font-mono">#{selected.ticketNumber} · {selected.category}</p>
           </div>
           <span className={`px-2.5 py-1 rounded-md text-xs font-medium ring-1 flex-shrink-0 ${STATUS_LABEL[selected.status].tone}`}>
             {STATUS_LABEL[selected.status].label}
           </span>
         </div>
 
-        <div className="px-5 py-2.5 bg-[#8e00f7]/5 border-b border-[#8e00f7]/10 flex items-center gap-2 text-xs text-gray-400">
+        <div className="px-5 py-2.5 bg-[#8e00f7]/5 border-b border-[#8e00f7]/10 flex items-center gap-2 text-xs text-[var(--text-muted)]">
           <ShieldCheck className="h-3.5 w-3.5 text-[#8e00f7] flex-shrink-0" />
           Solo tú y nuestro staff verificado pueden ver esta conversación
         </div>
@@ -202,10 +202,10 @@ function TicketsTab({ playerName }: { playerName: string }) {
                 </div>
               )}
               <div className={`max-w-[80%] rounded-2xl p-3 ${
-                m.authorRole === "staff" ? "bg-[#8e00f7]/10 ring-1 ring-[#8e00f7]/30 rounded-tl-sm" : "bg-[#1a1a28] rounded-tr-sm"
+                m.authorRole === "staff" ? "bg-[#8e00f7]/10 ring-1 ring-[#8e00f7]/30 rounded-tl-sm" : "bg-[var(--card-bg-2)] rounded-tr-sm"
               }`}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <span className="text-xs font-medium text-gray-300">{m.author}</span>
+                  <span className="text-xs font-medium text-[var(--text-muted)]">{m.author}</span>
                   {m.authorRole === "staff" && (
                     <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#8e00f7]/20 text-[#c084fc] text-[9px] font-bold uppercase tracking-wide">
                       <ShieldCheck className="h-2.5 w-2.5" /> Staff verificado
@@ -220,15 +220,15 @@ function TicketsTab({ playerName }: { playerName: string }) {
           ))}
         </div>
 
-        <div className="p-4 border-t border-[#1a1a28]">
+        <div className="p-4 border-t border-[var(--card-border-soft)]">
           {selected.status !== "closed" ? (
             <div>
               {replyAttachments.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
                   {replyAttachments.map((a, i) => (
-                    <span key={i} className="flex items-center gap-1.5 text-xs bg-[#8e00f7]/10 border border-[#8e00f7]/30 text-gray-300 rounded-lg px-2.5 py-1.5">
+                    <span key={i} className="flex items-center gap-1.5 text-xs bg-[#8e00f7]/10 border border-[#8e00f7]/30 text-[var(--text-muted)] rounded-lg px-2.5 py-1.5">
                       {a.name}
-                      <button type="button" onClick={() => setReplyAttachments((prev) => prev.filter((_, idx) => idx !== i))} className="text-gray-500 hover:text-white">
+                      <button type="button" onClick={() => setReplyAttachments((prev) => prev.filter((_, idx) => idx !== i))} className="text-[var(--text-faint)] hover:text-white">
                         <X className="w-3 h-3" />
                       </button>
                     </span>
@@ -249,7 +249,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
                   onChange={(e) => setReply(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendReply()}
                   placeholder="Escribe tu respuesta..."
-                  className="flex-1 h-11 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+                  className="flex-1 h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
                 />
                 <button
                   type="button"
@@ -263,7 +263,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
               {replyError && <p className="text-sm text-red-400 flex items-center gap-2 mt-2"><AlertCircle className="h-4 w-4 flex-shrink-0" /> {replyError}</p>}
             </div>
           ) : (
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-2 text-sm text-[var(--text-faint)]">
               <CheckCircle2 className="h-4 w-4 text-[#22c55e]" /> Este ticket quedó resuelto y está cerrado
             </div>
           )}
@@ -275,7 +275,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
   return (
     <div>
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
-        <div className="flex items-start gap-2 text-xs text-gray-500 max-w-md">
+        <div className="flex items-start gap-2 text-xs text-[var(--text-faint)] max-w-md">
           <ShieldCheck className="h-4 w-4 text-[#8e00f7] flex-shrink-0 mt-0.5" />
           <p>Cada ticket es privado: solo tú y el staff verificado pueden verlo y responderlo.</p>
         </div>
@@ -289,19 +289,19 @@ function TicketsTab({ playerName }: { playerName: string }) {
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-5 mb-6 space-y-3">
+        <form onSubmit={submit} className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-5 mb-6 space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
             <input
               value={form.subject}
               onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
               placeholder="Asunto"
-              className="h-11 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+              className="h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
               required
             />
             <select
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as TicketCategory }))}
-              className="h-11 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white focus:outline-none focus:border-[#8e00f7]"
+              className="h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7]"
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -311,7 +311,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
             onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
             placeholder="Cuéntanos qué necesitas..."
             rows={4}
-            className="w-full p-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
+            className="w-full p-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
             required
           />
           {error && <p className="text-sm text-red-400 flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {error}</p>}
@@ -328,15 +328,15 @@ function TicketsTab({ playerName }: { playerName: string }) {
       {loading ? (
         <div className="py-16 flex justify-center"><Loader2 className="h-6 w-6 text-[#8e00f7] animate-spin" /></div>
       ) : error ? (
-        <div className="bg-[#12121c] border border-red-500/30 rounded-2xl p-10 text-center">
+        <div className="bg-[var(--card-bg)] border border-red-500/30 rounded-2xl p-10 text-center">
           <AlertCircle className="h-9 w-9 text-red-400 mx-auto mb-3" />
-          <p className="text-sm text-gray-300 mb-3">{error}</p>
+          <p className="text-sm text-[var(--text-muted)] mb-3">{error}</p>
           <button type="button" onClick={() => load()} className="text-sm text-[#8e00f7] hover:underline">Reintentar</button>
         </div>
       ) : tickets.length === 0 ? (
-        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-10 text-center">
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-10 text-center">
           <MessageSquare className="h-9 w-9 text-gray-700 mx-auto mb-3" />
-          <p className="text-sm text-gray-400">No tienes ningún ticket todavía, {playerName}</p>
+          <p className="text-sm text-[var(--text-muted)]">No tienes ningún ticket todavía, {playerName}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -346,7 +346,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
               type="button"
               onClick={() => setSelectedId(t.id)}
               style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
-              className="w-full flex items-center justify-between gap-4 bg-[#12121c] border border-[#1a1a28] hover:border-[#8e00f7]/40 rounded-xl p-4 text-left transition animate-msg-in"
+              className="w-full flex items-center justify-between gap-4 bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#8e00f7]/40 rounded-xl p-4 text-left transition animate-msg-in"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1">
@@ -354,10 +354,10 @@ function TicketsTab({ playerName }: { playerName: string }) {
                   <span className={`px-2 py-0.5 rounded text-[10px] font-medium ring-1 ${STATUS_LABEL[t.status].tone}`}>
                     {STATUS_LABEL[t.status].label}
                   </span>
-                  <span className="text-[11px] text-gray-500">{t.category}</span>
+                  <span className="text-[11px] text-[var(--text-faint)]">{t.category}</span>
                 </div>
                 <div className="text-white font-medium truncate">{t.subject}</div>
-                <div className="text-xs text-gray-500">{formatDate(t.updatedAt)}</div>
+                <div className="text-xs text-[var(--text-faint)]">{formatDate(t.updatedAt)}</div>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-600 flex-shrink-0" />
             </button>
@@ -394,10 +394,10 @@ function ReportTab() {
 
   if (sent) {
     return (
-      <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-10 text-center">
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-10 text-center">
         <CheckCircle2 className="h-10 w-10 text-[#22c55e] mx-auto mb-3" />
         <h2 className="text-white font-semibold mb-1">Reporte enviado</h2>
-        <p className="text-sm text-gray-400 mb-4">El staff lo revisará en su panel. Gracias por ayudar a mantener la comunidad sana.</p>
+        <p className="text-sm text-[var(--text-muted)] mb-4">El staff lo revisará en su panel. Gracias por ayudar a mantener la comunidad sana.</p>
         <button type="button" onClick={() => setSent(false)} className="text-sm text-[#8e00f7] hover:underline">
           Enviar otro reporte
         </button>
@@ -406,19 +406,19 @@ function ReportTab() {
   }
 
   return (
-    <form onSubmit={submit} className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 space-y-4">
+    <form onSubmit={submit} className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 space-y-4">
       <input
         value={form.targetName}
         onChange={(e) => setForm((f) => ({ ...f, targetName: e.target.value }))}
         placeholder="Usuario o personaje reportado"
-        className="w-full h-12 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+        className="w-full h-12 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
         required
       />
       <input
         value={form.reason}
         onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))}
         placeholder="Motivo (ej. RDM, VDM, Fail RP, lenguaje inapropiado...)"
-        className="w-full h-12 px-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+        className="w-full h-12 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
         required
       />
       <textarea
@@ -426,7 +426,7 @@ function ReportTab() {
         onChange={(e) => setForm((f) => ({ ...f, details: e.target.value }))}
         placeholder="Describe lo que ocurrió, con la mayor cantidad de detalles posible (hora, lugar, testigos, evidencia si tienes)..."
         rows={5}
-        className="w-full p-4 bg-[#0c0c14] border border-[#1a1a28] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
+        className="w-full p-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
       />
       {error && <p className="text-sm text-red-400 flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {error}</p>}
       <button

@@ -165,13 +165,13 @@ export default function GoogleBrowserApp() {
             <div className="p-8 max-w-2xl mx-auto">
               <div className="flex items-center gap-3 mb-6"><Icon className={`w-8 h-8 ${meta.color}`} /><h1 className="text-2xl font-bold text-gray-800">{meta.title}</h1></div>
               {companies.length === 0 ? (
-                <p className="text-gray-500">Todavía no hay empresas registradas en el servidor.</p>
+                <p className="text-[var(--text-faint)]">Todavía no hay empresas registradas en el servidor.</p>
               ) : (
                 <div className="space-y-3">
                   {companies.map((c) => (
                     <div key={c.id} className="border border-gray-200 rounded-lg p-4">
                       <h3 className="font-semibold text-gray-800">{c.name}</h3>
-                      <p className="text-gray-500 text-sm">{c.fields?.sector || ''}</p>
+                      <p className="text-[var(--text-faint)] text-sm">{c.fields?.sector || ''}</p>
                     </div>
                   ))}
                 </div>
@@ -186,7 +186,7 @@ export default function GoogleBrowserApp() {
               </p>
             </div>
           ) : (
-            <div className="p-8 text-center text-gray-500">Página no encontrada</div>
+            <div className="p-8 text-center text-[var(--text-faint)]">Página no encontrada</div>
           )}
         </div>
 

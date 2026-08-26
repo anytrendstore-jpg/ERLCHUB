@@ -117,7 +117,7 @@ export default function WompiWidget({
           </div>
           <button 
             onClick={() => setMostrarBotonReal(false)}
-            className="text-gray-400 text-sm mt-4 underline"
+            className="text-[var(--text-muted)] text-sm mt-4 underline"
           >
             Volver
           </button>

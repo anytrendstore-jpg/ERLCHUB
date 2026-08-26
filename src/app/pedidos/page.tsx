@@ -41,11 +41,11 @@ export default function PedidosPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando historial de compras...</p>
+          <p className="text-[var(--text-muted)]">Cargando historial de compras...</p>
         </div>
         <Footer />
       </div>
@@ -54,7 +54,7 @@ export default function PedidosPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <p className="text-red-400 mb-4">Error: {error}</p>
@@ -68,20 +68,20 @@ export default function PedidosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] pt-20">
+    <div className="min-h-screen bg-[var(--background)] pt-20">
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-4">Mis Compras</h1>
-            <p className="text-gray-400 text-lg">
+            <p className="text-[var(--text-muted)] text-lg">
               Historial completo de tus transacciones de Hub Coins
             </p>
           </div>
 
           <div className="flex justify-center mb-8">
-            <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-1 inline-flex">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-1 inline-flex">
               {[
                 { value: 'all', label: 'Todas' },
                 { value: 'purchases', label: 'Compras' },
@@ -91,7 +91,7 @@ export default function PedidosPage() {
                   key={f.value}
                   onClick={() => setFilter(f.value as any)}
                   className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                    filter === f.value ? 'bg-[#8e00f7] text-white' : 'text-gray-400 hover:text-white'
+                    filter === f.value ? 'bg-[#8e00f7] text-white' : 'text-[var(--text-muted)] hover:text-white'
                   }`}
                 >
                   {f.label}
@@ -102,9 +102,9 @@ export default function PedidosPage() {
 
           <div className="space-y-4">
             {filteredTransactions.length === 0 ? (
-              <div className="text-center py-12 bg-[#12121c] border border-[#1a1a28] rounded-xl">
+              <div className="text-center py-12 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl">
                 <ShoppingBag className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">
+                <p className="text-[var(--text-muted)]">
                   {filter === 'all' 
                     ? 'No tienes transacciones aún' 
                     : filter === 'purchases' 
@@ -123,7 +123,7 @@ export default function PedidosPage() {
               filteredTransactions.map((transaction) => (
                 <div
                   key={transaction._id}
-                  className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 hover:border-[#2a2a38] transition-all"
+                  className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 hover:border-[#2a2a38] transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -157,7 +157,7 @@ export default function PedidosPage() {
                             {transaction.type === 'purchase' ? 'COMPRA' : 'GASTO'}
                           </span>
                         </div>
-                        <p className="text-gray-400 text-sm">{transaction.description}</p>
+                        <p className="text-[var(--text-muted)] text-sm">{transaction.description}</p>
                       </div>
                     </div>
 
@@ -173,7 +173,7 @@ export default function PedidosPage() {
                         {transaction.type === 'purchase' ? '+' : '-'}{transaction.amount}
                         <Coins className="h-5 w-5" />
                       </div>
-                      <div className="flex items-center gap-1 text-gray-500 text-sm">
+                      <div className="flex items-center gap-1 text-[var(--text-faint)] text-sm">
                         <Clock className="h-3 w-3" />
                         {formatTimestamp(transaction.timestamp)}
                       </div>
@@ -185,26 +185,26 @@ export default function PedidosPage() {
           </div>
 
           {filteredTransactions.length > 0 && (
-            <div className="mt-8 bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+            <div className="mt-8 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
               <h3 className="text-white font-bold mb-4">Resumen</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">
                     +{filteredTransactions.filter(t => t.type === 'purchase').reduce((sum, t) => sum + t.amount, 0)}
                   </div>
-                  <div className="text-gray-400 text-sm">Total Recibido</div>
+                  <div className="text-[var(--text-muted)] text-sm">Total Recibido</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-red-400">
                     -{filteredTransactions.filter(t => t.type === 'spend').reduce((sum, t) => sum + t.amount, 0)}
                   </div>
-                  <div className="text-gray-400 text-sm">Total Gastado</div>
+                  <div className="text-[var(--text-muted)] text-sm">Total Gastado</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8e00f7]">
                     {filteredTransactions.length}
                   </div>
-                  <div className="text-gray-400 text-sm">Transacciones</div>
+                  <div className="text-[var(--text-muted)] text-sm">Transacciones</div>
                 </div>
               </div>
             </div>

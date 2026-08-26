@@ -53,7 +53,7 @@ export default function TestimonialsCarousel() {
   if (loading) {
     return (
       <div className="w-full py-16 text-center">
-        <div className="text-gray-400 text-lg">Cargando mejores reseñas...</div>
+        <div className="text-[var(--text-muted)] text-lg">Cargando mejores reseñas...</div>
       </div>
     );
   }
@@ -61,10 +61,10 @@ export default function TestimonialsCarousel() {
   if (bestReviews.length === 0) {
     return (
       <div className="w-full py-16 text-center">
-        <div className="text-gray-400 text-lg mb-4">
+        <div className="text-[var(--text-muted)] text-lg mb-4">
           Aún no hay reseñas de la comunidad
         </div>
-        <div className="text-gray-500">
+        <div className="text-[var(--text-faint)]">
           Sé el primero en compartir tu experiencia
         </div>
       </div>
@@ -89,21 +89,21 @@ export default function TestimonialsCarousel() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Lo que dicen nuestros usuarios
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto">
             Descubre las experiencias de nuestra comunidad con ERLC HUB
           </p>
         </div>
 
         {/* Main Testimonial */}
         <div className="relative">
-          <div className="bg-[#12121c] border border-[#1e1e2e] rounded-2xl p-8 md:p-12 shadow-2xl">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-8 md:p-12 shadow-2xl">
             {/* Rating Stars */}
             <div className="flex justify-center mb-6">
               {renderStarsJSX(currentReview.rating)}
             </div>
 
             {/* Review Text */}
-            <blockquote className="text-gray-300 text-lg md:text-xl leading-relaxed mb-8 text-center">
+            <blockquote className="text-[var(--text-muted)] text-lg md:text-xl leading-relaxed mb-8 text-center">
               "{currentReview.comment}"
             </blockquote>
 
@@ -125,7 +125,7 @@ export default function TestimonialsCarousel() {
                   <div className="text-white font-semibold text-lg">
                     {currentReview.name}
                   </div>
-                  <div className="text-gray-400 text-sm">
+                  <div className="text-[var(--text-muted)] text-sm">
                     {currentReview.username || 'Usuario de ERLC HUB'}
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export default function TestimonialsCarousel() {
 
             {/* Date */}
             <div className="text-center mt-6">
-              <div className="text-gray-500 text-sm">
+              <div className="text-[var(--text-faint)] text-sm">
                 {new Date(currentReview.createdAt).toLocaleDateString('es-ES', {
                   year: 'numeric',
                   month: 'long',
@@ -187,13 +187,13 @@ export default function TestimonialsCarousel() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <div className="bg-[#12121c] border border-[#1e1e2e] rounded-xl p-6 text-center">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-white mb-2">
               {bestReviews.length}+
             </div>
-            <div className="text-gray-400">Reseñas Positivas</div>
+            <div className="text-[var(--text-muted)]">Reseñas Positivas</div>
           </div>
-          <div className="bg-[#12121c] border border-[#1e1e2e] rounded-xl p-6 text-center">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-white mb-2">
               {(() => {
                 if (bestReviews.length === 0) return '0.0';
@@ -201,11 +201,11 @@ export default function TestimonialsCarousel() {
                 return (total / bestReviews.length).toFixed(1);
               })()}
             </div>
-            <div className="text-gray-400">Calificación Promedio</div>
+            <div className="text-[var(--text-muted)]">Calificación Promedio</div>
           </div>
-          <div className="bg-[#12121c] border border-[#1e1e2e] rounded-xl p-6 text-center">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 text-center">
             <div className="text-2xl font-bold text-white mb-2">100%</div>
-            <div className="text-gray-400">Usuarios Satisfechos</div>
+            <div className="text-[var(--text-muted)]">Usuarios Satisfechos</div>
           </div>
         </div>
       </div>

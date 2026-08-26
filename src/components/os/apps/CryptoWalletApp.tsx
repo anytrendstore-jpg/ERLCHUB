@@ -279,8 +279,8 @@ export default function CryptoWalletApp() {
   const tradeFee = tradeCoin ? Math.round(tradeValue * (tradeCoin.feePercent / 100)) : 0;
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a12] text-white">
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 bg-gradient-to-r from-purple-950/40 to-[#0a0a12]">
+    <div className="h-full flex flex-col bg-[var(--background)] text-white">
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 bg-gradient-to-r from-purple-950/40 to-[var(--background)]">
         <Wallet className="w-6 h-6 text-purple-400" />
         <span className="font-bold text-xl">Crypto Wallet</span>
         <div className="ml-auto text-right">
@@ -501,7 +501,7 @@ export default function CryptoWalletApp() {
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
                     <input value={recipientQuery} onChange={(e) => setRecipientQuery(e.target.value)} placeholder="Buscar jugador..." className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-2.5 text-sm text-white focus:outline-none" />
                     {recipientResults.length > 0 && (
-                      <div className="mt-1.5 max-h-32 overflow-y-auto space-y-1 bg-[#1a1a28] rounded-lg p-1">
+                      <div className="mt-1.5 max-h-32 overflow-y-auto space-y-1 bg-[var(--card-bg-2)] rounded-lg p-1">
                         {recipientResults.map((u) => (
                           <button key={u.id} onClick={() => { setRecipient(u); setRecipientQuery(''); setRecipientResults([]); }} className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/10 text-left text-sm">
                             {u.name}

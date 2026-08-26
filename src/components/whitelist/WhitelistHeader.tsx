@@ -32,27 +32,28 @@ export default function WhitelistHeader({ variant = "default", applicationId }: 
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-          <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
+          <span className="font-bold text-[var(--foreground)] text-lg">ERLCᴴᵁᴮ</span>
         </Link>
 
         {variant === "close" && (
           <Link
             href="/"
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#12121c]/80 border border-[#1a1a28] hover:bg-[#1a1a28] transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl border border-[var(--card-border-soft)] hover:bg-[var(--card-bg-2)] transition-colors"
+            style={{ background: "color-mix(in srgb, var(--card-bg) 80%, transparent)" }}
           >
-            <X className="h-5 w-5 text-gray-400" />
+            <X className="h-5 w-5 text-[var(--text-muted)]" />
           </Link>
         )}
 
         {variant === "default" && (
           <div className="flex items-center gap-4">
             {applicationId && (
-              <span className="hidden sm:inline text-xs text-gray-500 font-mono">{applicationId}</span>
+              <span className="hidden sm:inline text-xs text-[var(--text-faint)] font-mono">{applicationId}</span>
             )}
             <button
               type="button"
               onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+              className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm"
             >
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Salir</span>

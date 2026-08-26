@@ -122,10 +122,10 @@ export default function PerfilPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-4">Acceso Restringido</h1>
-          <p className="text-gray-400 mb-8">Debes iniciar sesión para ver tu perfil</p>
+          <p className="text-[var(--text-muted)] mb-8">Debes iniciar sesión para ver tu perfil</p>
           <a
             href="/ingresar"
             className="inline-flex items-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-6 py-3 rounded-full transition-all"
@@ -138,7 +138,7 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0c14]">
+    <div className="min-h-screen bg-[var(--background-alt)]">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-white mb-8">Mi Perfil</h1>
 
@@ -164,7 +164,7 @@ export default function PerfilPage() {
         {/* Dashboard del usuario, o whitelist si todavía no la ha hecho */}
         <Link
           href={completed || !hasApplication ? "/dashboard" : nextRoute}
-          className="group flex items-center gap-4 mb-8 p-5 rounded-2xl bg-[#12121c] border border-[#1a1a28] hover:border-[#8e00f7]/50 transition-all"
+          className="group flex items-center gap-4 mb-8 p-5 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#8e00f7]/50 transition-all"
         >
           <div className="w-12 h-12 rounded-xl bg-[#8e00f7]/20 flex items-center justify-center flex-shrink-0">
             <LayoutDashboard className="h-6 w-6 text-[#8e00f7]" />
@@ -173,7 +173,7 @@ export default function PerfilPage() {
             <div className="text-white font-bold">
               {hasApplication && !completed ? "Continuar mi whitelist" : "Mi Dashboard"}
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-[var(--text-muted)]">
               {hasApplication && !completed
                 ? "Retoma tu solicitud donde la dejaste"
                 : "Entra a tu escritorio de ERLC HUB"}
@@ -181,7 +181,7 @@ export default function PerfilPage() {
           </div>
           <ArrowRight className="h-5 w-5 text-[#8e00f7] group-hover:translate-x-1 transition-transform flex-shrink-0" />
         </Link>
-        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-8">
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
           <div className="flex items-center gap-6">
             {user?.avatar && (
               <img
@@ -194,7 +194,7 @@ export default function PerfilPage() {
               <h2 className="text-2xl font-bold text-white mb-2">
                 {user?.global_name || user?.username}
               </h2>
-              <div className="flex items-center gap-4 text-gray-400">
+              <div className="flex items-center gap-4 text-[var(--text-muted)]">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
                   <span>@{user?.username}</span>
@@ -219,18 +219,18 @@ export default function PerfilPage() {
             </div>
             <div className="text-right">
               <div className="flex items-center gap-2 mb-2">
-                <Crown className={`h-5 w-5 ${membershipLevel !== "Ninguna" ? 'text-[#fbbf24]' : 'text-gray-400'}`} />
-                <span className={`font-bold text-lg ${membershipLevel !== "Ninguna" ? 'text-[#fbbf24]' : 'text-gray-400'}`}>
+                <Crown className={`h-5 w-5 ${membershipLevel !== "Ninguna" ? 'text-[#fbbf24]' : 'text-[var(--text-muted)]'}`} />
+                <span className={`font-bold text-lg ${membershipLevel !== "Ninguna" ? 'text-[#fbbf24]' : 'text-[var(--text-muted)]'}`}>
                   {membershipLevel}
                 </span>
               </div>
-              <p className="text-gray-400 text-sm">Nivel de Membresía</p>
+              <p className="text-[var(--text-muted)] text-sm">Nivel de Membresía</p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-8">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-8">
             <div className="flex items-center gap-4 mb-3">
               <Image
                 src="/hub-coins.png"
@@ -239,29 +239,29 @@ export default function PerfilPage() {
                 height={40}
                 className="w-10 h-10"
               />
-              <span className="text-gray-400 text-base">Hub Coins</span>
+              <span className="text-[var(--text-muted)] text-base">Hub Coins</span>
             </div>
             <div className="text-3xl font-bold text-white mb-1">
               {profileData.hubCoinsBalance || hubCoinsBalance || 0}
             </div>
-            <p className="text-gray-400 text-sm">Saldo actual</p>
+            <p className="text-[var(--text-muted)] text-sm">Saldo actual</p>
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-12">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-12">
             <div className="flex items-center gap-4 mb-3">
               <TrendingUp className="h-6 w-6 text-[#8e00f7]" />
-              <span className="text-gray-400 text-base">Total Gastado</span>
+              <span className="text-[var(--text-muted)] text-base">Total Gastado</span>
             </div>
             <div className="text-3xl font-bold text-white mb-1">
               ${profileData.totalSpent || 0}
             </div>
-            <p className="text-gray-400 text-sm">En compras</p>
+            <p className="text-[var(--text-muted)] text-sm">En compras</p>
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-12">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-12">
             <div className="flex items-center gap-4 mb-3">
               <Clock className="h-6 w-6 text-[#f59e0b]" />
-              <span className="text-gray-400 text-base">Actividad Reciente</span>
+              <span className="text-[var(--text-muted)] text-base">Actividad Reciente</span>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -272,31 +272,31 @@ export default function PerfilPage() {
                 <span className="text-red-400 text-sm">Rechazadas:</span>
                 <span className="text-white font-bold text-lg">{profileData.rejectedOrders || 0}</span>
               </div>
-              <div className="border-t border-[#1a1a28] pt-2 mt-2">
+              <div className="border-t border-[var(--card-border-soft)] pt-2 mt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">Total:</span>
+                  <span className="text-[var(--text-muted)] text-sm">Total:</span>
                   <span className="text-white font-bold text-xl">{profileData.recentActivity?.length || 0}</span>
                 </div>
               </div>
             </div>
-            <p className="text-gray-400 text-sm mt-3">Últimas transacciones</p>
+            <p className="text-[var(--text-muted)] text-sm mt-3">Últimas transacciones</p>
           </div>
         </div>
 
-        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
           <h3 className="text-xl font-bold text-white mb-6">Actividad Reciente</h3>
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8e00f7] mx-auto"></div>
-              <p className="text-gray-400 mt-4">Cargando actividad...</p>
+              <p className="text-[var(--text-muted)] mt-4">Cargando actividad...</p>
             </div>
           ) : !profileData.recentActivity || profileData.recentActivity.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-400">No hay actividad reciente</p>
+              <p className="text-[var(--text-muted)]">No hay actividad reciente</p>
             </div>
           ) : (
             profileData.recentActivity.map((activity: any, index: number) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-[#1a1a28] rounded-lg mb-3">
+              <div key={index} className="flex items-center justify-between p-4 bg-[var(--card-bg-2)] rounded-lg mb-3">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     activity.status === 'completed' 
@@ -317,7 +317,7 @@ export default function PerfilPage() {
                     <p className="text-white font-medium">
                       {activity.isHubCoins ? 'Hub Coins' : 'Compra'}
                     </p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-[var(--text-muted)] text-sm">
                       {activity.isHubCoins ? 'Hub Coins recibidos' : activity.description}
                     </p>
                   </div>
@@ -339,7 +339,7 @@ export default function PerfilPage() {
                       `$${Math.abs(activity.amount)}`
                     )}
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     {(() => {
                       const date = new Date(activity.timestamp);
                       const now = new Date();
@@ -363,7 +363,7 @@ export default function PerfilPage() {
         </div>
 
         {profileData.membership && profileData.membership.type === 'permanent' && profileData.membership.status === 'active' && (
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-8">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <Crown className="h-5 w-5 text-[#fbbf24]" />
               Gestión de Membresía Permanente
@@ -371,7 +371,7 @@ export default function PerfilPage() {
             <div className="space-y-4">
               <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
                 <h4 className="text-red-400 font-semibold mb-2">¿Deseas cancelar tu membresía?</h4>
-                <p className="text-gray-300 text-sm mb-4">
+                <p className="text-[var(--text-muted)] text-sm mb-4">
                   Al cancelar tu membresía permanente, perderás todos los beneficios inmediatamente 
                   y no podrás recuperarlos sin comprar una nueva membresía.
                 </p>
@@ -385,7 +385,7 @@ export default function PerfilPage() {
                   </button>
                   <button
                     onClick={() => window.location.href = '/tienda/membresia'}
-                    className="px-4 py-2 bg-[#1a1a28] hover:bg-[#2a2a38] text-white font-medium rounded-lg transition-all"
+                    className="px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white font-medium rounded-lg transition-all"
                   >
                     Ver Otras Membresías
                   </button>

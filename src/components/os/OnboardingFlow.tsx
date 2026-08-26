@@ -86,7 +86,7 @@ function SetupScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-[#0A0A0F] flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="w-full max-w-lg bg-[#12121c] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+      <div className="w-full max-w-lg bg-[var(--card-bg)] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
         <div className="flex items-center gap-4 mb-6">
           <img src={user.avatar} alt={user.displayName} className="w-16 h-16 rounded-full ring-2 ring-white/10" />
           <div className="min-w-0">

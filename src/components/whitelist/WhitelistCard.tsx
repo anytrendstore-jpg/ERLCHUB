@@ -9,7 +9,7 @@ interface WhitelistCardProps {
 
 /**
  * Shell de tarjeta compartido — antes cada página repetía
- * `bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl`
+ * `bg-[#12121c]/90 backdrop-blur-sm border border-[var(--card-border)] rounded-2xl`
  * a mano. Ahora además tiene degradado + sombra en capas para que se sienta
  * con más profundidad que un panel plano.
  */
@@ -17,11 +17,12 @@ export default function WhitelistCard({ children, className = "", variant = "def
   const variantClass =
     variant === "success"
       ? "border-[#22c55e]/30 shadow-2xl shadow-[#22c55e]/10"
-      : "border-[#1e1e2e] shadow-2xl shadow-black/40";
+      : "border-[var(--card-border)] shadow-2xl shadow-black/40";
 
   return (
     <div
-      className={`bg-gradient-to-b from-[#15151f]/95 to-[#0f0f18]/95 backdrop-blur-sm border rounded-2xl overflow-hidden ${variantClass} ${className}`}
+      className={`backdrop-blur-sm border rounded-2xl overflow-hidden ${variantClass} ${className}`}
+      style={{ background: "linear-gradient(to bottom, color-mix(in srgb, var(--card-bg) 95%, transparent), color-mix(in srgb, var(--background) 95%, transparent))" }}
     >
       {children}
     </div>

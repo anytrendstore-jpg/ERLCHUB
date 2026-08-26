@@ -29,7 +29,7 @@ export function MDTAuditContent() {
 
   const getActionColor = (action: string) => {
     if (action === "login") return "text-green-400";
-    if (action === "logout") return "text-gray-400";
+    if (action === "logout") return "text-[var(--text-muted)]";
     if (action.includes("delete")) return "text-red-400";
     if (action.includes("create")) return "text-blue-400";
     if (action.includes("edit")) return "text-yellow-400";

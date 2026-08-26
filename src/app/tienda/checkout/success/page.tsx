@@ -101,11 +101,11 @@ function CheckoutSuccessContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Verificando estado del pago...</p>
+          <p className="text-[var(--text-muted)]">Verificando estado del pago...</p>
         </div>
         <Footer />
       </div>
@@ -113,7 +113,7 @@ function CheckoutSuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] pt-20">
+    <div className="min-h-screen bg-[var(--background)] pt-20">
       <Navbar />
       
       <div className="container mx-auto px-4 py-16">
@@ -123,16 +123,16 @@ function CheckoutSuccessContent() {
           </div>
 
           <h1 className="text-4xl font-bold text-white mb-4">¡Compra Completada!</h1>
-          <p className="text-xl text-gray-400 mb-8">
+          <p className="text-xl text-[var(--text-muted)] mb-8">
             Tu pedido ha sido procesado exitosamente
           </p>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 mb-8 max-w-md mx-auto">
-            <div className="text-gray-400 text-sm mb-2">Número de Pedido</div>
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8 max-w-md mx-auto">
+            <div className="text-[var(--text-muted)] text-sm mb-2">Número de Pedido</div>
             <div className="text-[#8e00f7] font-bold text-lg">{orderNumber}</div>
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 mb-8">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8">
             <h2 className="text-xl font-bold text-white mb-4">¿Qué sigue?</h2>
             
             <div className="grid md:grid-cols-3 gap-6 text-left">
@@ -142,7 +142,7 @@ function CheckoutSuccessContent() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">Entrega Inmediata</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Tus productos digitales han sido entregados automáticamente
                   </p>
                 </div>
@@ -154,7 +154,7 @@ function CheckoutSuccessContent() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">Tiempo de Espera</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Algunos productos pueden tardar hasta 5 minutos en activarse
                   </p>
                 </div>
@@ -166,7 +166,7 @@ function CheckoutSuccessContent() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">Confirmación</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Recibirás un mensaje en discord con los detalles de tu compra
                   </p>
                 </div>
@@ -185,16 +185,16 @@ function CheckoutSuccessContent() {
             
             <Link
               href="/tienda"
-              className="inline-flex items-center gap-2 bg-[#12121c] hover:bg-[#1a1a28] text-white px-6 py-3 rounded-xl font-medium transition-all hover:scale-105 border border-[#1a1a28]"
+              className="inline-flex items-center gap-2 bg-[var(--card-bg)] hover:bg-[var(--card-bg-2)] text-white px-6 py-3 rounded-xl font-medium transition-all hover:scale-105 border border-[var(--card-border-soft)]"
             >
               <ArrowRight className="h-5 w-5" />
               Seguir Comprando
             </Link>
           </div>
 
-          <div className="mt-12 bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+          <div className="mt-12 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
             <h3 className="text-lg font-bold text-white mb-3">¿Necesitas ayuda?</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-[var(--text-muted)] mb-4">
               Si tienes algún problema con tu compra, nuestro equipo de soporte está aquí para ayudarte
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -227,11 +227,11 @@ function CheckoutSuccessContent() {
 export default function CheckoutSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando...</p>
+          <p className="text-[var(--text-muted)]">Cargando...</p>
         </div>
         <Footer />
       </div>

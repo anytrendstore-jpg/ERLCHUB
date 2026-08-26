@@ -27,12 +27,12 @@ export default function CheckoutCancelledPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] pt-20">
+    <div className="min-h-screen bg-[var(--background)] pt-20">
       <Navbar />
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-8 mb-6">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-8 mb-6">
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center">
                 <X className="h-10 w-10 text-red-500" />
@@ -43,24 +43,24 @@ export default function CheckoutCancelledPage() {
               <h1 className="text-3xl font-bold text-white mb-4">
                 Transacción Cancelada
               </h1>
-              <p className="text-gray-300 text-lg mb-2">
+              <p className="text-[var(--text-muted)] text-lg mb-2">
                 Tu pago no ha sido completado
               </p>
-              <p className="text-gray-400">
+              <p className="text-[var(--text-muted)]">
                 No te preocupes, no se ha realizado ningún cargo en tu cuenta.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <div className="bg-[#1a1a28] border border-[#2a2a38] rounded-xl p-4">
+              <div className="bg-[var(--card-bg-2)] border border-[#2a2a38] rounded-xl p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <AlertCircle className="h-5 w-5 text-orange-400" />
                   <h3 className="text-white font-semibold">¿Qué pasó?</h3>
                 </div>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[var(--text-muted)] text-sm">
                   La transacción fue cancelada o rechazada. Esto puede ocurrir por:
                 </p>
-                <ul className="text-gray-400 text-sm mt-2 space-y-1">
+                <ul className="text-[var(--text-muted)] text-sm mt-2 space-y-1">
                   <li>· Cancelación por tu parte</li>
                   <li>· Problema con el método de pago</li>
                   <li>· Tiempo de espera agotado</li>
@@ -68,15 +68,15 @@ export default function CheckoutCancelledPage() {
                 </ul>
               </div>
 
-              <div className="bg-[#1a1a28] border border-[#2a2a38] rounded-xl p-4">
+              <div className="bg-[var(--card-bg-2)] border border-[#2a2a38] rounded-xl p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <RefreshCw className="h-5 w-5 text-[#8e00f7]" />
                   <h3 className="text-white font-semibold">¿Qué hacer?</h3>
                 </div>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[var(--text-muted)] text-sm">
                   Puedes intentar realizar la compra nuevamente:
                 </p>
-                <ul className="text-gray-400 text-sm mt-2 space-y-1">
+                <ul className="text-[var(--text-muted)] text-sm mt-2 space-y-1">
                   <li>· Verifica tu método de pago</li>
                   <li>· Revisa tu conexión a internet</li>
                   <li>· Intenta con otro navegador</li>
@@ -97,7 +97,7 @@ export default function CheckoutCancelledPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Link
                   href="/tienda"
-                  className="w-full bg-[#1a1a28] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Volver a la Tienda

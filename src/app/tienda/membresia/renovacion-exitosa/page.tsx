@@ -42,7 +42,7 @@ function RenewalSuccessContent() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] pt-20">
+    <div className="min-h-screen bg-[var(--background)] pt-20">
       <Navbar />
       
       <div className="container mx-auto px-4 py-16">
@@ -54,19 +54,19 @@ function RenewalSuccessContent() {
           <h1 className="text-4xl font-bold text-white mb-4">
             ¡Membresía Renovada Exitosamente!
           </h1>
-          <p className="text-xl text-gray-400 mb-8">
+          <p className="text-xl text-[var(--text-muted)] mb-8">
             Tu {membershipInfo?.name || 'membresía'} ha sido renovada y todos tus beneficios han sido reactivados
           </p>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 mb-8 max-w-md mx-auto">
-            <div className="text-gray-400 text-sm mb-2">Membresía Reactivada</div>
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8 max-w-md mx-auto">
+            <div className="text-[var(--text-muted)] text-sm mb-2">Membresía Reactivada</div>
             <div className="text-[#8e00f7] font-bold text-lg flex items-center justify-center gap-2">
               <Crown className="h-5 w-5" />
               {membershipInfo?.name || 'Membresía'}
             </div>
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6 mb-8">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8">
             <h2 className="text-xl font-bold text-white mb-4">¿Qué sucede ahora?</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
               <div className="flex items-start gap-3">
@@ -75,7 +75,7 @@ function RenewalSuccessContent() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">Beneficios Reactivados</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Todos tus beneficios especiales han sido restaurados inmediatamente
                   </p>
                 </div>
@@ -87,7 +87,7 @@ function RenewalSuccessContent() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">Próxima Renovación</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Se te recordará 5 días antes de tu próximo vencimiento
                   </p>
                 </div>
@@ -99,7 +99,7 @@ function RenewalSuccessContent() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-1">Acceso Inmediato</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Ya puedes disfrutar de todos los beneficios en el servidor
                   </p>
                 </div>
@@ -115,19 +115,19 @@ function RenewalSuccessContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-[#8e00f7]" />
-                <span className="text-gray-300 text-sm">Acceso prioritario en tickets</span>
+                <span className="text-[var(--text-muted)] text-sm">Acceso prioritario en tickets</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-[#8e00f7]" />
-                <span className="text-gray-300 text-sm">Rango exclusivo en Discord</span>
+                <span className="text-[var(--text-muted)] text-sm">Rango exclusivo en Discord</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-[#8e00f7]" />
-                <span className="text-gray-300 text-sm">Dinero inicial recurrente</span>
+                <span className="text-[var(--text-muted)] text-sm">Dinero inicial recurrente</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-[#8e00f7]" />
-                <span className="text-gray-300 text-sm">Vehículos y propiedades</span>
+                <span className="text-[var(--text-muted)] text-sm">Vehículos y propiedades</span>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ function RenewalSuccessContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 href="/tienda/membresia"
-                className="w-full bg-[#1a1a28] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
               >
                 <ArrowRight className="h-4 w-4" />
                 Ver Otras Membresías
@@ -180,11 +180,11 @@ function RenewalSuccessContent() {
 export default function RenewalSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Procesando renovación...</p>
+          <p className="text-[var(--text-muted)]">Procesando renovación...</p>
         </div>
         <Footer />
       </div>

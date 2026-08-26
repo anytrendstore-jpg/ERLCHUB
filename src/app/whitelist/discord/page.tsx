@@ -47,7 +47,7 @@ export default function DiscordVerificationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="discord" />
       <WhitelistHeader applicationId={application?.applicationId} />
@@ -59,14 +59,14 @@ export default function DiscordVerificationPage() {
           </div>
 
           <WhitelistCard>
-            <div className="p-6 border-b border-[#1e1e2e]">
+            <div className="p-6 border-b border-[var(--card-border)]">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-[#5865F2]/20 flex items-center justify-center">
                   <MessageCircle className="h-7 w-7 text-[#5865F2]" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-white">Verificación de Discord</h1>
-                  <p className="text-gray-400">Únete al servidor y acepta las reglas</p>
+                  <p className="text-[var(--text-muted)]">Únete al servidor y acepta las reglas</p>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function DiscordVerificationPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                    <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                       Completa los requisitos
                     </h3>
 
@@ -115,19 +115,19 @@ export default function DiscordVerificationPage() {
                     <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                       discord.joinedServer
                         ? "bg-[#22c55e]/10 border-[#22c55e]/30"
-                        : "bg-[#0a0a12] border-[#1e1e2e]"
+                        : "bg-[var(--background)] border-[var(--card-border)]"
                     }`}>
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          discord.joinedServer ? "bg-[#22c55e]" : "bg-[#1a1a28]"
+                          discord.joinedServer ? "bg-[#22c55e]" : "bg-[var(--card-bg-2)]"
                         }`}>
                           {discord.joinedServer ? (
                             <Check className="w-4 h-4 text-white" />
                           ) : (
-                            <Users className="w-4 h-4 text-gray-500" />
+                            <Users className="w-4 h-4 text-[var(--text-faint)]" />
                           )}
                         </div>
-                        <span className={discord.joinedServer ? "text-white" : "text-gray-400"}>
+                        <span className={discord.joinedServer ? "text-white" : "text-[var(--text-muted)]"}>
                           Unirse al servidor de ERLC HUB
                         </span>
                       </div>
@@ -155,19 +155,19 @@ export default function DiscordVerificationPage() {
                     <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                       discord.acceptedRules
                         ? "bg-[#22c55e]/10 border-[#22c55e]/30"
-                        : "bg-[#0a0a12] border-[#1e1e2e]"
+                        : "bg-[var(--background)] border-[var(--card-border)]"
                     }`}>
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          discord.acceptedRules ? "bg-[#22c55e]" : "bg-[#1a1a28]"
+                          discord.acceptedRules ? "bg-[#22c55e]" : "bg-[var(--card-bg-2)]"
                         }`}>
                           {discord.acceptedRules ? (
                             <Check className="w-4 h-4 text-white" />
                           ) : (
-                            <Bell className="w-4 h-4 text-gray-500" />
+                            <Bell className="w-4 h-4 text-[var(--text-faint)]" />
                           )}
                         </div>
-                        <span className={discord.acceptedRules ? "text-white" : "text-gray-400"}>
+                        <span className={discord.acceptedRules ? "text-white" : "text-[var(--text-muted)]"}>
                           Aceptar las reglas del servidor
                         </span>
                       </div>
@@ -204,7 +204,7 @@ export default function DiscordVerificationPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">Discord Verificado</h2>
-                    <p className="text-gray-400">
+                    <p className="text-[var(--text-muted)]">
                       Tu cuenta de Discord ha sido vinculada exitosamente.
                     </p>
                   </div>
@@ -238,7 +238,7 @@ export default function DiscordVerificationPage() {
           </WhitelistCard>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[var(--text-faint)]">
               ¿Problemas con la verificación?{" "}
               <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer" className="text-[#8e00f7] hover:underline">
                 Contacta soporte

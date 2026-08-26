@@ -38,7 +38,7 @@ export default function TicketAttachments({ attachments }: { attachments?: Ticke
         if (a.kind === "audio") {
           return (
             <div key={i} className="flex items-center gap-2 max-w-[280px]">
-              <Music className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Music className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
               <audio src={a.url} controls className="h-9 flex-1" />
             </div>
           );
@@ -47,7 +47,7 @@ export default function TicketAttachments({ attachments }: { attachments?: Ticke
           <a key={i} href={a.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-3 py-2 transition-colors">
             <Download className="w-3.5 h-3.5 flex-shrink-0" />
             <span className="truncate">{a.name}</span>
-            <span className="text-gray-500 flex-shrink-0">{formatSize(a.size)}</span>
+            <span className="text-[var(--text-faint)] flex-shrink-0">{formatSize(a.size)}</span>
           </a>
         );
       })}

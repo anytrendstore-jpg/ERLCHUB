@@ -50,7 +50,7 @@ export default function AddToCartButton({
       disabled={disabled}
       className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 mb-2 ${
         disabled 
-          ? "bg-gray-600 text-gray-400 cursor-not-allowed" 
+          ? "bg-gray-600 text-[var(--text-muted)] cursor-not-allowed" 
           : isAdded 
             ? "bg-green-600 hover:bg-green-700 text-white"
             : (requireAuth && !isAuthenticated)

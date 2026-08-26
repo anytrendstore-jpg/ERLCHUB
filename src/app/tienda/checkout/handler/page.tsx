@@ -107,11 +107,11 @@ function HandlerContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Procesando tu pago...</p>
+          <p className="text-[var(--text-muted)]">Procesando tu pago...</p>
         </div>
         <Footer />
       </div>
@@ -119,10 +119,10 @@ function HandlerContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] pt-20">
+    <div className="min-h-screen bg-[var(--background)] pt-20">
       <Navbar />
       <div className="container mx-auto px-4 py-16 text-center">
-        <p className="text-gray-400">Redirigiendo...</p>
+        <p className="text-[var(--text-muted)]">Redirigiendo...</p>
       </div>
       <Footer />
     </div>
@@ -132,11 +132,11 @@ function HandlerContent() {
 export default function CheckoutHandlerPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="w-12 h-12 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando...</p>
+          <p className="text-[var(--text-muted)]">Cargando...</p>
         </div>
         <Footer />
       </div>

@@ -123,7 +123,7 @@ export default function ReviewWaitingPage() {
       : "—";
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="review" />
       <WhitelistHeader applicationId={application.applicationId} />
@@ -145,7 +145,7 @@ export default function ReviewWaitingPage() {
                 <h1 className={`text-3xl font-bold ${statusConfig.color} mb-2`}>
                   {statusConfig.title}
                 </h1>
-                <p className="text-gray-400 max-w-md">
+                <p className="text-[var(--text-muted)] max-w-md">
                   {statusConfig.description}
                 </p>
               </div>
@@ -155,28 +155,28 @@ export default function ReviewWaitingPage() {
               {(status === "pending" || status === "in_review") && (
                 <div className="space-y-6">
                   <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="bg-[#0a0a12] rounded-xl p-4 text-center">
+                    <div className="bg-[var(--background)] rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-white mb-1">
                         #{queue?.position ?? "—"}
                       </div>
-                      <div className="text-sm text-gray-500">Posición en cola</div>
+                      <div className="text-sm text-[var(--text-faint)]">Posición en cola</div>
                     </div>
-                    <div className="bg-[#0a0a12] rounded-xl p-4 text-center">
+                    <div className="bg-[var(--background)] rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-white mb-1">
                         {queue?.total ?? 0}
                       </div>
-                      <div className="text-sm text-gray-500">En revisión</div>
+                      <div className="text-sm text-[var(--text-faint)]">En revisión</div>
                     </div>
-                    <div className="bg-[#0a0a12] rounded-xl p-4 text-center">
+                    <div className="bg-[var(--background)] rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-[#8e00f7] mb-1">
                         {application.questionnaireScore ?? 0}%
                       </div>
-                      <div className="text-sm text-gray-500">Puntuación</div>
+                      <div className="text-sm text-[var(--text-faint)]">Puntuación</div>
                     </div>
                   </div>
 
-                  <div className="bg-[#0a0a12] rounded-xl p-4">
-                    <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                  <div className="bg-[var(--background)] rounded-xl p-4">
+                    <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-4">
                       Historial
                     </h3>
                     <div className="space-y-4">
@@ -186,45 +186,45 @@ export default function ReviewWaitingPage() {
                         </div>
                         <div className="flex-1">
                           <div className="text-white font-medium">Solicitud enviada</div>
-                          <div className="text-sm text-gray-500">{formatDate(application.submittedAt)}</div>
+                          <div className="text-sm text-[var(--text-faint)]">{formatDate(application.submittedAt)}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          status === "in_review" ? "bg-blue-500" : "bg-[#1a1a28]"
+                          status === "in_review" ? "bg-blue-500" : "bg-[var(--card-bg-2)]"
                         }`}>
                           {status === "in_review" ? (
                             <Loader2 className="w-4 h-4 text-white animate-spin" />
                           ) : (
-                            <Clock className="w-4 h-4 text-gray-500" />
+                            <Clock className="w-4 h-4 text-[var(--text-faint)]" />
                           )}
                         </div>
                         <div className="flex-1">
-                          <div className={status === "in_review" ? "text-white font-medium" : "text-gray-500"}>
+                          <div className={status === "in_review" ? "text-white font-medium" : "text-[var(--text-faint)]"}>
                             {status === "in_review" ? "En revisión por staff" : "Esperando revisión"}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 opacity-50">
-                        <div className="w-8 h-8 rounded-full bg-[#1a1a28] flex items-center justify-center flex-shrink-0">
-                          <Shield className="w-4 h-4 text-gray-500" />
+                        <div className="w-8 h-8 rounded-full bg-[var(--card-bg-2)] flex items-center justify-center flex-shrink-0">
+                          <Shield className="w-4 h-4 text-[var(--text-faint)]" />
                         </div>
                         <div className="flex-1">
-                          <div className="text-gray-500">Decisión final</div>
+                          <div className="text-[var(--text-faint)]">Decisión final</div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-[#0a0a12] rounded-xl">
-                    <div className="text-sm text-gray-500">
+                  <div className="flex items-center justify-between p-4 bg-[var(--background)] rounded-xl">
+                    <div className="text-sm text-[var(--text-faint)]">
                       Última comprobación: {lastChecked ? formatTime(lastChecked) : "—"}
                     </div>
                     <button
                       type="button"
                       onClick={checkStatus}
                       disabled={isRefreshing}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#1a1a28] hover:bg-[#2a2a3a] disabled:opacity-50 text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] disabled:opacity-50 text-white rounded-lg transition-colors"
                     >
                       <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
                       Actualizar
@@ -245,16 +245,16 @@ export default function ReviewWaitingPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">¡Felicitaciones!</h2>
-                    <p className="text-gray-400 max-w-md mx-auto">
+                    <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Tu solicitud de whitelist ha sido aprobada. Ahora puedes crear tu documento de identidad
                       y comenzar a jugar en ERLC HUB.
                     </p>
                   </div>
 
                   {application.staffNotes && (
-                    <div className="bg-[#0a0a12] border border-[#1e1e2e] rounded-xl p-4 text-left max-w-md mx-auto">
+                    <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-xl p-4 text-left max-w-md mx-auto">
                       <h3 className="text-sm font-semibold text-[#22c55e] mb-2">Notas del staff:</h3>
-                      <p className="text-gray-400 text-sm">{application.staffNotes}</p>
+                      <p className="text-[var(--text-muted)] text-sm">{application.staffNotes}</p>
                     </div>
                   )}
 
@@ -263,14 +263,14 @@ export default function ReviewWaitingPage() {
                       <div className="text-3xl font-bold text-[#22c55e]">
                         {application.questionnaireScore ?? 0}%
                       </div>
-                      <div className="text-sm text-gray-500">Puntuación</div>
+                      <div className="text-sm text-[var(--text-faint)]">Puntuación</div>
                     </div>
                     <div className="h-12 w-px bg-[#1e1e2e]" />
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[#8e00f7]">
                         {formatDate(application.reviewedAt)}
                       </div>
-                      <div className="text-sm text-gray-500">Revisada</div>
+                      <div className="text-sm text-[var(--text-faint)]">Revisada</div>
                     </div>
                   </div>
 
@@ -292,14 +292,14 @@ export default function ReviewWaitingPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">Solicitud Rechazada</h2>
-                    <p className="text-gray-400 max-w-md mx-auto">
+                    <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Lamentablemente tu solicitud no cumple con los requisitos necesarios.
                     </p>
                   </div>
 
                   <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-left max-w-md mx-auto">
                     <h3 className="text-sm font-semibold text-red-400 mb-2">Notas del Staff:</h3>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-[var(--text-muted)] text-sm">
                       {application.staffNotes || "El staff no dejó notas adicionales."}
                     </p>
                   </div>
@@ -307,7 +307,7 @@ export default function ReviewWaitingPage() {
                   <div className="flex items-center justify-center gap-4">
                     <Link
                       href="/"
-                      className="px-6 py-3 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
+                      className="px-6 py-3 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
                     >
                       Volver al inicio
                     </Link>
@@ -331,14 +331,14 @@ export default function ReviewWaitingPage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">Correcciones Necesarias</h2>
-                    <p className="text-gray-400 max-w-md mx-auto">
+                    <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Tu solicitud está casi lista, pero necesita algunas correcciones antes de ser aprobada.
                     </p>
                   </div>
 
                   <div className="bg-orange-400/10 border border-orange-400/30 rounded-xl p-4 text-left max-w-md mx-auto">
                     <h3 className="text-sm font-semibold text-orange-400 mb-2">Correcciones solicitadas:</h3>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-[var(--text-muted)] text-sm">
                       {application.staffNotes || "Amplía y mejora tus respuestas del formulario."}
                     </p>
                   </div>
@@ -357,7 +357,7 @@ export default function ReviewWaitingPage() {
           </WhitelistCard>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[var(--text-faint)]">
               ¿Tienes preguntas sobre tu solicitud?{" "}
               <a href="https://discord.gg/xKJqNX7uC3" target="_blank" rel="noopener noreferrer" className="text-[#8e00f7] hover:underline">
                 Contacta al staff

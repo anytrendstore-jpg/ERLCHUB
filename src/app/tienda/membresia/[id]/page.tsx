@@ -24,7 +24,7 @@ export default function MembershipPage() {
 
   if (!membership) {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Membresía no encontrada</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
@@ -52,12 +52,12 @@ export default function MembershipPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
             <Link href="/tienda" className="hover:text-white flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" /> Tienda
             </Link>
@@ -106,7 +106,7 @@ export default function MembershipPage() {
                 {membership.name}
               </h1>
 
-              <p className="text-gray-400 text-lg mb-6">{membership.description}</p>
+              <p className="text-[var(--text-muted)] text-lg mb-6">{membership.description}</p>
 
               <div className="flex gap-2 mb-6">
                 <button
@@ -115,7 +115,7 @@ export default function MembershipPage() {
                   className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                     paymentType === "monthly"
                       ? "bg-[#8e00f7] text-white"
-                      : "bg-[#12121c] border border-[#1a1a28] text-gray-400 hover:border-[#8e00f7]"
+                      : "bg-[var(--card-bg)] border border-[var(--card-border-soft)] text-[var(--text-muted)] hover:border-[#8e00f7]"
                   }`}
                 >
                   Mensual
@@ -126,7 +126,7 @@ export default function MembershipPage() {
                   className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                     paymentType === "permanent"
                       ? "bg-[#8e00f7] text-white"
-                      : "bg-[#12121c] border border-[#1a1a28] text-gray-400 hover:border-[#8e00f7]"
+                      : "bg-[var(--card-bg)] border border-[var(--card-border-soft)] text-[var(--text-muted)] hover:border-[#8e00f7]"
                   }`}
                 >
                   Permanente
@@ -138,17 +138,17 @@ export default function MembershipPage() {
                 style={{ borderColor: `${membership.color}40`, background: `linear-gradient(135deg, ${membership.color}12, transparent 60%)` }}
               >
                 <div className="mb-4">
-                  <span className="text-gray-400 block mb-2">Moneda</span>
+                  <span className="text-[var(--text-muted)] block mb-2">Moneda</span>
                   <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} />
                 </div>
                 <div className="text-4xl font-bold text-white mb-1">
                   <span className="text-white">
                     {convertPrice(currentPrice, selectedCurrency)}
                   </span>
-                  {paymentType === "monthly" && <span className="text-lg text-gray-400">/mes</span>}
+                  {paymentType === "monthly" && <span className="text-lg text-[var(--text-muted)]">/mes</span>}
                 </div>
                 {selectedCurrency.code !== "USD" && (
-                  <div className="text-gray-500">
+                  <div className="text-[var(--text-faint)]">
                     ${currentPrice}
                     <div className="w-5 h-3 rounded-sm overflow-hidden inline-block ml-1">
                       <Image
@@ -174,7 +174,7 @@ export default function MembershipPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+              <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)]">
                 <div className="flex items-center gap-1">
                   <Shield className="h-4 w-4" style={{ color: membership.color }} />
                   Pago seguro
@@ -193,7 +193,7 @@ export default function MembershipPage() {
               {membership.benefits.map((benefit, index) => (
                 <div
                   key={index}
-                  className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:-translate-y-0.5"
+                  className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${membership.color}20` }}>
                     <Check className="h-4 w-4" style={{ color: membership.color }} />
@@ -205,11 +205,11 @@ export default function MembershipPage() {
           </div>
 
           <div className="mt-10 grid sm:grid-cols-2 gap-4">
-            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-5">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-5">
               <h3 className="text-white font-semibold mb-2 text-sm">Otros niveles de membresía</h3>
               <div className="space-y-2">
                 {memberships.filter((m) => m.id !== membership.id).map((m) => (
-                  <Link key={m.id} href={`/tienda/membresia/${m.id}`} className="flex items-center justify-between gap-2 text-sm text-gray-400 hover:text-white transition-colors group">
+                  <Link key={m.id} href={`/tienda/membresia/${m.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors group">
                     <span className="truncate">{m.name}</span>
                     <span className="flex items-center gap-1 text-xs flex-shrink-0" style={{ color: m.color }}>
                       ${m.pricePermanent} único pago
@@ -220,9 +220,9 @@ export default function MembershipPage() {
               </div>
             </div>
 
-            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
               <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
+              <ul className="space-y-2 text-[var(--text-muted)] text-sm">
                 <li>Las membresías mensuales se renuevan automáticamente. Puedes cancelar en cualquier momento.</li>
                 <li>Las membresías permanentes son de un solo pago y no requieren renovación.</li>
                 <li>Los beneficios se activan inmediatamente después de confirmar el pago.</li>

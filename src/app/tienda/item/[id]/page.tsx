@@ -26,7 +26,7 @@ export default function ItemPage() {
 
   if (!item) {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Artículo no encontrado</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
@@ -51,12 +51,12 @@ export default function ItemPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
             <Link href="/tienda" className="hover:text-white">Tienda</Link>
             <ChevronRight className="h-4 w-4" />
             <Link href="/tienda#items" className="hover:text-white">Artículos</Link>
@@ -87,14 +87,14 @@ export default function ItemPage() {
               </div>
 
               <h1 className="text-4xl font-bold text-white mb-4">{item.name}</h1>
-              <p className="text-gray-400 text-lg mb-6">{item.description}</p>
+              <p className="text-[var(--text-muted)] text-lg mb-6">{item.description}</p>
 
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-6">
-                <div className="text-gray-400 mb-2">Precio</div>
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-6">
+                <div className="text-[var(--text-muted)] mb-2">Precio</div>
                 <div className="flex items-center gap-2 text-4xl font-bold text-[#8e00f7]">
                   <Coins className="h-8 w-8" />
                   {item.priceHubCoins.toLocaleString()}
-                  <span className="text-lg text-gray-400">Hub Coins</span>
+                  <span className="text-lg text-[var(--text-muted)]">Hub Coins</span>
                 </div>
               </div>
 
@@ -110,7 +110,7 @@ export default function ItemPage() {
                 itemId={item.id}
               />
 
-              <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+              <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)]">
                 <div className="flex items-center gap-1">
                   <Shield className="h-4 w-4 text-[#8e00f7]" />
                   Pago seguro
@@ -123,9 +123,9 @@ export default function ItemPage() {
             </div>
           </div>
 
-          <div className="mt-12 bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+          <div className="mt-12 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
+            <ul className="space-y-2 text-[var(--text-muted)] text-sm">
               <li>Los artículos se compran exclusivamente con Hub Coins.</li>
               <li>El artículo se entrega inmediatamente después de la compra.</li>
               <li>Los artículos no son transferibles a otros usuarios.</li>

@@ -62,7 +62,7 @@ export default function KitPage() {
 
   if (!kit) {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Kit no encontrado</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
@@ -91,12 +91,12 @@ export default function KitPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
             <Link href="/tienda" className="hover:text-white flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" /> Tienda
             </Link>
@@ -133,7 +133,7 @@ export default function KitPage() {
               </div>
 
               {bundleSavings && bundleSavings.pct > 0 && (
-                <p className="text-xs text-gray-500 mt-3 px-1">
+                <p className="text-xs text-[var(--text-faint)] mt-3 px-1">
                   Incluye lo mismo que KIT DINERO + KIT AUTOS + KIT PERSONAJES por separado, y encima más — pero cuesta {formatNumber(bundleSavings.amount)} Hub Coins menos.
                 </p>
               )}
@@ -148,7 +148,7 @@ export default function KitPage() {
               </div>
 
               <h1 className="text-4xl font-bold text-white mb-4">{kit.name}</h1>
-              <p className="text-gray-400 text-lg mb-4">{kit.description}</p>
+              <p className="text-[var(--text-muted)] text-lg mb-4">{kit.description}</p>
 
               {slotsGranted ? (
                 <div className="flex items-center gap-2 text-sm text-blue-300 bg-blue-500/10 border border-blue-500/25 rounded-lg px-3 py-2 mb-6 w-fit">
@@ -163,13 +163,13 @@ export default function KitPage() {
                 className="relative rounded-2xl p-6 mb-6 overflow-hidden border"
                 style={{ borderColor: `${color}40`, background: `linear-gradient(135deg, ${color}12, transparent 60%)` }}
               >
-                <div className="text-gray-400 mb-2">Precio</div>
+                <div className="text-[var(--text-muted)] mb-2">Precio</div>
                 {isWhitelistFast ? (
                   <div>
                     <div className="flex items-center gap-2 text-4xl font-bold mb-4">
                       <span className="text-white">{convertPrice(whitelistFastKit.priceDollars, selectedCurrency)}</span>
                     </div>
-                    <div className="text-gray-500 text-sm">≈ ${whitelistFastKit.priceDollars}.00</div>
+                    <div className="text-[var(--text-faint)] text-sm">≈ ${whitelistFastKit.priceDollars}.00</div>
                     <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} className="mt-4" />
                   </div>
                 ) : (
@@ -202,7 +202,7 @@ export default function KitPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+              <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)]">
                 <div className="flex items-center gap-1">
                   <Shield className="h-4 w-4" style={{ color }} />
                   Pago seguro
@@ -221,7 +221,7 @@ export default function KitPage() {
               {kit.items.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:-translate-y-0.5"
+                  className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:-translate-y-0.5"
                   style={{ '--hover-color': color } as React.CSSProperties}
                 >
                   <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
@@ -234,11 +234,11 @@ export default function KitPage() {
           </div>
 
           <div className="mt-10 grid sm:grid-cols-2 gap-4">
-            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-5">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-5">
               <h3 className="text-white font-semibold mb-2 text-sm">Otros kits que te podrían interesar</h3>
               <div className="space-y-2">
                 {kits.filter((k) => k.id !== kit.id && k.category === (kit as any).category).slice(0, 3).map((k) => (
-                  <Link key={k.id} href={`/tienda/kit/${k.id}`} className="flex items-center justify-between gap-2 text-sm text-gray-400 hover:text-white transition-colors group">
+                  <Link key={k.id} href={`/tienda/kit/${k.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors group">
                     <span className="truncate">{k.name}</span>
                     <span className="flex items-center gap-1 text-xs flex-shrink-0" style={{ color: k.color }}>
                       {formatNumber(k.priceHubCoins)}
@@ -252,9 +252,9 @@ export default function KitPage() {
               </div>
             </div>
 
-            <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
               <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
+              <ul className="space-y-2 text-[var(--text-muted)] text-sm">
                 <li>Los kits se compran exclusivamente con Hub Coins.</li>
                 <li>Los items se entregan inmediatamente después de la compra.</li>
                 <li>Los items del kit no son transferibles a otros usuarios.</li>

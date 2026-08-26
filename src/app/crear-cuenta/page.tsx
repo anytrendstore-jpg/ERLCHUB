@@ -22,12 +22,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center px-4 py-12 relative overflow-hidden animate-modal-backdrop">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4 py-12 relative overflow-hidden animate-modal-backdrop">
       
       <ParticlesBackground />
 
       <div className="relative z-10 w-full max-w-[400px] animate-modal-card">
-        <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl shadow-2xl overflow-hidden">
+        <div className="backdrop-blur-sm border border-[var(--card-border)] rounded-2xl shadow-2xl overflow-hidden" style={{ background: "color-mix(in srgb, var(--card-bg) 90%, transparent)" }}>
           <div className="flex items-center justify-between px-6 pt-6 pb-4">
             <div className="flex items-center gap-2">
               <Image
@@ -37,20 +37,20 @@ export default function RegisterPage() {
                 height={32}
                 className="h-8 w-auto"
               />
-              <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
+              <span className="font-bold text-[var(--foreground)] text-lg">ERLCᴴᵁᴮ</span>
             </div>
             <Link
               href="/"
               className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
             >
-              <X className="h-5 w-5 text-gray-400" />
+              <X className="h-5 w-5 text-[var(--text-muted)]" />
             </Link>
           </div>
 
           <div className="px-6 pb-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-white mb-2">Únete a ERLC HUB</h2>
-              <p className="text-gray-400 text-sm">Crea tu cuenta y accede a todos los beneficios</p>
+              <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Únete a ERLC HUB</h2>
+              <p className="text-[var(--text-muted)] text-sm">Crea tu cuenta y accede a todos los beneficios</p>
             </div>
             
             <button

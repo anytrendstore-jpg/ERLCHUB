@@ -49,7 +49,7 @@ export default function CasinoGamePage() {
 
   if (!game) {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Juego no encontrado</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
@@ -153,12 +153,12 @@ export default function CasinoGamePage() {
   const GameIcon = game.type === "roulette" ? Sparkles : game.type === "mystery_box" ? Gift : Star;
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
             <Link href="/tienda" className="hover:text-white">Tienda</Link>
             <ChevronRight className="h-4 w-4" />
             <Link href="/tienda#casino" className="hover:text-white">Casino</Link>
@@ -175,7 +175,7 @@ export default function CasinoGamePage() {
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all ${
                     soundEnabled
                       ? "bg-[#8e00f7]/20 text-[#8e00f7]"
-                      : "bg-[#12121c] text-gray-500"
+                      : "bg-[var(--card-bg)] text-[var(--text-faint)]"
                   }`}
                 >
                   {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
@@ -236,7 +236,7 @@ export default function CasinoGamePage() {
 
                 
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#0c0c14] border-4 border-white/30 flex items-center justify-center z-10 shadow-inner">
+                        <div className="w-16 h-16 rounded-full bg-[var(--background-alt)] border-4 border-white/30 flex items-center justify-center z-10 shadow-inner">
                           <Sparkles className="h-6 w-6 text-[#8e00f7]" />
                         </div>
                       </div>
@@ -326,10 +326,10 @@ export default function CasinoGamePage() {
               </div>
 
               <h1 className="text-4xl font-bold text-white mb-4">{game.name}</h1>
-              <p className="text-gray-400 text-lg mb-6">{game.description}</p>
+              <p className="text-[var(--text-muted)] text-lg mb-6">{game.description}</p>
 
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-6">
-                <div className="text-gray-400 mb-4">Cantidad a apostar</div>
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-6">
+                <div className="text-[var(--text-muted)] mb-4">Cantidad a apostar</div>
 
                 <div className="flex items-center gap-4 mb-4">
                   <button
@@ -339,7 +339,7 @@ export default function CasinoGamePage() {
                       setBetAmount(Math.max(game.minBet, betAmount - 50));
                     }}
                     disabled={isPlaying}
-                    className="w-12 h-12 rounded-xl bg-[#1a1a28] flex items-center justify-center text-white hover:bg-[#2a2a3a] transition-colors disabled:opacity-50"
+                    className="w-12 h-12 rounded-xl bg-[var(--card-bg-2)] flex items-center justify-center text-white hover:bg-[#2a2a3a] transition-colors disabled:opacity-50"
                   >
                     <Minus className="h-5 w-5" />
                   </button>
@@ -356,7 +356,7 @@ export default function CasinoGamePage() {
                       setBetAmount(Math.min(game.maxBet, betAmount + 50));
                     }}
                     disabled={isPlaying}
-                    className="w-12 h-12 rounded-xl bg-[#1a1a28] flex items-center justify-center text-white hover:bg-[#2a2a3a] transition-colors disabled:opacity-50"
+                    className="w-12 h-12 rounded-xl bg-[var(--card-bg-2)] flex items-center justify-center text-white hover:bg-[#2a2a3a] transition-colors disabled:opacity-50"
                   >
                     <Plus className="h-5 w-5" />
                   </button>
@@ -375,7 +375,7 @@ export default function CasinoGamePage() {
                       className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                         betAmount === amount
                           ? "bg-[#8e00f7] text-white"
-                          : "bg-[#1a1a28] text-gray-400 hover:bg-[#2a2a3a]"
+                          : "bg-[var(--card-bg-2)] text-[var(--text-muted)] hover:bg-[#2a2a3a]"
                       }`}
                     >
                       {amount}
@@ -403,7 +403,7 @@ export default function CasinoGamePage() {
                 )}
               </button>
 
-              <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+              <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)]">
                 <div className="flex items-center gap-1">
                   <Shield className="h-4 w-4 text-[#8e00f7]" />
                   Juego justo
@@ -424,7 +424,7 @@ export default function CasinoGamePage() {
               {(game.type === "roulette" ? rouletteSegments.map(s => s.prize) : mysteryPrizes.map(p => p.name)).slice(0, 4).map((prize, index) => (
                 <div
                   key={index}
-                  className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 text-center casino-card-hover"
+                  className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 text-center casino-card-hover"
                 >
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ef4444]/20 to-[#8e00f7]/20 flex items-center justify-center mx-auto mb-3">
                     <Gift className="h-6 w-6 text-[#8e00f7]" />
@@ -435,9 +435,9 @@ export default function CasinoGamePage() {
             </div>
           </div>
 
-          <div className="mt-12 bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+          <div className="mt-12 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
+            <ul className="space-y-2 text-[var(--text-muted)] text-sm">
               <li>Las apuestas se realizan exclusivamente con Hub Coins.</li>
               <li>Los resultados son aleatorios y verificables.</li>
               <li>Los premios se entregan inmediatamente al ganar.</li>

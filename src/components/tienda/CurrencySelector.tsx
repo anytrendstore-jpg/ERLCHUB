@@ -36,7 +36,7 @@ export default function CurrencySelector({ value, onChange, className }: Currenc
           className={`flex items-center gap-1 px-3 py-1 rounded-lg border-2 transition-all text-xs ${
             value.code === currency.code
               ? "border-[#8e00f7] bg-[#8e00f7]/10"
-              : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
+              : "border-[var(--card-border-soft)] bg-[var(--card-bg)] hover:border-[#3a3a4a]"
           }`}
         >
           <div className="w-5 h-3 rounded-sm overflow-hidden flex-shrink-0">

@@ -59,7 +59,7 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-[var(--text-muted)] hover:text-white transition-colors"
               aria-label="Cerrar panel de modo beta"
             >
               <X className="h-4 w-4" />
@@ -67,7 +67,7 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
           </div>
 
           <div className="p-3 space-y-1">
-            <p className="text-[11px] text-gray-500 px-1 pb-2">
+            <p className="text-[11px] text-[var(--text-faint)] px-1 pb-2">
               Salta a cualquier fase. Se rellenan los datos anteriores con contenido de ejemplo.
             </p>
 
@@ -85,11 +85,11 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
                   className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-50 ${
                     isCurrent
                       ? "bg-amber-500/20 text-amber-300"
-                      : "text-gray-300 hover:bg-[#1a1a28] hover:text-white"
+                      : "text-[var(--text-muted)] hover:bg-[var(--card-bg-2)] hover:text-white"
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#1a1a28] text-[10px] font-bold flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-[var(--card-bg-2)] text-[10px] font-bold flex items-center justify-center">
                       {info?.number}
                     </span>
                     {info?.title}
@@ -103,7 +103,7 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
               );
             })}
 
-            <div className="pt-2 mt-2 border-t border-[#1e1e2e]">
+            <div className="pt-2 mt-2 border-t border-[var(--card-border)]">
               <button
                 type="button"
                 disabled={busy !== null}

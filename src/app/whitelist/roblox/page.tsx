@@ -29,7 +29,7 @@ const OAUTH_ERROR_MESSAGES: Record<string, string> = {
 export default function RobloxVerificationPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
       </div>
     }>
@@ -120,7 +120,7 @@ function RobloxVerificationContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="roblox" />
       <WhitelistHeader applicationId={application?.applicationId} />
@@ -132,14 +132,14 @@ function RobloxVerificationContent() {
           </div>
 
           <WhitelistCard>
-            <div className="p-6 border-b border-[#1e1e2e]">
+            <div className="p-6 border-b border-[var(--card-border)]">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-[#e2231a]/20 flex items-center justify-center">
                   <Gamepad2 className="h-7 w-7 text-[#e2231a]" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-white">Verificación de Roblox</h1>
-                  <p className="text-gray-400">Vincula tu cuenta de Roblox para continuar</p>
+                  <p className="text-[var(--text-muted)]">Vincula tu cuenta de Roblox para continuar</p>
                 </div>
               </div>
             </div>
@@ -152,7 +152,7 @@ function RobloxVerificationContent() {
                       <Gamepad2 className="h-10 w-10 text-[#e2231a]" />
                     </div>
                     <h2 className="text-xl font-bold text-white mb-2">Ingresa tu usuario de Roblox</h2>
-                    <p className="text-gray-400 max-w-md mx-auto">
+                    <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Buscaremos tu cuenta en Roblox y te daremos un código para demostrar que es tuya.
                     </p>
                   </div>
@@ -175,26 +175,26 @@ function RobloxVerificationContent() {
                       </>
                     )}
                   </button>
-                  <p className="text-xs text-gray-500 text-center -mt-3">
+                  <p className="text-xs text-[var(--text-faint)] text-center -mt-3">
                     Inicia sesión oficialmente en Roblox: verificación instantánea, sin copiar códigos. Solo pedimos tu identidad básica (usuario, nombre y foto) — nunca tu contraseña.
                   </p>
 
                   <div className="flex items-center gap-3">
                     <div className="h-px flex-1 bg-[#1e1e2e]" />
-                    <span className="text-xs text-gray-500 uppercase tracking-wide">o verifica con un código</span>
+                    <span className="text-xs text-[var(--text-faint)] uppercase tracking-wide">o verifica con un código</span>
                     <div className="h-px flex-1 bg-[#1e1e2e]" />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Usuario de Roblox</label>
+                    <label className="block text-sm text-[var(--text-muted)] mb-2">Usuario de Roblox</label>
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--text-faint)]" />
                       <input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Tu nombre de usuario"
-                        className="w-full h-14 pl-12 pr-4 bg-[#0a0a12] border border-[#1e1e2e] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#e2231a] transition-colors text-lg"
+                        className="w-full h-14 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#e2231a] transition-colors text-lg"
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                       />
                     </div>
@@ -226,9 +226,9 @@ function RobloxVerificationContent() {
                     )}
                   </button>
 
-                  <div className="bg-[#0a0a12] rounded-xl p-4 border border-[#1e1e2e]">
+                  <div className="bg-[var(--background)] rounded-xl p-4 border border-[var(--card-border)]">
                     <h3 className="text-sm font-semibold text-white mb-2">¿Cómo funciona?</h3>
-                    <ol className="space-y-2 text-sm text-gray-400">
+                    <ol className="space-y-2 text-sm text-[var(--text-muted)]">
                       {[
                         "Ingresa tu nombre de usuario de Roblox",
                         "Copia el código de verificación",
@@ -236,7 +236,7 @@ function RobloxVerificationContent() {
                         "Verifica tu cuenta",
                       ].map((text, index) => (
                         <li key={text} className="flex items-start gap-2">
-                          <span className="w-5 h-5 rounded-full bg-[#1a1a28] flex items-center justify-center flex-shrink-0 text-xs text-white">
+                          <span className="w-5 h-5 rounded-full bg-[var(--card-bg-2)] flex items-center justify-center flex-shrink-0 text-xs text-white">
                             {index + 1}
                           </span>
                           {text}
@@ -251,7 +251,7 @@ function RobloxVerificationContent() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between p-4 bg-[#e2231a]/10 border border-[#e2231a]/30 rounded-xl">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-[#1a1a28] flex items-center justify-center overflow-hidden">
+                      <div className="w-14 h-14 rounded-xl bg-[var(--card-bg-2)] flex items-center justify-center overflow-hidden">
                         {roblox.avatar ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={roblox.avatar} alt={roblox.username} className="w-full h-full object-cover" />
@@ -272,22 +272,22 @@ function RobloxVerificationContent() {
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                      className="text-sm text-[var(--text-muted)] hover:text-white transition-colors"
                     >
                       Cambiar
                     </button>
                   </div>
 
-                  <div className="bg-[#0a0a12] rounded-xl p-6 border border-[#1e1e2e]">
+                  <div className="bg-[var(--background)] rounded-xl p-6 border border-[var(--card-border)]">
                     <h3 className="text-lg font-bold text-white mb-4">Verificación de propiedad</h3>
 
                     <div className="space-y-4">
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-[var(--text-muted)] text-sm">
                         Para verificar que eres el dueño de esta cuenta, copia el siguiente código
                         y pégalo en la descripción de tu perfil de Roblox:
                       </p>
 
-                      <div className="flex items-center gap-3 p-4 bg-[#1a1a28] rounded-xl">
+                      <div className="flex items-center gap-3 p-4 bg-[var(--card-bg-2)] rounded-xl">
                         <Hash className="h-5 w-5 text-[#8e00f7]" />
                         <code className="flex-1 text-xl font-mono text-[#8e00f7] tracking-wider">
                           {roblox.verificationCode}
@@ -322,7 +322,7 @@ function RobloxVerificationContent() {
                           "Pega el código de verificación en tu descripción",
                           "Guarda los cambios y regresa aquí",
                         ].map((text, index) => (
-                          <li key={text} className="flex items-start gap-3 text-gray-400">
+                          <li key={text} className="flex items-start gap-3 text-[var(--text-muted)]">
                             <span className="w-6 h-6 rounded-full bg-[#8e00f7] flex items-center justify-center flex-shrink-0 text-xs text-white font-bold">
                               {index + 1}
                             </span>
@@ -339,7 +339,7 @@ function RobloxVerificationContent() {
                       : `https://www.roblox.com/search/users?keyword=${encodeURIComponent(roblox.username)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full h-12 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
+                    className="flex items-center justify-center gap-2 w-full h-12 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Abrir perfil de Roblox
@@ -380,13 +380,13 @@ function RobloxVerificationContent() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">Roblox Verificado</h2>
-                    <p className="text-gray-400">
+                    <p className="text-[var(--text-muted)]">
                       Tu cuenta de Roblox ha sido vinculada exitosamente.
                     </p>
                   </div>
 
                   <div className="inline-flex items-center gap-3 px-4 py-3 bg-[#e2231a]/10 border border-[#e2231a]/30 rounded-xl">
-                    <div className="w-10 h-10 rounded-lg bg-[#1a1a28] flex items-center justify-center overflow-hidden">
+                    <div className="w-10 h-10 rounded-lg bg-[var(--card-bg-2)] flex items-center justify-center overflow-hidden">
                       {roblox.avatar ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={roblox.avatar} alt={roblox.username} className="w-full h-full object-cover" />
@@ -400,7 +400,7 @@ function RobloxVerificationContent() {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[var(--text-faint)]">
                     {roblox.verifiedMode === "oauth"
                       ? "Verificado con el login oficial de Roblox — confirmamos que la cuenta es tuya sin necesidad de códigos."
                       : roblox.verifiedMode === "api"
@@ -422,7 +422,7 @@ function RobloxVerificationContent() {
           </WhitelistCard>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[var(--text-faint)]">
               ¿No puedes encontrar tu cuenta?{" "}
               <a href="https://discord.gg/xKJqNX7uC3" target="_blank" rel="noopener noreferrer" className="text-[#8e00f7] hover:underline">
                 Contacta soporte

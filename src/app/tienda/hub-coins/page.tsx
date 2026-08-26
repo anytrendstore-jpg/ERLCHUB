@@ -92,13 +92,13 @@ export default function HubCoinsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-6">
             <Link href="/tienda" className="hover:text-white flex items-center gap-1">
               Tienda
             </Link>
@@ -120,7 +120,7 @@ export default function HubCoinsPage() {
                 </div>
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Comprar Hub Coins</h1>
-                  <p className="text-gray-400">Elige tu cantidad, método de pago y moneda.</p>
+                  <p className="text-[var(--text-muted)]">Elige tu cantidad, método de pago y moneda.</p>
 
                   <div className="flex flex-wrap gap-2 mt-4">
                     <span className="flex items-center gap-1 bg-[#8e00f7]/20 border border-[#8e00f7]/30 px-3 py-1 rounded-full text-xs text-white">
@@ -153,10 +153,10 @@ export default function HubCoinsPage() {
                       key={pkg.id}
                       type="button"
                       onClick={() => setSelectedPackage(pkg.id)}
-                      className={`relative bg-[#12121c] border-2 rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 ${
+                      className={`relative bg-[var(--card-bg)] border-2 rounded-xl p-4 text-left transition-all duration-200 hover:-translate-y-0.5 ${
                         selectedPackage === pkg.id
                           ? "border-[#8e00f7] bg-[#8e00f7]/10 shadow-[0_15px_35px_-15px_rgba(142,0,247,0.5)]"
-                          : "border-[#1a1a28] hover:border-[#3a3a4a]"
+                          : "border-[var(--card-border-soft)] hover:border-[#3a3a4a]"
                       }`}
                     >
                       {pkg.popular && (
@@ -187,10 +187,10 @@ export default function HubCoinsPage() {
                           +{formatNumber(pkg.bonus)} gratis
                         </div>
                       ) : (
-                        <div className="text-gray-500 text-xs">&nbsp;</div>
+                        <div className="text-[var(--text-faint)] text-xs">&nbsp;</div>
                       )}
 
-                      <div className="text-gray-400 text-sm mt-2">
+                      <div className="text-[var(--text-muted)] text-sm mt-2">
                         {convertPrice(pkg.priceUSD, selectedCurrency)}
                       </div>
                     </button>
@@ -214,7 +214,7 @@ export default function HubCoinsPage() {
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
                         selectedCurrency.code === currency.code
                           ? "border-[#8e00f7] bg-[#8e00f7]/10"
-                          : "border-[#1a1a28] bg-[#12121c] hover:border-[#3a3a4a]"
+                          : "border-[var(--card-border-soft)] bg-[var(--card-bg)] hover:border-[#3a3a4a]"
                       }`}
                     >
                       <div className="w-5 h-3 rounded-sm overflow-hidden">
@@ -233,12 +233,12 @@ export default function HubCoinsPage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-5">
+                <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-5">
                   <h3 className="text-white font-bold mb-2">Cómo comprar?</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-[var(--text-muted)] text-sm">
                     Guía rápida paso a paso.
                   </p>
-                  <ol className="mt-3 space-y-2 text-sm text-gray-300">
+                  <ol className="mt-3 space-y-2 text-sm text-[var(--text-muted)]">
                     <li className="flex items-start gap-2">
                       <span className="w-5 h-5 rounded-full bg-[#8e00f7]/20 text-[#8e00f7] text-xs flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
                       Selecciona la cantidad
@@ -258,7 +258,7 @@ export default function HubCoinsPage() {
                   </ol>
                 </div>
 
-                <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-5">
+                <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-5">
                   <h3 className="text-white font-bold mb-2">Pagos Seguros</h3>
                   <div className="flex flex-wrap gap-2 mb-4">
                     <div className="bg-white rounded px-3 py-1.5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-700/20 cursor-pointer">
@@ -301,7 +301,7 @@ export default function HubCoinsPage() {
 
                 <div className="relative rounded-2xl p-6 overflow-hidden border border-[#8e00f7]/30" style={{ background: 'linear-gradient(135deg, #8e00f712, #12121c 60%)' }}>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-gray-400 text-sm uppercase tracking-wider">Resumen</h3>
+                    <h3 className="text-[var(--text-muted)] text-sm uppercase tracking-wider">Resumen</h3>
                     <div className="w-10 h-10 rounded-full bg-[#8e00f7] flex items-center justify-center">
                       <Image
                         src="/hub-coins.png"
@@ -317,12 +317,12 @@ export default function HubCoinsPage() {
                     <div className="text-5xl font-black text-white mb-1">
                       {formatNumber(totalCoins)}
                     </div>
-                    <div className="text-gray-400">Hub Coins</div>
+                    <div className="text-[var(--text-muted)]">Hub Coins</div>
                   </div>
 
-                  <div className="space-y-3 text-sm border-t border-[#1a1a28] pt-4">
+                  <div className="space-y-3 text-sm border-t border-[var(--card-border-soft)] pt-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Cantidad base</span>
+                      <span className="text-[var(--text-muted)]">Cantidad base</span>
                       <span className="text-white flex items-center gap-1">
                         {formatNumber(currentPackage.coins)}
                         <Image
@@ -336,7 +336,7 @@ export default function HubCoinsPage() {
                     </div>
                     {currentPackage.bonus > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Bonus gratis</span>
+                        <span className="text-[var(--text-muted)]">Bonus gratis</span>
                         <span className="text-[#8e00f7] flex items-center gap-1">
                           +{formatNumber(currentPackage.bonus)}
                           <Image
@@ -350,7 +350,7 @@ export default function HubCoinsPage() {
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Moneda</span>
+                      <span className="text-[var(--text-muted)]">Moneda</span>
                       <span className="text-white flex items-center gap-1">
                         <div className="w-5 h-3 rounded-sm overflow-hidden">
                           <Image
@@ -366,16 +366,16 @@ export default function HubCoinsPage() {
                     </div>
                   </div>
 
-                  <div className="border-t border-[#1a1a28] mt-4 pt-4">
+                  <div className="border-t border-[var(--card-border-soft)] mt-4 pt-4">
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-gray-400">Total</span>
+                      <span className="text-[var(--text-muted)]">Total</span>
                       <span className="text-3xl font-bold text-white">
                         {convertPrice(currentPackage.priceUSD, selectedCurrency)}
                       </span>
                     </div>
 
                     {selectedCurrency.code !== "USD" && (
-                      <div className="text-right text-gray-500 text-sm mb-4">
+                      <div className="text-right text-[var(--text-faint)] text-sm mb-4">
                         ${currentPackage.priceUSD} 
                         <div className="w-5 h-3 rounded-sm overflow-hidden inline-block ml-1">
                           <Image
@@ -396,7 +396,7 @@ export default function HubCoinsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
+                  <div className="flex items-center justify-center gap-4 mt-4 text-xs text-[var(--text-faint)]">
                     <div className="flex items-center gap-1">
                       <Shield className="h-3 w-3" />
                       Pago seguro
@@ -409,13 +409,13 @@ export default function HubCoinsPage() {
 
                   <div className="flex items-center justify-center gap-1 mt-4">
                     {renderStarsManual(dynamicStats?.avgRating || 0)}
-                    <span className="text-gray-400 text-sm ml-1">{dynamicStats?.avgRating?.toFixed(1) || '0.0'} ({dynamicStats?.count || 0} Reseñas )</span>
+                    <span className="text-[var(--text-muted)] text-sm ml-1">{dynamicStats?.avgRating?.toFixed(1) || '0.0'} ({dynamicStats?.count || 0} Reseñas )</span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   {hubCoinsReviews.slice(0, 2).map((review, index) => (
-                    <div key={index} className="bg-[#1a1a28] rounded-lg p-3 border border-[#2a2a3a]">
+                    <div key={index} className="bg-[var(--card-bg-2)] rounded-lg p-3 border border-[#2a2a3a]">
                       <div className="flex items-start gap-2">
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
@@ -424,12 +424,12 @@ export default function HubCoinsPage() {
                               {review.rating && (
                                 <>
                                   {renderStarsManual(review.rating)}
-                                  <span className="text-gray-400 text-xs ml-1">{review.rating}</span>
+                                  <span className="text-[var(--text-muted)] text-xs ml-1">{review.rating}</span>
                                 </>
                               )}
                             </div>
                           </div>
-                          <p className="text-gray-300 text-sm leading-relaxed mb-2">{review.comment}</p>
+                          <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-2">{review.comment}</p>
                           <div className="flex items-center justify-between">
                             <span className="bg-[#8e00f7]/20 text-[#8e00f7] px-2 py-1 rounded text-xs">Hub Coins</span>
                           </div>
@@ -439,17 +439,17 @@ export default function HubCoinsPage() {
                   ))}
                 </div>
 
-                <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-4 mb-4">
+                <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-4 mb-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-white font-bold text-sm">ÓRDENES</h3>
                     <div className="bg-[#8e00f7]/20 text-[#8e00f7] px-2 py-1 rounded-full text-xs font-bold">
                       {totalOrders} transacciones exitosas
                     </div>
                   </div>
-                  <p className="text-gray-400 text-xs">Total de transacciones completadas</p>
+                  <p className="text-[var(--text-muted)] text-xs">Total de transacciones completadas</p>
                 </div>
 
-                <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-4">
+                <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-white font-bold text-sm">Compras Recientes</h3>
                     <div className="flex items-center gap-1">
@@ -459,14 +459,14 @@ export default function HubCoinsPage() {
                   </div>
 
                   {hubCoinsLoading ? (
-                    <div className="text-center text-gray-500 text-sm py-8">
+                    <div className="text-center text-[var(--text-faint)] text-sm py-8">
                       <div className="w-12 h-12 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-3">
                         <div className="w-6 h-6 border-2 border-[#8e00f7] border-t-transparent rounded-full animate-spin" />
                       </div>
                       <p>Cargando compras...</p>
                     </div>
                   ) : transactions.filter(t => t.type === 'purchase').length === 0 ? (
-                    <div className="text-center text-gray-500 text-sm py-8">
+                    <div className="text-center text-[var(--text-faint)] text-sm py-8">
                       <div className="w-12 h-12 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-3">
                         <ShoppingBag className="h-6 w-6 text-[#8e00f7]" />
                       </div>
@@ -478,7 +478,7 @@ export default function HubCoinsPage() {
                         .filter(t => t.type === 'purchase')
                         .slice(0, 5)
                         .map((transaction) => (
-                          <div key={transaction._id} className="flex items-center gap-3 p-2 bg-[#1a1a28] rounded-lg">
+                          <div key={transaction._id} className="flex items-center gap-3 p-2 bg-[var(--card-bg-2)] rounded-lg">
                             {transaction.user?.avatar ? (
                               <Image
                                 src={`https://cdn.discordapp.com/avatars/${transaction.userId}/${transaction.user.avatar}.png?size=32`}
@@ -502,7 +502,7 @@ export default function HubCoinsPage() {
                                 </span>
                                 <TrendingUp className="h-3 w-3 text-green-400" />
                               </div>
-                              <div className="flex items-center gap-2 text-xs text-gray-400">
+                              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                                 <Coins className="h-3 w-3" />
                                 <span>+{transaction.amount} Hub Coins</span>
                                 <span>•</span>

@@ -30,7 +30,7 @@ export default function MembershipTierCard({ membership, billing, recommended }:
       onMouseMove={tilt.onMouseMove}
       onMouseLeave={tilt.onMouseLeave}
       style={{ '--card-color': membership.color, transform: 'rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))' } as React.CSSProperties}
-      className={`tier-card group relative flex flex-col bg-[#12121c] border rounded-2xl overflow-hidden transition-[transform,border-color,box-shadow] duration-300 [transform-style:preserve-3d] hover:-translate-y-1 ${recommended ? 'border-[color:var(--card-color)]' : 'border-[#1a1a28]'}`}
+      className={`tier-card group relative flex flex-col bg-[var(--card-bg)] border rounded-2xl overflow-hidden transition-[transform,border-color,box-shadow] duration-300 [transform-style:preserve-3d] hover:-translate-y-1 ${recommended ? 'border-[color:var(--card-color)]' : 'border-[var(--card-border-soft)]'}`}
     >
       {recommended && (
         <div className="absolute top-0 inset-x-0 flex justify-center z-10">
@@ -46,15 +46,15 @@ export default function MembershipTierCard({ membership, billing, recommended }:
           className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{ background: 'radial-gradient(220px circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,255,255,0.12), transparent 60%)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#12121c] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] to-transparent" />
       </div>
 
       <div className="p-5 flex flex-col flex-1">
         <h3 className="text-xl font-bold mb-1" style={{ color: membership.color }}>{membership.name}</h3>
 
         <div className="flex items-baseline gap-1 mb-1">
-          <span className="text-3xl font-black text-white">${price}</span>
-          <span className="text-gray-500 text-sm">{billing === "monthly" ? "/mes" : " único pago"}</span>
+          <span className="text-3xl font-black text-[var(--foreground)]">${price}</span>
+          <span className="text-[var(--text-faint)] text-sm">{billing === "monthly" ? "/mes" : " único pago"}</span>
         </div>
         {billing === "permanent" && (
           <p className="text-[11px] text-emerald-400 mb-4">Se paga solo — el mensual lo iguala recién al mes {breakEvenMonths}</p>
@@ -63,12 +63,12 @@ export default function MembershipTierCard({ membership, billing, recommended }:
 
         <ul className="space-y-2 mb-6 flex-1">
           {visible.map((benefit, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+            <li key={i} className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
               <Check className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: membership.color }} />
               {benefit}
             </li>
           ))}
-          {rest > 0 && <li className="text-sm text-gray-500 pl-6">+ {rest} beneficios más</li>}
+          {rest > 0 && <li className="text-sm text-[var(--text-faint)] pl-6">+ {rest} beneficios más</li>}
         </ul>
 
         <Link

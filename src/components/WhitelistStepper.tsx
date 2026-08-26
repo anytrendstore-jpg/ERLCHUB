@@ -44,21 +44,21 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
                   ${status === "completed"
                     ? "bg-[#22c55e] text-white"
                     : status === "current"
-                      ? "bg-[#8e00f7] text-white ring-2 ring-[#8e00f7]/50 ring-offset-2 ring-offset-[#0c0c14]"
-                      : "bg-[#1a1a28] text-gray-500"
+                      ? "bg-[#8e00f7] text-white ring-2 ring-[#8e00f7]/50 ring-offset-2 ring-offset-[var(--background)]"
+                      : "bg-[var(--card-bg-2)] text-[var(--text-faint)]"
                   }
                 `}
               >
                 {status === "completed" ? (
                   <Check className="w-4 h-4" />
                 ) : (
-                  <span className="text-xs font-bold">{phase.number}</span>
+                  <span className="text-xs font-bold">{phase.number + 1}</span>
                 )}
               </div>
               {index < PHASES.length - 2 && (
                 <div
                   className={`w-6 h-0.5 mx-1 transition-colors duration-300 ${
-                    status === "completed" ? "bg-[#22c55e]" : "bg-[#1a1a28]"
+                    status === "completed" ? "bg-[#22c55e]" : "bg-[var(--card-bg-2)]"
                   }`}
                 />
               )}
@@ -75,7 +75,7 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
       {/* Desktop horizontal stepper */}
       <div className="hidden lg:flex items-center justify-between relative">
         {/* Progress line background */}
-        <div className="absolute top-6 left-0 right-0 h-0.5 bg-[#1a1a28]" />
+        <div className="absolute top-6 left-0 right-0 h-0.5 bg-[var(--card-bg-2)]" />
 
         {/* Progress line filled */}
         <div
@@ -99,7 +99,7 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
                     ? "bg-[#22c55e] text-white shadow-lg shadow-[#22c55e]/30"
                     : status === "current"
                       ? "bg-[#8e00f7] text-white shadow-lg shadow-[#8e00f7]/30 ring-4 ring-[#8e00f7]/20"
-                      : "bg-[#12121c] border-2 border-[#1a1a28] text-gray-500"
+                      : "bg-[var(--card-bg)] border-2 border-[var(--card-border-soft)] text-[var(--text-faint)]"
                   }
                 `}
               >
@@ -117,13 +117,13 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
                     status === "completed"
                       ? "text-[#22c55e]"
                       : status === "current"
-                        ? "text-white"
-                        : "text-gray-500"
+                        ? "text-[var(--foreground)]"
+                        : "text-[var(--text-faint)]"
                   }`}
                 >
                   {phase.title}
                 </div>
-                <div className="text-xs text-gray-500 mt-0.5 max-w-[100px]">
+                <div className="text-xs text-[var(--text-faint)] mt-0.5 max-w-[100px]">
                   {phase.description}
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
                       ? "bg-[#22c55e] text-white"
                       : status === "current"
                         ? "bg-[#8e00f7] text-white ring-4 ring-[#8e00f7]/20"
-                        : "bg-[#12121c] border-2 border-[#1a1a28] text-gray-500"
+                        : "bg-[var(--card-bg)] border-2 border-[var(--card-border-soft)] text-[var(--text-faint)]"
                     }
                   `}
                 >
@@ -163,7 +163,7 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
                 {!isLast && (
                   <div
                     className={`w-0.5 h-8 mt-2 transition-colors duration-300 ${
-                      status === "completed" ? "bg-[#22c55e]" : "bg-[#1a1a28]"
+                      status === "completed" ? "bg-[#22c55e]" : "bg-[var(--card-bg-2)]"
                     }`}
                   />
                 )}
@@ -176,13 +176,13 @@ export default function WhitelistStepper({ currentPhase, completedPhases = [], c
                     status === "completed"
                       ? "text-[#22c55e]"
                       : status === "current"
-                        ? "text-white"
-                        : "text-gray-500"
+                        ? "text-[var(--foreground)]"
+                        : "text-[var(--text-faint)]"
                   }`}
                 >
-                  Fase {phase.number}: {phase.title}
+                  Fase {phase.number + 1}: {phase.title}
                 </div>
-                <div className="text-sm text-gray-400 mt-0.5">
+                <div className="text-sm text-[var(--text-muted)] mt-0.5">
                   {phase.description}
                 </div>
               </div>

@@ -37,10 +37,10 @@ export default function ReferidosPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">Acceso Restringido</h1>
-          <p className="text-gray-400 mb-8">Debes iniciar sesión para ver tus referidos</p>
+          <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">Acceso Restringido</h1>
+          <p className="text-[var(--text-muted)] mb-8">Debes iniciar sesión para ver tus referidos</p>
           <a
             href="/ingresar"
             className="inline-flex items-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-semibold px-6 py-3 rounded-full transition-all"
@@ -169,37 +169,37 @@ export default function ReferidosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0c14]">
+    <div className="min-h-screen bg-[var(--background-alt)]">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Referidos</h1> 
+        <h1 className="text-3xl font-bold text-[var(--foreground)] mb-8">Referidos</h1> 
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
                 <Users className="h-6 w-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Total Referidos</p>
+                <p className="text-[var(--text-muted)] text-sm">Total Referidos</p>
                 <p className="text-2xl font-bold text-blue-400">{referralData.totalReferrals}</p>
               </div>
             </div>
           </div> 
           
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-yellow-400" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Pendientes</p>
+                <p className="text-[var(--text-muted)] text-sm">Pendientes</p>
                 <p className="text-2xl font-bold text-yellow-400">{referralData.pendingReferrals}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 bg-[#fbbf24]/20 rounded-full flex items-center justify-center">
                 <Image
@@ -211,7 +211,7 @@ export default function ReferidosPage() {
                 />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">HC Ganados</p>
+                <p className="text-[var(--text-muted)] text-sm">HC Ganados</p>
                 <p className="text-2xl font-bold text-[#fbbf24]">{referralData.totalHubCoinsEarned.toLocaleString()}</p>
               </div>
             </div>
@@ -220,8 +220,8 @@ export default function ReferidosPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
               <Gift className="h-5 w-5 text-[#8e00f7]" />
               Tu Enlace de Referido
             </h3>
@@ -229,18 +229,18 @@ export default function ReferidosPage() {
             {loading ? (
               <div className="text-center py-8">
                 <div className="w-8 h-8 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-400">Cargando tu código...</p>
+                <p className="text-[var(--text-muted)]">Cargando tu código...</p>
               </div>
             ) : referralData.referralCode ? (
               <div className="space-y-4">
-                <div className="bg-[#1a1a28] rounded-lg p-4">
-                  <p className="text-gray-400 text-sm mb-2">Enlace completo:</p>
+                <div className="bg-[var(--card-bg-2)] rounded-lg p-4">
+                  <p className="text-[var(--text-muted)] text-sm mb-2">Enlace completo:</p>
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={referralData.referralLink}
                       readOnly
-                      className="flex-1 bg-transparent text-white font-mono text-sm"
+                      className="flex-1 bg-transparent text-[var(--foreground)] font-mono text-sm"
                     />
                     <button
                       onClick={handleCopyLink}
@@ -252,11 +252,11 @@ export default function ReferidosPage() {
                   </div>
                 </div>
                 
-                <div className="bg-[#1a1a28] rounded-lg p-4">
-                  <p className="text-gray-400 text-sm mb-2">Código de referido:</p>
+                <div className="bg-[var(--card-bg-2)] rounded-lg p-4">
+                  <p className="text-[var(--text-muted)] text-sm mb-2">Código de referido:</p>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-[#0c0c14] rounded-lg px-4 py-3 text-center">
-                      <span className="text-white font-bold text-lg font-mono">{referralData.referralCode}</span>
+                    <div className="flex-1 bg-[var(--background-alt)] rounded-lg px-4 py-3 text-center">
+                      <span className="text-[var(--foreground)] font-bold text-lg font-mono">{referralData.referralCode}</span>
                     </div>
                     <button
                       onClick={handleCopyCode}
@@ -270,9 +270,9 @@ export default function ReferidosPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="bg-[#1a1a28] rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-3">Crea tu código de referido</h4>
-                  <p className="text-gray-400 text-sm mb-4">
+                <div className="bg-[var(--card-bg-2)] rounded-lg p-4">
+                  <h4 className="text-[var(--foreground)] font-medium mb-3">Crea tu código de referido</h4>
+                  <p className="text-[var(--text-muted)] text-sm mb-4">
                     El código debe cumplir con los siguientes requerimientos:
                   </p>
                   
@@ -333,7 +333,7 @@ export default function ReferidosPage() {
                       }}
                       placeholder="Ej: abc123"
                       maxLength={5}
-                      className={`flex-1 bg-[#0c0c14] text-white px-4 py-2 rounded-lg font-mono ${
+                      className={`flex-1 bg-[var(--background-alt)] text-[var(--foreground)] px-4 py-2 rounded-lg font-mono ${
                         validationError ? 'border border-red-500' : ''
                       }`}
                       pattern="[a-z0-9]{5}"
@@ -358,7 +358,7 @@ export default function ReferidosPage() {
                     </p>
                   )}
                   
-                  <p className="text-gray-500 text-xs mt-2">
+                  <p className="text-[var(--text-faint)] text-xs mt-2">
                     Solo letras minúsculas y números. Los símbolos como ,.-¿¡'? no están permitidos.
                   </p>
                 </div>
@@ -366,8 +366,8 @@ export default function ReferidosPage() {
             )}
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
               <Crown className="h-5 w-5 text-[#fbbf24]" />
               Beneficios del Programa
             </h3>
@@ -377,8 +377,8 @@ export default function ReferidosPage() {
                   <Check className="h-3 w-3 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-white font-medium">250 Hub Coins por compra</p>
-                  <p className="text-gray-400 text-sm">Gana 250 HC por cada compra completada de tus referidos</p>
+                  <p className="text-[var(--foreground)] font-medium">250 Hub Coins por compra</p>
+                  <p className="text-[var(--text-muted)] text-sm">Gana 250 HC por cada compra completada de tus referidos</p>
                 </div>
               </div>
               
@@ -387,8 +387,8 @@ export default function ReferidosPage() {
                   <Check className="h-3 w-3 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-white font-medium">Entrega inmediata</p>
-                  <p className="text-gray-400 text-sm">Recibe tus comisiones al instante cuando se completa la compra</p>
+                  <p className="text-[var(--foreground)] font-medium">Entrega inmediata</p>
+                  <p className="text-[var(--text-muted)] text-sm">Recibe tus comisiones al instante cuando se completa la compra</p>
                 </div>
               </div>
               
@@ -397,8 +397,8 @@ export default function ReferidosPage() {
                   <Check className="h-3 w-3 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-white font-medium">Seguimiento real</p>
-                  <p className="text-gray-400 text-sm">Ve en tiempo real tus referidos y comisiones ganadas</p>
+                  <p className="text-[var(--foreground)] font-medium">Seguimiento real</p>
+                  <p className="text-[var(--text-muted)] text-sm">Ve en tiempo real tus referidos y comisiones ganadas</p>
                 </div>
               </div>
               
@@ -407,35 +407,35 @@ export default function ReferidosPage() {
                   <Check className="h-3 w-3 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-white font-medium">Sin límites</p>
-                  <p className="text-gray-400 text-sm">Refiere a tantas personas como quieras sin restricciones</p>
+                  <p className="text-[var(--foreground)] font-medium">Sin límites</p>
+                  <p className="text-[var(--text-muted)] text-sm">Refiere a tantas personas como quieras sin restricciones</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Referidos Recientes</h3>
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-4">Referidos Recientes</h3>
           <div className="overflow-x-auto">
             {loading ? (
               <div className="text-center py-8">
                 <div className="w-8 h-8 border-4 border-[#8e00f7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-400">Cargando referidos...</p>
+                <p className="text-[var(--text-muted)]">Cargando referidos...</p>
               </div>
             ) : referralData.recentReferrals.length > 0 ? (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1a1a28]">
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Usuario</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Fecha</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Estado</th>
-                    <th className="text-right py-3 px-4 text-gray-400 font-medium">Comisión</th>
+                  <tr className="border-b border-[var(--card-border-soft)]">
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Usuario</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Fecha</th>
+                    <th className="text-left py-3 px-4 text-[var(--text-muted)] font-medium">Estado</th>
+                    <th className="text-right py-3 px-4 text-[var(--text-muted)] font-medium">Comisión</th>
                   </tr>
                 </thead>
                 <tbody>
                   {referralData.recentReferrals.map((referral: any, index: number) => (
-                    <tr key={index} className="border-b border-[#1a1a28]/50">
+                    <tr key={index} className="border-b" style={{ borderColor: "color-mix(in srgb, var(--card-border-soft) 50%, transparent)" }}>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           {referral.referredAvatar ? (
@@ -451,10 +451,10 @@ export default function ReferidosPage() {
                               </span>
                             </div>
                           )}
-                          <span className="text-white">{referral.referredUsername}</span>
+                          <span className="text-[var(--foreground)]">{referral.referredUsername}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-gray-400">
+                      <td className="py-3 px-4 text-[var(--text-muted)]">
                         {new Date(referral.createdAt).toLocaleDateString('es-CO')}
                       </td>
                       <td className="py-3 px-4">
@@ -480,7 +480,7 @@ export default function ReferidosPage() {
                         {referral.status === 'completed' ? (
                           <span className="text-green-400 font-medium">+{referral.commissionAmount} HC</span>
                         ) : (
-                          <span className="text-gray-400 font-medium">0 HC</span>
+                          <span className="text-[var(--text-muted)] font-medium">0 HC</span>
                         )}
                       </td>
                     </tr>
@@ -489,9 +489,9 @@ export default function ReferidosPage() {
               </table>
             ) : (
               <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-400">No tienes referidos aún</p>
-                <p className="text-gray-500 text-sm mt-2">Comparte tu enlace para empezar a ganar Hub Coins</p>
+                <Users className="h-12 w-12 text-[var(--text-muted)] mx-auto mb-4" />
+                <p className="text-[var(--text-muted)]">No tienes referidos aún</p>
+                <p className="text-[var(--text-faint)] text-sm mt-2">Comparte tu enlace para empezar a ganar Hub Coins</p>
               </div>
             )}
           </div>
@@ -508,9 +508,9 @@ export default function ReferidosPage() {
 
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold text-white mb-4">Crea tu Código de Referido</h3>
-            <p className="text-gray-400 text-sm mb-4">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-4">Crea tu Código de Referido</h3>
+            <p className="text-[var(--text-muted)] text-sm mb-4">
               Para poder usar el sistema de referidos, necesitas crear tu código personalizado.
             </p>
             
@@ -571,7 +571,7 @@ export default function ReferidosPage() {
                 }}
                 placeholder="Ej: abc123"
                 maxLength={5}
-                className={`flex-1 bg-[#0c0c14] text-white px-4 py-2 rounded-lg font-mono ${
+                className={`flex-1 bg-[var(--background-alt)] text-white px-4 py-2 rounded-lg font-mono ${
                   validationError ? 'border border-red-500' : ''
                 }`}
                 pattern="[a-z0-9]{5}"

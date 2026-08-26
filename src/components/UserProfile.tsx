@@ -40,7 +40,8 @@ export default function UserProfile() {
       {/* Profile Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="flex items-center gap-1.5 sm:gap-2 bg-[#12121c]/80 border border-[#1a1a28] rounded-full px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 hover:bg-[#1a1a28] hover:border-[#8e00f7]"
+        className="flex items-center gap-1.5 sm:gap-2 border border-[var(--card-border-soft)] rounded-full px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 hover:bg-[var(--card-bg-2)] hover:border-[#8e00f7]"
+        style={{ background: "color-mix(in srgb, var(--card-bg) 80%, transparent)" }}
       >
         {user.avatar && (
           <img
@@ -49,19 +50,19 @@ export default function UserProfile() {
             className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
           />
         )}
-        <span className="text-gray-300 hidden sm:block">{user.global_name || user.username}</span>
+        <span className="text-[var(--text-muted)] hidden sm:block">{user.global_name || user.username}</span>
         {isDropdownOpen ? (
-          <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
+          <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4 text-[var(--text-muted)]" />
         ) : (
-          <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
+          <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-[var(--text-muted)]" />
         )}
       </button>
 
       {/* Dropdown Menu */}
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-56 sm:w-64 bg-[#12121c] border border-[#1a1a28] rounded-xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-56 sm:w-64 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl shadow-xl z-50 overflow-hidden">
           {/* User Info */}
-          <div className="p-3 sm:p-4 border-b border-[#1a1a28]">
+          <div className="p-3 sm:p-4 border-b border-[var(--card-border-soft)]">
             <div className="flex items-center gap-2 sm:gap-3">
               {user.avatar && (
                 <img
@@ -71,14 +72,14 @@ export default function UserProfile() {
                 />
               )}
               <div className="min-w-0 flex-1">
-                <div className="text-white font-medium text-sm sm:text-base truncate">{user.global_name || user.username}</div>
-                <div className="text-gray-400 text-xs sm:text-sm truncate">@{user.username}</div>
+                <div className="text-[var(--foreground)] font-medium text-sm sm:text-base truncate">{user.global_name || user.username}</div>
+                <div className="text-[var(--text-muted)] text-xs sm:text-sm truncate">@{user.username}</div>
               </div>
             </div>
           </div>
 
           {/* Hub Coins */}
-          <div className="p-3 sm:p-4 border-b border-[#1a1a28]">
+          <div className="p-3 sm:p-4 border-b border-[var(--card-border-soft)]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Image
@@ -88,24 +89,24 @@ export default function UserProfile() {
                   height={20}
                   className="w-4 h-4 sm:w-5 sm:h-5"
                 />
-                <span className="text-gray-300 text-xs sm:text-sm">Hub Coins:</span>
+                <span className="text-[var(--text-muted)] text-xs sm:text-sm">Hub Coins:</span>
               </div>
               <span className="text-[#fbbf24] font-bold text-sm sm:text-base">{balance.toLocaleString()}</span>
             </div>
           </div>
 
           {/* Membership */}
-          <div className="p-3 sm:p-4 border-b border-[#1a1a28]">
+          <div className="p-3 sm:p-4 border-b border-[var(--card-border-soft)]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Gift className="h-4 w-4 sm:h-5 sm:w-5 text-[#8e00f7]" />
-                <span className="text-gray-300 text-xs sm:text-sm">MEMBRESÍA:</span>
+                <span className="text-[var(--text-muted)] text-xs sm:text-sm">MEMBRESÍA:</span>
               </div>
               {userMembership ? (
                 <span className="text-[#8e00f7] font-bold text-sm sm:text-base">{userMembership}</span>
               ) : (
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 gap-1">
-                  <span className="text-gray-400 text-xs sm:text-sm">Ninguna</span>
+                  <span className="text-[var(--text-muted)] text-xs sm:text-sm">Ninguna</span>
                 </div>
               )}
             </div>
@@ -126,7 +127,7 @@ export default function UserProfile() {
 
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-gray-300 hover:text-white hover:bg-[#1a1a28] rounded-lg transition-all duration-200"
+              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg-2)] rounded-lg transition-all duration-200"
               onClick={() => setIsDropdownOpen(false)}
             >
               <LayoutDashboard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -135,7 +136,7 @@ export default function UserProfile() {
 
             <Link
               href="/perfil"
-              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-gray-300 hover:text-white hover:bg-[#1a1a28] rounded-lg transition-all duration-200"
+              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg-2)] rounded-lg transition-all duration-200"
               onClick={() => setIsDropdownOpen(false)}
             >
               <User className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -144,7 +145,7 @@ export default function UserProfile() {
             
             <Link
               href="/pedidos"
-              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-gray-300 hover:text-white hover:bg-[#1a1a28] rounded-lg transition-all duration-200"
+              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg-2)] rounded-lg transition-all duration-200"
               onClick={() => setIsDropdownOpen(false)}
             >
               <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -154,7 +155,7 @@ export default function UserProfile() {
                         
             <Link
               href="/tienda/hub-coins"
-              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-gray-300 hover:text-white hover:bg-[#1a1a28] rounded-lg transition-all duration-200"
+              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg-2)] rounded-lg transition-all duration-200"
               onClick={() => setIsDropdownOpen(false)}
             >
               <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -172,7 +173,7 @@ export default function UserProfile() {
               </Link>
             )}
 
-            <div className="border-t border-[#1a1a28] my-2"></div>
+            <div className="border-t border-[var(--card-border-soft)] my-2"></div>
 
             <button
               onClick={handleLogout}

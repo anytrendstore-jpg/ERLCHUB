@@ -124,7 +124,7 @@ export default function BuyWithHubCoinsButton({
     }
     
     if (!isAuthenticated) {
-      return `${baseClass} bg-gray-600 text-gray-400 cursor-not-allowed`;
+      return `${baseClass} bg-gray-600 text-[var(--text-muted)] cursor-not-allowed`;
     }
     
     if (balance < priceInHubCoins) {
@@ -167,7 +167,7 @@ export default function BuyWithHubCoinsButton({
       
       {!isAuthenticated && (
         <div className="mt-2 p-2 bg-gray-500/20 border border-gray-500/50 rounded-lg">
-          <p className="text-gray-400 text-sm">
+          <p className="text-[var(--text-muted)] text-sm">
             Debes <a href="/ingresar" className="text-[#8e00f7] hover:text-[#a64dfa] underline">iniciar sesión</a> para comprar con Hub Coins.
           </p>
         </div>

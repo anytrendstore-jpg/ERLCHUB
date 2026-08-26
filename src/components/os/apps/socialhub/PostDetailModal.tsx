@@ -29,7 +29,7 @@ export default function PostDetailModal({ post, me, onClose, onOpenProfile, onOp
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-in fade-in duration-150" onClick={onClose}>
       <div className="relative w-full max-w-lg max-h-[88vh] overflow-y-auto custom-scrollbar animate-in zoom-in-95 duration-150" onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-[#12121c] border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors">
+        <button onClick={onClose} className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-[var(--card-bg)] border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors">
           <X className="w-4 h-4" />
         </button>
         <PostCard

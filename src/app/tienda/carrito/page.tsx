@@ -331,7 +331,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] pt-20">
+      <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
         
         <div className="container mx-auto px-4 py-16">
@@ -341,7 +341,7 @@ export default function CartPage() {
             </div>
             
             <h1 className="text-3xl font-bold text-white mb-4">Tu carrito está vacío</h1>
-            <p className="text-gray-400 text-lg mb-8">
+            <p className="text-[var(--text-muted)] text-lg mb-8">
               Parece que aún no has agregado productos a tu carrito
             </p>
             
@@ -361,7 +361,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] pt-20">
+    <div className="min-h-screen bg-[var(--background)] pt-20">
       <Navbar />
 
       {notice && (
@@ -381,7 +381,7 @@ export default function CartPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Carrito de Compras</h1>
-              <p className="text-gray-400">
+              <p className="text-[var(--text-muted)]">
                 {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
               </p>
             </div>
@@ -398,9 +398,9 @@ export default function CartPage() {
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+                <div key={item.id} className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
                   <div className="flex gap-4">
-                    <div className="w-20 h-20 rounded-lg bg-[#1a1a28] overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 rounded-lg bg-[var(--card-bg-2)] overflow-hidden flex-shrink-0">
                       {item.image ? (
                         <Image
                           src={item.image}
@@ -420,7 +420,7 @@ export default function CartPage() {
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="text-white font-semibold text-lg">{item.name}</h3>
-                          <p className="text-gray-400 text-sm">{item.category}</p>
+                          <p className="text-[var(--text-muted)] text-sm">{item.category}</p>
                         </div>
                         
                         <button
@@ -433,12 +433,12 @@ export default function CartPage() {
 
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center bg-[#1a1a28] rounded-lg">
+                          <div className="flex items-center bg-[var(--card-bg-2)] rounded-lg">
                             <button
                               onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                               className="p-2 hover:bg-[#2a2a3a] transition-colors rounded-l-lg"
                             >
-                              <Minus className="h-4 w-4 text-gray-400" />
+                              <Minus className="h-4 w-4 text-[var(--text-muted)]" />
                             </button>
                             <span className="px-3 py-1 text-white font-medium">
                               {item.quantity}
@@ -447,7 +447,7 @@ export default function CartPage() {
                               onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                               className="p-2 hover:bg-[#2a2a3a] transition-colors rounded-r-lg"
                             >
-                              <Plus className="h-4 w-4 text-gray-400" />
+                              <Plus className="h-4 w-4 text-[var(--text-muted)]" />
                             </button>
                           </div>
                         </div>
@@ -466,7 +466,7 @@ export default function CartPage() {
                                 {item.priceHubCoins * item.quantity}
                               </div>
                               {item.quantity > 1 && (
-                                <div className="text-gray-400 text-sm flex items-center gap-1">
+                                <div className="text-[var(--text-muted)] text-sm flex items-center gap-1">
                                   <Image
                                     src="/hub-coins.png"
                                     alt="Hub Coins"
@@ -489,7 +489,7 @@ export default function CartPage() {
                                 </div>
                               )}
                               {item.quantity > 1 && (
-                                <div className="text-gray-400 text-sm">
+                                <div className="text-[var(--text-muted)] text-sm">
                                   {getConvertedPrice(item.priceUSD || item.price || 0)} c/u
                                 </div>
                               )}
@@ -499,7 +499,7 @@ export default function CartPage() {
                       </div>
 
                       {item.details && (
-                        <div className="mt-3 text-sm text-gray-400">
+                        <div className="mt-3 text-sm text-[var(--text-muted)]">
                           {item.details}
                         </div>
                       )}
@@ -509,15 +509,15 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="lg:sticky lg:top-24 bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+            <div className="lg:sticky lg:top-24 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
               <h2 className="text-xl font-bold text-white mb-6">Resumen del Pedido</h2>
 
               <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-sm">
                   <div className="flex-1">
-                    <div className="text-gray-300">{item.name}</div>
-                    <div className="text-gray-500 text-xs">
+                    <div className="text-[var(--text-muted)]">{item.name}</div>
+                    <div className="text-[var(--text-faint)] text-xs">
                       {item.quantity} × {item.priceHubCoins ? `${item.priceHubCoins} Hub Coins` : `$${item.priceUSD || item.price || 0}`}
                     </div>
                   </div>
@@ -550,15 +550,15 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="space-y-3 mb-6 border-t border-[#1a1a28] pt-4">
+            <div className="space-y-3 mb-6 border-t border-[var(--card-border-soft)] pt-4">
                   {usdTotal > 0 && (
-                    <div className="flex justify-between text-gray-400">
+                    <div className="flex justify-between text-[var(--text-muted)]">
                       <span>Subtotal USD</span>
                       <span>{getConvertedPrice(usdTotal)}</span>
                     </div>
                   )}
                   {hubCoinsTotal > 0 && (
-                    <div className="flex justify-between text-gray-400">
+                    <div className="flex justify-between text-[var(--text-muted)]">
                       <span>Subtotal Hub Coins</span>
                       <span className="flex items-center gap-1">
                         <Image
@@ -574,8 +574,8 @@ export default function CartPage() {
                   )}
 
                   {usdTotal > 0 && (
-                    <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 mb-4">
-                      <div className="text-gray-400 mb-3">Código de Descuento</div>
+                    <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 mb-4">
+                      <div className="text-[var(--text-muted)] mb-3">Código de Descuento</div>
                       <div className="space-y-3">
                         <div className="flex gap-2">
                           <input 
@@ -583,7 +583,7 @@ export default function CartPage() {
                             value={discountCode}
                             onChange={(e) => setDiscountCode(e.target.value)}
                             placeholder="Ingresa tu código de descuento" 
-                            className="flex-1 px-3 py-2 bg-[#1a1a28] border border-[#2a2a3a] rounded-lg text-white text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
+                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-white text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
                           />
                           <button 
                             onClick={validateDiscountCode}
@@ -603,8 +603,8 @@ export default function CartPage() {
                   )}
 
                   {usdTotal > 0 && (
-                    <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-4 mb-4">
-                      <div className="text-gray-400 mb-3">Código de Referido</div>
+                    <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 mb-4">
+                      <div className="text-[var(--text-muted)] mb-3">Código de Referido</div>
                       <div className="space-y-3">
                         <div className="flex gap-2">
                           <input 
@@ -612,7 +612,7 @@ export default function CartPage() {
                             value={referralCode}
                             onChange={(e) => setReferralCode(e.target.value)}
                             placeholder="Ingresa tu código de referido" 
-                            className="flex-1 px-3 py-2 bg-[#1a1a28] border border-[#2a2a3a] rounded-lg text-white text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
+                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-white text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
                           />
                           <button 
                             onClick={async () => {
@@ -637,7 +637,7 @@ export default function CartPage() {
                 )}
                   
                   {hubCoinsTotal > 0 && usdTotal === 0 && (
-                    <div className="flex justify-between text-white font-bold text-lg border-t border-[#1a1a28] pt-3">
+                    <div className="flex justify-between text-white font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total Hub Coins</span>
                       <span className="text-[#fbbf24] flex items-center gap-1">
                         <Image
@@ -652,13 +652,13 @@ export default function CartPage() {
                     </div>
                   )}
                   {usdTotal > 0 && hubCoinsTotal === 0 && (
-                    <div className="flex justify-between text-white font-bold text-lg border-t border-[#1a1a28] pt-3">
+                    <div className="flex justify-between text-white font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total</span>
                       <span className="text-[#8e00f7]">{getConvertedPrice(finalUsdTotal)}</span>
                     </div>
                   )}
                   {usdTotal === 0 && hubCoinsTotal > 0 && (
-                    <div className="flex justify-between text-white font-bold text-lg border-t border-[#1a1a28] pt-3">
+                    <div className="flex justify-between text-white font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total</span>
                       <span className="text-[#fbbf24] flex items-center gap-1">
                         <Image

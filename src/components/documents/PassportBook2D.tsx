@@ -25,7 +25,7 @@ export default function PassportBook2D({
   return (
     <div className="w-full">
       <div
-        className="relative w-full max-w-md mx-auto overflow-hidden rounded-xl shadow-2xl bg-[#0a0a12]"
+        className="relative w-full max-w-md mx-auto overflow-hidden rounded-xl shadow-2xl bg-[var(--background)]"
         style={{ aspectRatio: "500 / 700" }}
       >
         {/* Doble página, apiladas verticalmente, siempre en su tamaño final */}

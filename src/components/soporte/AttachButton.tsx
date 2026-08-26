@@ -63,7 +63,7 @@ export default function AttachButton({ uploadUrl, ticketId, disabled, pendingCou
         onClick={() => inputRef.current?.click()}
         disabled={disabled || uploading || pendingCount >= MAX_ATTACHMENTS_PER_MESSAGE}
         title="Adjuntar imagen, audio o video"
-        className="h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-lg sm:rounded-xl text-gray-500 hover:text-white hover:bg-white/5 disabled:opacity-40 transition flex-shrink-0"
+        className="h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-lg sm:rounded-xl text-[var(--text-faint)] hover:text-white hover:bg-white/5 disabled:opacity-40 transition flex-shrink-0"
       >
         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
       </button>

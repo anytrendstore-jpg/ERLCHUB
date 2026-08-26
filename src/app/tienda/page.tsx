@@ -74,11 +74,11 @@ export default function TiendaPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       {/* Navegación rápida — la página es larga, así se salta directo a la sección que importa */}
-      <nav className="sticky top-16 z-30 bg-[#0c0c14]/90 backdrop-blur-xl border-b border-[#1a1a28]">
+      <nav className="sticky top-16 z-30 backdrop-blur-xl border-b border-[var(--card-border-soft)]" style={{ background: "color-mix(in srgb, var(--background-alt) 90%, transparent)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1 overflow-x-auto scrollbar-hide py-2.5">
           {[
             { href: "#hubcoins", label: "Hub Coins" },
@@ -89,7 +89,7 @@ export default function TiendaPage() {
             <a
               key={item.href}
               href={item.href}
-              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm text-[var(--text-muted)] hover:text-white hover:bg-white/5 transition-colors"
             >
               {item.label}
             </a>
@@ -113,7 +113,7 @@ export default function TiendaPage() {
                   <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
                     Hub Coins
                   </h1>
-                  <p className="text-gray-300 text-lg mb-6 max-w-md">
+                  <p className="text-[var(--text-muted)] text-lg mb-6 max-w-md">
                     Compra Hub Coins al mejor precio del mercado.<br />
                     Entrega instantánea, segura y garantizada.
                   </p>
@@ -137,7 +137,7 @@ export default function TiendaPage() {
 
                 <div className="flex flex-col items-center md:items-end gap-4">
                   <div className="text-right">
-                    <div className="text-gray-400 text-sm">Desde</div>
+                    <div className="text-[var(--text-muted)] text-sm">Desde</div>
                     <div className="text-white text-2xl font-bold flex items-center gap-2">
                       $5.00 
                       <div className="w-5 h-3 rounded-sm overflow-hidden">
@@ -149,7 +149,7 @@ export default function TiendaPage() {
                           className="object-cover"
                         />
                       </div>
-                      <span className="text-gray-400 font-normal">/ 500</span>
+                      <span className="text-[var(--text-muted)] font-normal">/ 500</span>
                       <Image
                         src="/hub-coins.png"
                         alt="Hub Coins"
@@ -181,22 +181,22 @@ export default function TiendaPage() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-white">Membresías</h2>
-                  <p className="text-gray-400 text-sm">Beneficios exclusivos con pago en dinero real</p>
+                  <p className="text-[var(--text-muted)] text-sm">Beneficios exclusivos con pago en dinero real</p>
                 </div>
               </div>
 
-              <div className="flex items-center bg-[#12121c] border border-[#1a1a28] rounded-xl p-1">
+              <div className="flex items-center bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-1">
                 <button
                   type="button"
                   onClick={() => setBilling("monthly")}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${billing === "monthly" ? "bg-[#8e00f7] text-white" : "text-gray-400 hover:text-white"}`}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${billing === "monthly" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-white"}`}
                 >
                   Mensual
                 </button>
                 <button
                   type="button"
                   onClick={() => setBilling("permanent")}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${billing === "permanent" ? "bg-[#8e00f7] text-white" : "text-gray-400 hover:text-white"}`}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${billing === "permanent" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-white"}`}
                 >
                   Permanente
                 </button>
@@ -227,7 +227,7 @@ export default function TiendaPage() {
                   <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
                     Whitelist Fast
                   </h1>
-                  <p className="text-gray-300 text-lg mb-6 max-w-md">
+                  <p className="text-[var(--text-muted)] text-lg mb-6 max-w-md">
                     Acceso instantáneo sin entrevistas.<br />
                     Activa tu whitelist inmediatamente.
                   </p>
@@ -261,7 +261,7 @@ export default function TiendaPage() {
                   </div>
 
                   <div className="text-right">
-                    <div className="text-gray-400 text-sm">Precio especial</div>
+                    <div className="text-[var(--text-muted)] text-sm">Precio especial</div>
                     <div className="text-white text-2xl font-bold flex items-center gap-2">
                       {convertPrice(7, selectedCurrency)} 
                       <div className="w-5 h-3 rounded-sm overflow-hidden">
@@ -283,7 +283,7 @@ export default function TiendaPage() {
                         />
                       </div>
                     </div>
-                    <div className="text-gray-500 text-sm mt-1">
+                    <div className="text-[var(--text-faint)] text-sm mt-1">
                       ≈ ${7.00} 
                       <div className="w-5 h-3 rounded-sm overflow-hidden inline-block ml-1">
                         <Image
@@ -319,7 +319,7 @@ export default function TiendaPage() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-white">Kits</h2>
-                  <p className="text-gray-400 text-sm">Paquetes completos - Se compran con Hub Coins</p>
+                  <p className="text-[var(--text-muted)] text-sm">Paquetes completos - Se compran con Hub Coins</p>
                 </div>
               </div>
             </div>
@@ -328,7 +328,7 @@ export default function TiendaPage() {
               <button
                 type="button"
                 onClick={() => setKitCategory(null)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${kitCategory === null ? "bg-[#22c55e] text-black" : "bg-[#12121c] border border-[#1a1a28] text-gray-400 hover:border-[#3a3a4a]"}`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${kitCategory === null ? "bg-[#22c55e] text-black" : "bg-[var(--card-bg)] border border-[var(--card-border-soft)] text-[var(--text-muted)] hover:border-[#3a3a4a]"}`}
               >
                 Todos
               </button>
@@ -337,7 +337,7 @@ export default function TiendaPage() {
                   key={cat}
                   type="button"
                   onClick={() => setKitCategory(cat)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${kitCategory === cat ? "bg-[#22c55e] text-black" : "bg-[#12121c] border border-[#1a1a28] text-gray-400 hover:border-[#3a3a4a]"}`}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${kitCategory === cat ? "bg-[#22c55e] text-black" : "bg-[var(--card-bg)] border border-[var(--card-border-soft)] text-[var(--text-muted)] hover:border-[#3a3a4a]"}`}
                 >
                   {KIT_CATEGORY_LABELS[cat] || cat}
                 </button>
@@ -377,7 +377,7 @@ export default function TiendaPage() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-white">Artículos</h2>
-                  <p className="text-gray-400 text-sm">Artículos individuales - Se compran con Hub Coins</p>
+                  <p className="text-[var(--text-muted)] text-sm">Artículos individuales - Se compran con Hub Coins</p>
                 </div>
               </div>
             </div>
@@ -393,7 +393,7 @@ export default function TiendaPage() {
                   <ShoppingBag className="h-10 w-10 text-[#8e00f7]" />
                 </div>
                 <h3 className="text-3xl font-bold text-white mb-4">Próximamente Disponible</h3>
-                <p className="text-gray-300 text-lg mb-6 max-w-2xl mx-auto">
+                <p className="text-[var(--text-muted)] text-lg mb-6 max-w-2xl mx-auto">
                   Estamos trabajando para esta seccion de artículos individuales. 
                 </p>
                 <div className="flex items-center justify-center gap-2 text-[#8e00f7]">
@@ -415,7 +415,7 @@ export default function TiendaPage() {
                       tiendaStats.activeUsers.toLocaleString() || "0"
                     )}
                   </div>
-                  <div className="text-gray-400 text-sm">Usuarios Activos</div>
+                  <div className="text-[var(--text-muted)] text-sm">Usuarios Activos</div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl font-bold text-[#22c55e] mb-2">
@@ -425,15 +425,15 @@ export default function TiendaPage() {
                       tiendaStats.totalOrders.toLocaleString() || "0"
                     )}
                   </div>
-                  <div className="text-gray-400 text-sm">Órdenes Totales</div>
+                  <div className="text-[var(--text-muted)] text-sm">Órdenes Totales</div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl font-bold text-[#fbbf24] mb-2">{tiendaRating}★</div>
-                  <div className="text-gray-400 text-sm">Calificación</div>
+                  <div className="text-[var(--text-muted)] text-sm">Calificación</div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl font-bold text-[#ef4444] mb-2">24/7</div>
-                  <div className="text-gray-400 text-sm">Soporte</div>
+                  <div className="text-[var(--text-muted)] text-sm">Soporte</div>
                 </div>
               </div>
             </div>
@@ -442,17 +442,17 @@ export default function TiendaPage() {
           <section className="mb-12">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-4">Lo que dicen nuestros usuarios</h2>
-              <p className="text-gray-400 text-lg">Descubre por qué miles de jugadores confían en ERLC HUB</p>
+              <p className="text-[var(--text-muted)] text-lg">Descubre por qué miles de jugadores confían en ERLC HUB</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {mejoresReseñasTienda.length > 0 ? (
                 mejoresReseñasTienda.map((review, index) => (
-                  <div key={index} className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6">
+                  <div key={index} className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
                     <div className="flex items-center gap-1 mb-4">
                       {renderStarsJSX(review.rating)}
                     </div>
-                    <p className="text-gray-300 text-sm mb-4 italic">
+                    <p className="text-[var(--text-muted)] text-sm mb-4 italic">
                       "{review.comment}"
                     </p>
                     <div className="flex items-center gap-3">
@@ -463,14 +463,14 @@ export default function TiendaPage() {
                       </div>
                       <div>
                         <div className="text-white font-medium text-sm">{review.username}</div>
-                        <div className="text-gray-500 text-xs">Cliente Verificado</div>
+                        <div className="text-[var(--text-faint)] text-xs">Cliente Verificado</div>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="col-span-3 text-center py-12">
-                  <p className="text-gray-400 text-lg">No hay reseñas de tienda aún. ¡Sé el primero en compartir tu experiencia!</p>
+                  <p className="text-[var(--text-muted)] text-lg">No hay reseñas de tienda aún. ¡Sé el primero en compartir tu experiencia!</p>
                 </div>
               )}
             </div>
@@ -479,20 +479,20 @@ export default function TiendaPage() {
           <section className="mb-12">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-4">Preguntas Frecuentes</h2>
-              <p className="text-gray-400 text-lg">Todo lo que necesitas saber sobre nuestra tienda</p>
+              <p className="text-[var(--text-muted)] text-lg">Todo lo que necesitas saber sobre nuestra tienda</p>
             </div>
 
             <div className="max-w-3xl mx-auto space-y-4">
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
                 <h3 className="text-white font-bold mb-2">¿Cómo compro Hub Coins?</h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[var(--text-muted)] text-sm">
                   Es muy fácil. Ve a la sección de Hub Coins, selecciona la cantidad que quieres, elige tu moneda y método de pago, y completa la compra. La entrega es instantánea.
                 </p>
               </div>
 
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
                 <h3 className="text-white font-bold mb-2">¿Qué métodos de pago aceptan?</h3>
-                <div className="text-gray-400 text-sm space-y-2">
+                <div className="text-[var(--text-muted)] text-sm space-y-2">
                   <p className="font-semibold text-white">Pagos seguros:</p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>VISA</li>
@@ -508,16 +508,16 @@ export default function TiendaPage() {
                 </div>
               </div>
 
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
                 <h3 className="text-white font-bold mb-2">¿Cuánto tiempo tarda la entrega?</h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[var(--text-muted)] text-sm">
                   La entrega de Hub Coins y productos digitales es instantánea. Recibirás tus compras en tu cuenta inmediatamente después de confirmar el pago.
                 </p>
               </div>
 
-              <div className="bg-[#12121c] border border-[#1a1a28] rounded-xl p-6">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
                 <h3 className="text-white font-bold mb-2">¿Hay reembolsos?</h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[var(--text-muted)] text-sm">
                   Los productos digitales no tienen reembolso una vez entregados. Si tienes problemas con tu compra, nuestro equipo de soporte te ayudará a resolverlo.
                 </p>
               </div>

@@ -15,18 +15,18 @@ interface WhitelistLoadingStateProps {
 export default function WhitelistLoadingState({ error, onRetry }: WhitelistLoadingStateProps) {
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="h-6 w-6 text-red-400" />
           </div>
-          <p className="text-white font-semibold mb-1">No pudimos cargar tu solicitud</p>
-          <p className="text-gray-400 text-sm mb-5">{error}</p>
+          <p className="text-[var(--foreground)] font-semibold mb-1">No pudimos cargar tu solicitud</p>
+          <p className="text-[var(--text-muted)] text-sm mb-5">{error}</p>
           {onRetry && (
             <button
               type="button"
               onClick={onRetry}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white text-sm font-semibold rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] text-sm font-semibold rounded-xl transition-colors"
             >
               <RotateCcw className="h-4 w-4" />
               Reintentar
@@ -38,7 +38,7 @@ export default function WhitelistLoadingState({ error, onRetry }: WhitelistLoadi
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
       <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
     </div>
   );

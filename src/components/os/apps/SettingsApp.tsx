@@ -617,7 +617,7 @@ export default function SettingsApp() {
 
       {showRestartTutorial && (
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowRestartTutorial(false)}>
-          <div className="bg-[#12121c] border border-white/10 rounded-2xl w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[var(--card-bg)] border border-white/10 rounded-2xl w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-white font-semibold text-base mb-2">¿Quieres volver a realizar el tutorial?</h3>
             <p className="text-white/50 text-sm mb-5">Verás de nuevo la bienvenida y la introducción al sistema ahora mismo.</p>
             <div className="flex gap-2">

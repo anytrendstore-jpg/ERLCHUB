@@ -58,7 +58,7 @@ export default function CompletedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="completed" />
       {showConfetti && <Confetti />}
@@ -80,28 +80,28 @@ export default function CompletedPage() {
               <h1 className="text-4xl font-black text-white mt-6 mb-2">
                 ¡Whitelist Completada!
               </h1>
-              <p className="text-gray-400 text-lg">
+              <p className="text-[var(--text-muted)] text-lg">
                 Felicitaciones {application.character?.firstName || application.fullName}, ahora eres parte de ERLC HUB
               </p>
-              <p className="text-gray-500 text-sm mt-2 font-mono">{application.applicationId}</p>
+              <p className="text-[var(--text-faint)] text-sm mt-2 font-mono">{application.applicationId}</p>
             </div>
 
             <div className="p-8 space-y-8">
               <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-[#0a0a12] rounded-xl">
+                <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Sparkles className="w-6 h-6 text-[#8e00f7] mx-auto mb-2" />
                   <div className="text-2xl font-bold text-white">100%</div>
-                  <div className="text-xs text-gray-500">Completado</div>
+                  <div className="text-xs text-[var(--text-faint)]">Completado</div>
                 </div>
-                <div className="text-center p-4 bg-[#0a0a12] rounded-xl">
+                <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Star className="w-6 h-6 text-[#fbbf24] mx-auto mb-2" />
                   <div className="text-2xl font-bold text-white">{application.questionnaireScore ?? 0}%</div>
-                  <div className="text-xs text-gray-500">Puntuación</div>
+                  <div className="text-xs text-[var(--text-faint)]">Puntuación</div>
                 </div>
-                <div className="text-center p-4 bg-[#0a0a12] rounded-xl">
+                <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Users className="w-6 h-6 text-[#22c55e] mx-auto mb-2" />
                   <div className="text-2xl font-bold text-white">#{application.memberNumber ?? 1}</div>
-                  <div className="text-xs text-gray-500">Miembro</div>
+                  <div className="text-xs text-[var(--text-faint)]">Miembro</div>
                 </div>
               </div>
 
@@ -109,13 +109,13 @@ export default function CompletedPage() {
                 <h2 className="text-lg font-bold text-white">Próximos pasos</h2>
 
                 <div className="space-y-3">
-                  <div className="flex items-start gap-4 p-4 bg-[#0a0a12] rounded-xl border border-[#1e1e2e]">
+                  <div className="flex items-start gap-4 p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)]">
                     <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
                       1
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-white">Únete al servidor de Discord</div>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="text-sm text-[var(--text-muted)] mt-1">
                         Accede a canales exclusivos y conoce a otros jugadores
                       </p>
                     </div>
@@ -130,24 +130,24 @@ export default function CompletedPage() {
                     </a>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-[#0a0a12] rounded-xl border border-[#1e1e2e]">
+                  <div className="flex items-start gap-4 p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)]">
                     <div className="w-8 h-8 rounded-full bg-[#8e00f7] flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
                       2
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-white">Tu número de documento</div>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="text-sm text-[var(--text-muted)] mt-1">
                         Guárdalo: es tu identificación dentro del servidor
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <code className="px-3 py-1.5 bg-[#1a1a28] rounded-lg text-[#8e00f7] font-mono text-sm">
+                        <code className="px-3 py-1.5 bg-[var(--card-bg-2)] rounded-lg text-[#8e00f7] font-mono text-sm">
                           {serverCode}
                         </code>
                         <button
                           type="button"
                           onClick={handleCopyCode}
                           className={`p-1.5 rounded-lg transition-colors ${
-                            codeCopied ? "bg-[#22c55e] text-white" : "bg-[#1a1a28] text-gray-400 hover:text-white"
+                            codeCopied ? "bg-[#22c55e] text-white" : "bg-[var(--card-bg-2)] text-[var(--text-muted)] hover:text-white"
                           }`}
                         >
                           {codeCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -165,13 +165,13 @@ export default function CompletedPage() {
                     </a>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-[#0a0a12] rounded-xl border border-[#1e1e2e]">
+                  <div className="flex items-start gap-4 p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)]">
                     <div className="w-8 h-8 rounded-full bg-[#fbbf24] flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
                       3
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-white">Revisa tu documento</div>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="text-sm text-[var(--text-muted)] mt-1">
                         {application.character
                           ? `${application.character.firstName} ${application.character.lastName} · válido hasta ${application.document?.expiryDate}`
                           : "Consulta los datos de tu DNI del servidor"}
@@ -179,7 +179,7 @@ export default function CompletedPage() {
                     </div>
                     <Link
                       href="/whitelist/dni"
-                      className="flex items-center gap-2 px-4 py-2 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white text-sm font-medium rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white text-sm font-medium rounded-lg transition-colors"
                     >
                       <CreditCard className="w-4 h-4" />
                       Ver DNI
@@ -191,7 +191,7 @@ export default function CompletedPage() {
               <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#8e00f7]/20 to-[#22c55e]/20 rounded-xl border border-[#8e00f7]/30">
                 <div>
                   <div className="font-medium text-white">Comparte tu logro</div>
-                  <div className="text-sm text-gray-400">Invita a tus amigos a unirse</div>
+                  <div className="text-sm text-[var(--text-muted)]">Invita a tus amigos a unirse</div>
                 </div>
                 <button
                   type="button"
@@ -215,7 +215,7 @@ export default function CompletedPage() {
                 </Link>
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white font-medium rounded-xl transition-all"
+                  className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white font-medium rounded-xl transition-all"
                 >
                   Ir al Inicio
                 </Link>
@@ -224,7 +224,7 @@ export default function CompletedPage() {
           </WhitelistCard>
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[var(--text-faint)]">
               ¿Tienes preguntas? Contáctanos en{" "}
               <a href="https://discord.gg/xKJqNX7uC3" className="text-[#8e00f7] hover:underline">
                 Discord

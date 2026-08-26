@@ -88,10 +88,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="w-screen h-screen overflow-hidden bg-[#0a0a12] flex items-center justify-center">
+      <main className="w-screen h-screen overflow-hidden bg-[var(--background)] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-[#8e00f7] mx-auto mb-4" />
-          <p className="text-gray-400">Preparando tu escritorio...</p>
+          <p className="text-[var(--text-muted)]">Preparando tu escritorio...</p>
         </div>
       </main>
     );
@@ -99,11 +99,11 @@ export default function DashboardPage() {
 
   if (!hasAccess) {
     return (
-      <main className="w-screen h-screen overflow-hidden bg-[#0a0a12] flex items-center justify-center">
+      <main className="w-screen h-screen overflow-hidden bg-[var(--background)] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <AlertCircle className="h-14 w-14 text-amber-500 mx-auto mb-4" />
           <h2 className="text-white text-xl font-bold mb-2">Necesitas una cuenta</h2>
-          <p className="text-gray-400 mb-6">
+          <p className="text-[var(--text-muted)] mb-6">
             Inicia sesión con Discord o completa la whitelist para entrar a tu escritorio.
           </p>
           <button

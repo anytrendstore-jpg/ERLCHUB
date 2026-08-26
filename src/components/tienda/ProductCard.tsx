@@ -31,7 +31,7 @@ export default function ProductCard({ href, image, name, description, color, pri
       onMouseMove={tilt.onMouseMove}
       onMouseLeave={tilt.onMouseLeave}
       style={{ '--card-color': color, transform: 'rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))' } as React.CSSProperties}
-      className="product-card group relative bg-[#12121c] border border-[#1a1a28] rounded-2xl overflow-hidden transition-[transform,border-color,box-shadow] duration-300 [transform-style:preserve-3d] hover:-translate-y-1"
+      className="product-card group relative bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl overflow-hidden transition-[transform,border-color,box-shadow] duration-300 [transform-style:preserve-3d] hover:-translate-y-1"
     >
       <div className="relative w-full h-48 overflow-hidden">
         <Image src={image} alt={name} fill className="object-cover object-top transition-transform duration-500 group-hover:scale-105" />
@@ -44,10 +44,10 @@ export default function ProductCard({ href, image, name, description, color, pri
 
       <div className="p-5">
         <h3 className="text-lg font-bold mb-2 transition-colors" style={{ color }}>{name}</h3>
-        <p className="text-gray-400 text-sm mb-4 line-clamp-2">{description}</p>
+        <p className="text-[var(--text-muted)] text-sm mb-4 line-clamp-2">{description}</p>
 
         <div className="flex items-center justify-between">
-          <div className="text-white font-bold text-sm">{priceLabel}</div>
+          <div className="text-[var(--foreground)] font-bold text-sm">{priceLabel}</div>
           <span className="flex items-center gap-1 text-sm transition-colors" style={{ color }}>
             Ver <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </span>
@@ -56,7 +56,7 @@ export default function ProductCard({ href, image, name, description, color, pri
 
       <style jsx>{`
         .product-card:hover {
-          background-color: color-mix(in srgb, var(--card-color) 12%, #12121c);
+          background-color: color-mix(in srgb, var(--card-color) 12%, var(--card-bg));
           border-color: color-mix(in srgb, var(--card-color) 45%, transparent);
           box-shadow: 0 20px 45px -20px color-mix(in srgb, var(--card-color) 55%, transparent);
         }

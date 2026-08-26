@@ -125,12 +125,12 @@ Nuestro equipo de soporte está disponible 24/7 para asistirle.`
 
 export default function TerminosPage() {
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
+    <main className="min-h-screen bg-[var(--background-alt)]">
       <Navbar />
 
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
             <Link href="/" className="hover:text-white">Inicio</Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-white">Términos de Servicio</span>
@@ -141,22 +141,22 @@ export default function TerminosPage() {
               <FileText className="h-8 w-8 text-[#8e00f7]" />
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">Términos de Servicio</h1>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-[var(--text-muted)] max-w-2xl mx-auto">
               Por favor, lea cuidadosamente estos términos antes de utilizar nuestros servicios.
             </p>
-            <p className="text-gray-500 text-sm mt-4">
+            <p className="text-[var(--text-faint)] text-sm mt-4">
               Última actualización: 5 de agosto de 2026
             </p>
           </div>
 
-          <div className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 mb-8">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
             <h2 className="text-lg font-bold text-white mb-4">Contenido</h2>
             <div className="grid sm:grid-cols-2 gap-2">
               {sections.map((section) => (
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="flex items-center gap-2 text-gray-400 hover:text-[#8e00f7] text-sm transition-colors py-1"
+                  className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[#8e00f7] text-sm transition-colors py-1"
                 >
                   <section.icon className="h-4 w-4" />
                   {section.title}
@@ -170,7 +170,7 @@ export default function TerminosPage() {
               <section
                 key={section.id}
                 id={section.id}
-                className="bg-[#12121c] border border-[#1a1a28] rounded-2xl p-6 scroll-mt-24"
+                className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 scroll-mt-24"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-[#8e00f7]/20 flex items-center justify-center">
@@ -178,7 +178,7 @@ export default function TerminosPage() {
                   </div>
                   <h2 className="text-xl font-bold text-white">{section.title}</h2>
                 </div>
-                <div className="text-gray-400 whitespace-pre-line leading-relaxed">
+                <div className="text-[var(--text-muted)] whitespace-pre-line leading-relaxed">
                   {section.content}
                 </div>
               </section>
@@ -186,7 +186,7 @@ export default function TerminosPage() {
           </div>
 
           <div className="mt-12 bg-gradient-to-r from-[#8e00f7]/20 to-[#a64dfa]/20 border border-[#8e00f7]/30 rounded-2xl p-6 text-center">
-            <p className="text-gray-300 mb-4">
+            <p className="text-[var(--text-muted)] mb-4">
               ¿Tienes preguntas sobre nuestros términos?
             </p>
             <Link
