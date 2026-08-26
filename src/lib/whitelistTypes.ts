@@ -106,6 +106,17 @@ export interface ApplicantData {
   completedAt?: Date;
 }
 
+/** Ruta a la que debe ir el usuario según la fase en la que esté — fuente única, también reexportada desde whitelistServer.ts. */
+export const PHASE_ROUTES: Record<WhitelistPhase, string> = {
+  registration: "/whitelist",
+  discord: "/whitelist/discord",
+  roblox: "/whitelist/roblox",
+  questionnaire: "/whitelist/formulario",
+  review: "/whitelist/espera",
+  dni: "/whitelist/dni",
+  completed: "/whitelist/completado",
+};
+
 export interface PhaseInfo {
   id: WhitelistPhase;
   number: number;

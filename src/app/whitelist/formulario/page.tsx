@@ -1,23 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, ArrowRight, Loader2, FileText,
+  ArrowRight, Loader2, FileText,
   AlertCircle, CheckCircle, ChevronLeft, ChevronRight,
-  Save, Send, HelpCircle
+  Send, HelpCircle
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import WhitelistStepper from "@/components/WhitelistStepper";
 import { QUESTIONNAIRE_QUESTIONS } from "@/lib/whitelistTypes";
 import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
 import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
 
 export default function QuestionnairePage() {
   const router = useRouter();
-  const { application, loading, run } = useWhitelistApplication(["questionnaire"]);
+  const { application, loading, error: loadError, reload, run } = useWhitelistApplication(["questionnaire"]);
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -156,34 +157,15 @@ export default function QuestionnairePage() {
     return answer.trim().length > 0;
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
-      </div>
-    );
+  if (loading || loadError) {
+    return <WhitelistLoadingState error={loadError} onRetry={() => reload(true)} />;
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="questionnaire" />
-
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-          <Link
-            href="/whitelist/roblox"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Volver</span>
-          </Link>
-        </div>
-      </header>
+      <WhitelistHeader applicationId={application?.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
@@ -202,7 +184,7 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+          <WhitelistCard>
             <div className="p-6 border-b border-[#1e1e2e]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -513,7 +495,7 @@ export default function QuestionnairePage() {
                 )}
               </div>
             )}
-          </div>
+          </WhitelistCard>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">

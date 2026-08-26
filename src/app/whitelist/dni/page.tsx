@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, ArrowRight, Loader2, CreditCard,
+  ArrowRight, Loader2, CreditCard,
   User, Calendar, MapPin, Users, Flag,
-  Check, Download, Eye, Lock,
+  Check, Download, Eye, Lock, X,
   Sparkles, AlertCircle, ChevronDown
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
@@ -15,6 +14,9 @@ import WhitelistStepper from "@/components/WhitelistStepper";
 import DocumentViewer3D from "@/components/documents/DocumentViewer3D";
 import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
 import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
 import {
   CITIES, HEIGHT_OPTIONS, NATIONALITY_OPTIONS, BIRTHPLACE_OPTIONS, GROUP_OPTIONS,
   type City, type DocumentType
@@ -22,12 +24,21 @@ import {
 
 const CURRENT_YEAR = new Date().getFullYear();
 const MIN_AGE = 18;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const BIRTH_MONTHS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 const BIRTH_YEARS = Array.from({ length: 82 }, (_, i) => CURRENT_YEAR - MIN_AGE - i); // 18 a 99 años
 const daysInMonth = (month: number, year: number) => new Date(year, month, 0).getDate();
+
+/** Misma cuenta que hace el servidor al confirmar (edad exacta, no solo el año elegido). */
+function calculateAge(birthDate: string): number | null {
+  if (!birthDate) return null;
+  const parsed = new Date(birthDate);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return (Date.now() - parsed.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+}
 
 const documentTypes: { id: DocumentType; name: string; description: string; available: boolean }[] = [
   {
@@ -52,7 +63,7 @@ const documentTypes: { id: DocumentType; name: string; description: string; avai
 
 export default function DNIPage() {
   const router = useRouter();
-  const { application, loading, run } = useWhitelistApplication(["dni", "completed"]);
+  const { application, loading, error: loadError, reload, run } = useWhitelistApplication(["dni", "completed"]);
 
   const [step, setStep] = useState<"city" | "form" | "document" | "preview" | "complete">("city");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +71,10 @@ export default function DNIPage() {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<DocumentType>("license");
   const [showDocumentSelect, setShowDocumentSelect] = useState(false);
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hydrated = useRef(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -80,47 +95,63 @@ export default function DNIPage() {
   const [birthYear, setBirthYear] = useState("");
 
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const documentData = application?.document ?? null;
 
   useEffect(() => {
     const day = Number(birthDay), month = Number(birthMonth), year = Number(birthYear);
     if (day && month && year) {
       const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      setFormData(prev => (prev.birthDate === iso ? prev : { ...prev, birthDate: iso }));
+      setFormData(prev => {
+        if (prev.birthDate === iso) return prev;
+        const next = { ...prev, birthDate: iso };
+        scheduleSave(next, selectedCity, photoUrl);
+        return next;
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [birthDay, birthMonth, birthYear]);
 
-  // El usuario de Roblox sale de la fase anterior; si ya había un documento
-  // generado, se recuperan los datos del personaje guardados.
+  const hydrateBirthDate = (iso?: string) => {
+    if (!iso) return;
+    const [y, m, d] = iso.split("-");
+    if (y && m && d) { setBirthYear(y); setBirthMonth(String(Number(m))); setBirthDay(String(Number(d))); }
+  };
+
+  // El usuario de Roblox sale de la fase anterior. Si ya hay un documento
+  // generado (final, ya no editable) se recupera ese; si no, se recupera el
+  // borrador autoguardado — antes un refresh a mitad de llenar el formulario
+  // borraba todo lo escrito, incluida la foto.
   useEffect(() => {
-    if (!application) return;
+    if (!application || hydrated.current) return;
+    hydrated.current = true;
+
+    const draft = application.character || application.characterDraft;
 
     setFormData(prev => ({
       ...prev,
       robloxUsername: application.roblox?.username || "",
-      ...(application.character
+      ...(draft
         ? {
-            firstName: application.character.firstName || prev.firstName,
-            lastName: application.character.lastName || prev.lastName,
-            birthDate: application.character.birthDate || prev.birthDate,
-            birthPlace: application.character.birthPlace || prev.birthPlace,
-            gender: (application.character.gender || prev.gender) as typeof prev.gender,
-            height: application.character.height || prev.height,
-            nationality: application.character.nationality || prev.nationality,
-            group: application.character.group || prev.group
+            firstName: draft.firstName || prev.firstName,
+            lastName: draft.lastName || prev.lastName,
+            birthDate: draft.birthDate || prev.birthDate,
+            birthPlace: draft.birthPlace || prev.birthPlace,
+            gender: (draft.gender || prev.gender) as typeof prev.gender,
+            height: draft.height || prev.height,
+            nationality: draft.nationality || prev.nationality,
+            group: draft.group || prev.group
           }
         : {})
     }));
 
-    if (application.character?.birthDate) {
-      const [y, m, d] = application.character.birthDate.split("-");
-      if (y && m && d) { setBirthYear(y); setBirthMonth(String(Number(m))); setBirthDay(String(Number(d))); }
+    hydrateBirthDate(draft?.birthDate);
+    if (draft?.city && CITIES.find(c => c.id === draft.city)) {
+      setSelectedCity(draft.city as City);
+      if (!application.document) setStep("form");
     }
-    if (application.character?.city) {
-      setSelectedCity(application.character.city as City);
-    }
-    if (application.character?.photoUrl) {
-      setPhotoUrl(application.character.photoUrl);
+    if (draft?.photoUrl) {
+      setPhotoUrl(draft.photoUrl);
     }
     if (application.document) {
       setSelectedDocument(application.document.type as DocumentType);
@@ -128,33 +159,69 @@ export default function DNIPage() {
     }
   }, [application]);
 
+  // Autoguardado del borrador (igual patrón que el cuestionario): 1.5s tras
+  // dejar de escribir, incluida la foto para no perderla en un refresh.
+  const scheduleSave = useCallback((next: typeof formData, city: City | null, photo: string | null) => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      setSaveState("saving");
+      try {
+        await run("character_draft", { answers: { ...next, city: city || "", photoUrl: photo || "" } });
+        setSaveState("saved");
+      } catch {
+        setSaveState("idle");
+      }
+    }, 1500);
+  }, [run]);
+
+  useEffect(() => () => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+  }, []);
+
   const handleCitySelect = (city: City) => {
     if (CITIES.find(c => c.id === city)?.available) {
       setSelectedCity(city);
       setStep("form");
+      scheduleSave(formData, city, photoUrl);
     }
   };
 
   const handleFormChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      scheduleSave(next, selectedCity, photoUrl);
+      return next;
+    });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setPhotoError(null);
     if (file) {
+      if (file.size > MAX_PHOTO_BYTES) {
+        setPhotoError("La foto supera los 5MB permitidos. Elige una imagen más liviana.");
+        e.target.value = "";
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoUrl(reader.result as string);
+        const result = reader.result as string;
+        setPhotoUrl(result);
+        scheduleSave(formData, selectedCity, result);
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const age = calculateAge(formData.birthDate);
+  const isUnderage = age !== null && age < MIN_AGE;
+
   const isFormValid = () => {
-    return (
+    return Boolean(
       formData.firstName.trim() &&
       formData.lastName.trim() &&
       formData.birthDate &&
+      !isUnderage &&
       formData.birthPlace.trim() &&
       formData.gender &&
       formData.height &&
@@ -198,34 +265,15 @@ export default function DNIPage() {
     router.push("/whitelist/completado");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
-      </div>
-    );
+  if (loading || loadError) {
+    return <WhitelistLoadingState error={loadError} onRetry={() => reload(true)} />;
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="dni" />
-
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-          <Link
-            href="/whitelist/espera"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Volver</span>
-          </Link>
-        </div>
-      </header>
+      <WhitelistHeader applicationId={application?.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
@@ -233,7 +281,13 @@ export default function DNIPage() {
             <WhitelistStepper currentPhase="dni" />
           </div>
 
-          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+          {saveState !== "idle" && step === "form" && (
+            <p className="text-xs text-gray-500 text-right mb-2">
+              {saveState === "saving" ? "Guardando borrador..." : "Borrador guardado."}
+            </p>
+          )}
+
+          <WhitelistCard>
             <div className="p-6 border-b border-[#1e1e2e]">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-[#8e00f7]/20 flex items-center justify-center">
@@ -446,7 +500,14 @@ export default function DNIPage() {
                           ))}
                         </select>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1.5">Debes tener al menos {MIN_AGE} años (edad de tu personaje)</p>
+                      {isUnderage ? (
+                        <p className="flex items-center gap-1.5 text-xs text-red-400 mt-1.5">
+                          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          Tu personaje tendría {Math.floor(age!)} años — debe tener al menos {MIN_AGE}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-600 mt-1.5">Debes tener al menos {MIN_AGE} años (edad de tu personaje)</p>
+                      )}
                     </div>
 
                     <div>
@@ -580,10 +641,16 @@ export default function DNIPage() {
                         <p className="text-xs text-gray-500 mt-2">
                           JPG, PNG o GIF. Máx 5MB.
                         </p>
+                        {photoError && (
+                          <p className="flex items-center gap-1.5 text-xs text-red-400 mt-1">
+                            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                            {photoError}
+                          </p>
+                        )}
                         {photoUrl && (
                           <button
                             type="button"
-                            onClick={() => setPhotoUrl(null)}
+                            onClick={() => { setPhotoUrl(null); scheduleSave(formData, selectedCity, null); }}
                             className="text-xs text-red-400 hover:text-red-300 mt-1"
                           >
                             Eliminar foto
@@ -697,7 +764,7 @@ export default function DNIPage() {
                     </p>
                   </div>
 
-                  <div className="w-full bg-[#0a0a12] p-6 rounded-2xl text-left">
+                  <div id="dni-print-area" className="w-full bg-[#0a0a12] p-6 rounded-2xl text-left">
                     <DocumentViewer3D
                       documentType={selectedDocument}
                       city={selectedCity || "los_santos"}
@@ -728,6 +795,7 @@ export default function DNIPage() {
                   <div className="flex items-center justify-center gap-4">
                     <button
                       type="button"
+                      onClick={() => setShowDocumentModal(true)}
                       className="flex items-center gap-2 px-6 py-3 bg-[#1a1a28] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
                     >
                       <Eye className="w-5 h-5" />
@@ -735,6 +803,7 @@ export default function DNIPage() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => window.print()}
                       className="flex items-center gap-2 px-6 py-3 bg-[#8e00f7] hover:bg-[#7a00d4] text-white rounded-xl transition-colors"
                     >
                       <Download className="w-5 h-5" />
@@ -753,7 +822,7 @@ export default function DNIPage() {
                 </div>
               )}
             </div>
-          </div>
+          </WhitelistCard>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
@@ -762,6 +831,52 @@ export default function DNIPage() {
           </div>
         </div>
       </main>
+
+      {/* Al imprimir (o "Guardar como PDF"), solo se muestra el documento. */}
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          #dni-print-area, #dni-print-area * { visibility: visible; }
+          #dni-print-area { position: fixed; inset: 0; padding: 24px; background: white; }
+        }
+      `}</style>
+
+      {showDocumentModal && documentData && (
+        <div
+          className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 print:hidden"
+          onClick={() => setShowDocumentModal(false)}
+        >
+          <div className="relative w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setShowDocumentModal(false)}
+              className="absolute -top-12 right-0 w-10 h-10 flex items-center justify-center rounded-xl bg-[#12121c]/80 border border-[#1a1a28] hover:bg-[#1a1a28] transition-colors"
+              aria-label="Cerrar"
+            >
+              <X className="h-5 w-5 text-gray-400" />
+            </button>
+            <div className="bg-[#0a0a12] p-6 rounded-2xl">
+              <DocumentViewer3D
+                documentType={selectedDocument}
+                city={selectedCity || "los_santos"}
+                firstName={formData.firstName}
+                lastName={formData.lastName}
+                birthDate={formData.birthDate}
+                birthPlace={formData.birthPlace}
+                gender={formData.gender}
+                height={formData.height}
+                nationality={formData.nationality}
+                group={formData.group}
+                robloxUsername={formData.robloxUsername}
+                documentNumber={documentData.number}
+                issueDate={documentData.issueDate}
+                expiryDate={documentData.expiryDate}
+                photoUrl={photoUrl || application?.roblox?.avatar || undefined}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

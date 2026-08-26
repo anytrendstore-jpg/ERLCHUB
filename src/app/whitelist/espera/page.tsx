@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Clock, CheckCircle, XCircle, AlertCircle,
@@ -13,7 +12,12 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 import WhitelistStepper from "@/components/WhitelistStepper";
 import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
 import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
 import type { ApplicationStatus } from "@/lib/whitelistTypes";
+
+const TERMINAL_STATUSES: ApplicationStatus[] = ["approved", "rejected"];
 
 interface StatusConfig {
   title: string;
@@ -69,19 +73,22 @@ const statusConfigs: Record<ApplicationStatus, StatusConfig> = {
 
 export default function ReviewWaitingPage() {
   const router = useRouter();
-  const { application, queue, loading, reload } = useWhitelistApplication(["review", "dni"]);
+  const { application, queue, loading, error: loadError, reload } = useWhitelistApplication(["review", "dni"]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
 
-  // Consulta periódica del estado real de la solicitud.
+  // Consulta periódica del estado real de la solicitud — se detiene sola una
+  // vez que el estado es final (aprobada/rechazada), en vez de seguir
+  // llamando a la API cada 20s para siempre sin que nada vaya a cambiar.
   useEffect(() => {
+    if (application && TERMINAL_STATUSES.includes(application.status)) return;
     const interval = setInterval(async () => {
       await reload();
       setLastChecked(new Date());
     }, 20000);
     return () => clearInterval(interval);
-  }, [reload]);
+  }, [reload, application?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!loading) setLastChecked(new Date());
@@ -94,12 +101,8 @@ export default function ReviewWaitingPage() {
     setIsRefreshing(false);
   };
 
-  if (loading || !application) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
-      </div>
-    );
+  if (loading || loadError || !application) {
+    return <WhitelistLoadingState error={loadError} onRetry={() => reload(true)} />;
   }
 
   const status = application.status;
@@ -123,19 +126,7 @@ export default function ReviewWaitingPage() {
     <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="review" />
-
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-          <div className="flex items-center gap-2 text-gray-400 text-sm">
-            <Clock className="h-4 w-4" />
-            <span className="font-mono">{application.applicationId}</span>
-          </div>
-        </div>
-      </header>
+      <WhitelistHeader applicationId={application.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
@@ -143,7 +134,7 @@ export default function ReviewWaitingPage() {
             <WhitelistStepper currentPhase="review" />
           </div>
 
-          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+          <WhitelistCard>
             <div className={`p-8 ${statusConfig.bgColor} border-b ${statusConfig.borderColor}`}>
               <div className="flex flex-col items-center text-center">
                 <div className={`w-20 h-20 rounded-full ${statusConfig.bgColor} border-2 ${statusConfig.borderColor} flex items-center justify-center mb-4 ${
@@ -363,7 +354,7 @@ export default function ReviewWaitingPage() {
                 </div>
               )}
             </div>
-          </div>
+          </WhitelistCard>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">

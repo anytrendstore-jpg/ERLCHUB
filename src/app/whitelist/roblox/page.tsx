@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft, ArrowRight, Check, Loader2, Shield,
+  ArrowRight, Check, Loader2, Shield,
   Gamepad2, User, Copy, CheckCircle,
   AlertCircle, ExternalLink, Hash, Sparkles
 } from "lucide-react";
@@ -13,6 +11,9 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 import WhitelistStepper from "@/components/WhitelistStepper";
 import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
 import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   oauth_not_configured: "El login oficial de Roblox todavía no está configurado. Usa la verificación por código mientras tanto.",
@@ -40,7 +41,7 @@ export default function RobloxVerificationPage() {
 function RobloxVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { application, loading, run } = useWhitelistApplication(["roblox"]);
+  const { application, loading, error: loadError, reload, run } = useWhitelistApplication(["roblox"]);
 
   const [username, setUsername] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -50,9 +51,13 @@ function RobloxVerificationContent() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Limpia cualquier `?error=` u `?oauth=success` que haya dejado el callback
+    // de OAuth — si no, se quedan pegados en la URL para siempre.
     const oauthError = searchParams.get("error");
     if (oauthError) {
       setError(OAUTH_ERROR_MESSAGES[oauthError] || "No se pudo completar la conexión con Roblox.");
+      router.replace("/whitelist/roblox");
+    } else if (searchParams.get("oauth")) {
       router.replace("/whitelist/roblox");
     }
   }, [searchParams, router]);
@@ -110,34 +115,15 @@ function RobloxVerificationContent() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
-      </div>
-    );
+  if (loading || loadError) {
+    return <WhitelistLoadingState error={loadError} onRetry={() => reload(true)} />;
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="roblox" />
-
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-          <Link
-            href="/whitelist/discord"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Volver</span>
-          </Link>
-        </div>
-      </header>
+      <WhitelistHeader applicationId={application?.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
@@ -145,7 +131,7 @@ function RobloxVerificationContent() {
             <WhitelistStepper currentPhase="roblox" />
           </div>
 
-          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+          <WhitelistCard>
             <div className="p-6 border-b border-[#1e1e2e]">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-[#e2231a]/20 flex items-center justify-center">
@@ -433,7 +419,7 @@ function RobloxVerificationContent() {
                 </div>
               )}
             </div>
-          </div>
+          </WhitelistCard>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">

@@ -6,6 +6,7 @@ import {
   generateCityDocumentId,
   generateDocumentNumber,
   generateRobloxCode,
+  nextMemberNumber,
   scoreQuestionnaire,
   toPublicApplication,
   validateQuestionnaire,
@@ -172,10 +173,14 @@ export async function PATCH(request: NextRequest) {
 
         const found = await lookupRobloxUser(username);
         // Si la API de Roblox no responde (proxy/red), seguimos con el nombre tal cual.
+        // Se prioriza el id (inmutable) cuando está disponible: el username puede
+        // cambiar, así que solo comparar por username podía dejar pasar una cuenta
+        // ya vinculada bajo un nombre distinto (o bloquear una libre por coincidencia
+        // de nombre viejo).
         const taken = await col.findOne({
           applicationId: { $ne: application.applicationId },
-          'roblox.username': found?.username || username,
           'roblox.verified': true,
+          ...(found?.id ? { 'roblox.id': found.id } : { 'roblox.username': found?.username || username }),
         });
         if (taken) {
           return NextResponse.json(
@@ -259,6 +264,11 @@ export async function PATCH(request: NextRequest) {
       }
 
       /* ---------------- DNI ---------------- */
+      case 'character_draft':
+        // Autoguardado mientras se llena el formulario — se pierde si solo se
+        // guarda en el estado de React del navegador y el usuario refresca.
+        return save({ characterDraft: (data.answers || {}) as Record<string, string> });
+
       case 'character_submit': {
         if (application.status !== 'approved' || application.currentPhase !== 'dni') {
           return NextResponse.json(
@@ -277,6 +287,16 @@ export async function PATCH(request: NextRequest) {
           );
         }
 
+        // La UI dice "Máx 5MB", pero antes nada lo comprobaba realmente: un
+        // usuario podía subir una foto enorme y quedaba guardada tal cual en
+        // Mongo. Base64 pesa ~1.37x el binario original.
+        if (typeof character.photoUrl === 'string' && character.photoUrl.length > 7 * 1024 * 1024) {
+          return NextResponse.json(
+            { success: false, error: 'La foto supera los 5MB permitidos' },
+            { status: 400 }
+          );
+        }
+
         const birthDate = new Date(character.birthDate);
         const age = (now.getTime() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
         if (Number.isNaN(birthDate.getTime()) || age < 18) {
@@ -291,11 +311,11 @@ export async function PATCH(request: NextRequest) {
         expiry.setFullYear(expiry.getFullYear() + 5);
         const number = generateCityDocumentId(character.city);
 
-        const memberNumber =
-          application.memberNumber ?? (await col.countDocuments({ currentPhase: 'completed' })) + 1;
+        const memberNumber = application.memberNumber ?? (await nextMemberNumber());
 
         return save({
           character,
+          characterDraft: undefined,
           document: {
             type: data.documentType || 'license',
             number,
@@ -404,8 +424,7 @@ export async function PATCH(request: NextRequest) {
             securityCode: generateDocumentNumber('SEC'),
             generatedAt: now,
           };
-          update.memberNumber =
-            application.memberNumber ?? (await col.countDocuments({ currentPhase: 'completed' })) + 1;
+          update.memberNumber = application.memberNumber ?? (await nextMemberNumber());
           update.completedAt = application.completedAt || now;
         }
 
@@ -429,6 +448,7 @@ export async function PATCH(request: NextRequest) {
           reviewedBy: undefined,
           staffNotes: undefined,
           character: undefined,
+          characterDraft: undefined,
           document: undefined,
           memberNumber: undefined,
           completedAt: undefined,

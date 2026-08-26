@@ -2,21 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   CheckCircle, Sparkles, Download, Share2,
   ArrowRight, Trophy, Star, Users, Gamepad2,
-  MessageCircle, Copy, Check, Loader2, CreditCard
+  MessageCircle, Copy, Check, CreditCard
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import Confetti from "@/components/Confetti";
 import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
 import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
 
 export default function CompletedPage() {
-  const { application, loading } = useWhitelistApplication(["completed"]);
+  const { application, loading, error: loadError, reload } = useWhitelistApplication(["completed"]);
   const [showConfetti, setShowConfetti] = useState(true);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), 5000);
@@ -31,12 +34,27 @@ export default function CompletedPage() {
     setTimeout(() => setCodeCopied(false), 2000);
   };
 
-  if (loading || !application) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
-      </div>
-    );
+  const handleShare = async () => {
+    const shareData = {
+      title: "ERLCᴴᵁᴮ",
+      text: "¡Acabo de pasar la whitelist de ERLCᴴᵁᴮ! Únete a la mejor comunidad de roleplay en ERLC.",
+      url: "https://erlchub.pro/whitelist",
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // El usuario canceló el diálogo nativo — no es un error real.
+      }
+      return;
+    }
+    await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+    setShared(true);
+    setTimeout(() => setShared(false), 2000);
+  };
+
+  if (loading || loadError || !application) {
+    return <WhitelistLoadingState error={loadError} onRetry={() => reload(true)} />;
   }
 
   return (
@@ -44,19 +62,11 @@ export default function CompletedPage() {
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="completed" />
       {showConfetti && <Confetti />}
-
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-        </div>
-      </header>
+      <WhitelistHeader variant="minimal" />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#22c55e]/30 rounded-2xl overflow-hidden shadow-2xl shadow-[#22c55e]/10">
+          <WhitelistCard variant="success">
             <div className="bg-gradient-to-r from-[#22c55e]/20 to-[#8e00f7]/20 p-8 text-center">
               <div className="relative inline-block">
                 <div className="w-24 h-24 rounded-full bg-[#22c55e] flex items-center justify-center mx-auto animate-prize-reveal">
@@ -185,10 +195,13 @@ export default function CompletedPage() {
                 </div>
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-4 py-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white text-sm font-medium rounded-lg transition-colors"
+                  onClick={handleShare}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    shared ? "bg-[#22c55e] text-white" : "bg-[#8e00f7] hover:bg-[#7a00d4] text-white"
+                  }`}
                 >
-                  <Share2 className="w-4 h-4" />
-                  Compartir
+                  {shared ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+                  {shared ? "Copiado" : "Compartir"}
                 </button>
               </div>
 
@@ -208,7 +221,7 @@ export default function CompletedPage() {
                 </Link>
               </div>
             </div>
-          </div>
+          </WhitelistCard>
 
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">

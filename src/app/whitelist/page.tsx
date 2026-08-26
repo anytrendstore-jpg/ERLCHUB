@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  X, Loader2, UserPlus, AlertCircle,
-  Shield, Clock, Users, MessageCircle,
+  Loader2, AlertCircle,
+  Shield, Users, MessageCircle,
   Gamepad2, FileText, CreditCard
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
+import WhitelistStepper from "@/components/WhitelistStepper";
 
 const features = [
   {
@@ -32,15 +34,6 @@ const features = [
     title: "Comunidad Activa",
     description: "Únete a miles de jugadores roleplay"
   }
-];
-
-const stepsOverview = [
-  { icon: UserPlus, title: "Discord", desc: "Inicia sesión" },
-  { icon: MessageCircle, title: "Servidor", desc: "Únete y acepta reglas" },
-  { icon: Gamepad2, title: "Roblox", desc: "Vincula Roblox" },
-  { icon: FileText, title: "Evaluación", desc: "Completa el formulario" },
-  { icon: Clock, title: "Revisión", desc: "Staff revisa tu solicitud" },
-  { icon: CreditCard, title: "DNI", desc: "Genera tu documento" },
 ];
 
 const errorMessages: Record<string, string> = {
@@ -113,20 +106,7 @@ export default function WhitelistPage() {
     <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
       <ParticlesBackground />
 
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-          <Link
-            href="/"
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#12121c]/80 border border-[#1a1a28] hover:bg-[#1a1a28] transition-colors"
-          >
-            <X className="h-5 w-5 text-gray-400" />
-          </Link>
-        </div>
-      </header>
+      <WhitelistHeader variant="close" />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-6xl mx-auto">
@@ -144,23 +124,8 @@ export default function WhitelistPage() {
             </p>
           </div>
 
-          <div className="mb-12 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-            <div className="flex gap-4 min-w-max lg:grid lg:grid-cols-6 lg:min-w-0">
-              {stepsOverview.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="flex flex-col items-center p-4 bg-[#12121c]/80 border border-[#1a1a28] rounded-xl min-w-[120px] lg:min-w-0"
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                    index === 0 ? "bg-[#8e00f7] text-white" : "bg-[#1a1a28] text-gray-500"
-                  }`}>
-                    <step.icon className="w-5 h-5" />
-                  </div>
-                  <span className="text-white text-sm font-medium text-center">{step.title}</span>
-                  <span className="text-gray-500 text-xs text-center">{step.desc}</span>
-                </div>
-              ))}
-            </div>
+          <div className="mb-12">
+            <WhitelistStepper currentPhase="registration" compact />
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -201,7 +166,7 @@ export default function WhitelistPage() {
             </div>
 
             <div className="order-1 lg:order-2 animate-modal-card">
-              <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl shadow-2xl overflow-hidden">
+              <WhitelistCard>
                 <div className="p-8 text-center border-b border-[#1e1e2e]">
                   <div className="w-16 h-16 rounded-2xl bg-[#5865F2]/20 flex items-center justify-center mx-auto mb-4">
                     <svg className="h-8 w-8 text-[#5865F2]" fill="currentColor" viewBox="0 0 24 24">
@@ -282,7 +247,7 @@ export default function WhitelistPage() {
                     </Link>
                   </p>
                 </div>
-              </div>
+              </WhitelistCard>
             </div>
           </div>
         </div>

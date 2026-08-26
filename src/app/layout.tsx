@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
-import { WhitelistProvider } from "@/contexts/WhitelistContext";
 import { MDTProvider } from "@/contexts/MDTContext";
 import CartDrawer from "@/components/CartDrawer";
 
@@ -31,12 +30,10 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${inter.variable} font-sans antialiased`}>
         <MDTProvider>
-          <WhitelistProvider>
-            <CartProvider>
-              {children}
-              <CartDrawer />
-            </CartProvider>
-          </WhitelistProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
         </MDTProvider>
       </body>
     </html>

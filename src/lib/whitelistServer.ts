@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import type { Collection, Db } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
-import { QUESTIONNAIRE_QUESTIONS, type WhitelistPhase, type ApplicationStatus } from '@/lib/whitelistTypes';
+import { QUESTIONNAIRE_QUESTIONS, PHASE_ROUTES, type WhitelistPhase, type ApplicationStatus } from '@/lib/whitelistTypes';
 
 export const SESSION_COOKIE = 'wl_session';
 export const STAFF_COOKIE = 'wl_staff';
@@ -116,6 +116,8 @@ export interface WhitelistApplication {
   interviewRequestedBy?: string;
   interviewNotes?: string;
   character?: WhitelistCharacter;
+  /** Borrador del personaje, autoguardado mientras el usuario llena el formulario del DNI (igual que questionnaireDraft). */
+  characterDraft?: Record<string, string>;
   document?: WhitelistDocument;
   memberNumber?: number;
   completedAt?: Date;
@@ -395,16 +397,24 @@ export function validateQuestionnaire(answers: Record<string, string>): string |
   return null;
 }
 
-/** Ruta a la que debe ir el usuario según la fase en la que esté. */
-export const PHASE_ROUTES: Record<WhitelistPhase, string> = {
-  registration: '/whitelist',
-  discord: '/whitelist/discord',
-  roblox: '/whitelist/roblox',
-  questionnaire: '/whitelist/formulario',
-  review: '/whitelist/espera',
-  dni: '/whitelist/dni',
-  completed: '/whitelist/completado',
-};
+/** Ruta a la que debe ir el usuario según la fase en la que esté — fuente única en whitelistTypes.ts. */
+export { PHASE_ROUTES };
+
+/**
+ * Asigna el próximo número de miembro de forma atómica (contador dedicado con
+ * `$inc`), en vez de `countDocuments()+1` que puede repetirse si dos
+ * solicitudes terminan al mismo tiempo.
+ */
+export async function nextMemberNumber(): Promise<number> {
+  const db: Db = await connectToDatabase();
+  const counters = db.collection<{ _id: string; seq: number }>('whitelist_counters');
+  const result = await counters.findOneAndUpdate(
+    { _id: 'memberNumber' },
+    { $inc: { seq: 1 } },
+    { upsert: true, returnDocument: 'after' }
+  );
+  return result?.seq ?? 1;
+}
 
 /** Versión de la solicitud que se envía al navegador. */
 export function toPublicApplication(doc: WhitelistApplication) {

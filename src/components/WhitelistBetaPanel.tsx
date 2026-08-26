@@ -3,17 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FlaskConical, X, RotateCcw, Loader2, ChevronRight } from "lucide-react";
-import { PHASES, type WhitelistPhase } from "@/lib/whitelistTypes";
-
-const PHASE_ROUTES: Record<WhitelistPhase, string> = {
-  registration: "/whitelist",
-  discord: "/whitelist/discord",
-  roblox: "/whitelist/roblox",
-  questionnaire: "/whitelist/formulario",
-  review: "/whitelist/espera",
-  dni: "/whitelist/dni",
-  completed: "/whitelist/completado",
-};
+import { PHASES, PHASE_ROUTES, type WhitelistPhase } from "@/lib/whitelistTypes";
 
 const JUMPABLE: WhitelistPhase[] = ["discord", "roblox", "questionnaire", "review", "dni", "completed"];
 

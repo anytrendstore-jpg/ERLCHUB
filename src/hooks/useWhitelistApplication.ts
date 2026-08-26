@@ -28,7 +28,7 @@ export interface WhitelistApplicationView {
     avatar?: string;
     verificationCode: string;
     verified: boolean;
-    verifiedMode?: "api" | "offline";
+    verifiedMode?: "api" | "offline" | "oauth";
   };
   questionnaireDraft?: Record<string, string>;
   questionnaireScore?: number;
@@ -36,6 +36,7 @@ export interface WhitelistApplicationView {
   reviewedAt?: string;
   staffNotes?: string;
   character?: Record<string, string>;
+  characterDraft?: Record<string, string>;
   document?: {
     type: string;
     number: string;

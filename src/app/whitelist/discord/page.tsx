@@ -1,24 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight, Check, Loader2,
   MessageCircle, Users, Bell, AlertCircle,
-  CheckCircle, ExternalLink, LogOut
+  CheckCircle, ExternalLink
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import WhitelistStepper from "@/components/WhitelistStepper";
 import { useWhitelistApplication } from "@/hooks/useWhitelistApplication";
 import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
+import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
+import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
+import WhitelistCard from "@/components/whitelist/WhitelistCard";
 
 const DISCORD_INVITE = "https://discord.gg/xKJqNX7uC3";
 
 export default function DiscordVerificationPage() {
   const router = useRouter();
-  const { application, loading, run } = useWhitelistApplication(["discord"]);
+  const { application, loading, error: loadError, reload, run } = useWhitelistApplication(["discord"]);
 
   const [busyRequirement, setBusyRequirement] = useState<"server" | "rules" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,45 +42,15 @@ export default function DiscordVerificationPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/whitelist/auth/logout", { method: "POST" });
-    router.replace("/whitelist");
-  };
-
-  if (loading || !discord) {
-    return (
-      <div className="min-h-screen bg-[#0a0a12] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#8e00f7] animate-spin" />
-      </div>
-    );
+  if (loading || loadError || !discord) {
+    return <WhitelistLoadingState error={loadError} onRetry={() => reload(true)} />;
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a12] relative overflow-hidden">
       <ParticlesBackground />
       <WhitelistBetaPanel currentPhase="discord" />
-
-      <header className="relative z-20 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="ERLC HUB" width={40} height={40} className="h-10 w-auto" />
-            <span className="font-bold text-white text-lg">ERLCᴴᵁᴮ</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline text-xs text-gray-500 font-mono">
-              {application?.applicationId}
-            </span>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Salir</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <WhitelistHeader applicationId={application?.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
@@ -87,7 +58,7 @@ export default function DiscordVerificationPage() {
             <WhitelistStepper currentPhase="discord" />
           </div>
 
-          <div className="bg-[#12121c]/90 backdrop-blur-sm border border-[#1e1e2e] rounded-2xl overflow-hidden">
+          <WhitelistCard>
             <div className="p-6 border-b border-[#1e1e2e]">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-[#5865F2]/20 flex items-center justify-center">
@@ -264,7 +235,7 @@ export default function DiscordVerificationPage() {
                 </div>
               )}
             </div>
-          </div>
+          </WhitelistCard>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
