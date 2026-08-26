@@ -86,7 +86,7 @@ export default function TestimonialsCarousel() {
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[var(--foreground)] mb-4">
             Lo que dicen nuestros usuarios
           </h2>
           <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto">
@@ -122,7 +122,7 @@ export default function TestimonialsCarousel() {
                   </div>
                 )}
                 <div>
-                  <div className="text-white font-semibold text-lg">
+                  <div className="text-[var(--foreground)] font-semibold text-lg">
                     {currentReview.name}
                   </div>
                   <div className="text-[var(--text-muted)] text-sm">
@@ -150,7 +150,7 @@ export default function TestimonialsCarousel() {
           {/* Navigation Arrows */}
           <button
             onClick={goToPrevious}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-[#1e1e2e] hover:bg-[#2a2a3e] text-white p-3 rounded-full transition-all hover:scale-110 shadow-lg"
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3e] text-[var(--foreground)] p-3 rounded-full transition-all hover:scale-110 shadow-lg"
             aria-label="Anterior"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,7 +160,7 @@ export default function TestimonialsCarousel() {
 
           <button
             onClick={goToNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-[#1e1e2e] hover:bg-[#2a2a3e] text-white p-3 rounded-full transition-all hover:scale-110 shadow-lg"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3e] text-[var(--foreground)] p-3 rounded-full transition-all hover:scale-110 shadow-lg"
             aria-label="Siguiente"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +178,7 @@ export default function TestimonialsCarousel() {
               className={`w-2 h-2 rounded-full transition-all ${
                 index === currentIndex
                   ? "bg-[#8e00f7] w-8"
-                  : "bg-[#1e1e2e] hover:bg-[#2a2a3e]"
+                  : "bg-[var(--card-bg-2)] hover:bg-[#2a2a3e]"
               }`}
               aria-label={`Ir a reseña ${index + 1}`}
             />
@@ -188,13 +188,13 @@ export default function TestimonialsCarousel() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 text-center">
-            <div className="text-2xl font-bold text-white mb-2">
+            <div className="text-2xl font-bold text-[var(--foreground)] mb-2">
               {bestReviews.length}+
             </div>
             <div className="text-[var(--text-muted)]">Reseñas Positivas</div>
           </div>
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 text-center">
-            <div className="text-2xl font-bold text-white mb-2">
+            <div className="text-2xl font-bold text-[var(--foreground)] mb-2">
               {(() => {
                 if (bestReviews.length === 0) return '0.0';
                 const total = bestReviews.reduce((acc: number, r: any) => acc + r.rating, 0);
@@ -204,7 +204,7 @@ export default function TestimonialsCarousel() {
             <div className="text-[var(--text-muted)]">Calificación Promedio</div>
           </div>
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-6 text-center">
-            <div className="text-2xl font-bold text-white mb-2">100%</div>
+            <div className="text-2xl font-bold text-[var(--foreground)] mb-2">100%</div>
             <div className="text-[var(--text-muted)]">Usuarios Satisfechos</div>
           </div>
         </div>

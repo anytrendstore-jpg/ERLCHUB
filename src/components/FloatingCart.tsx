@@ -44,10 +44,10 @@ export default function FloatingCart() {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-[var(--card-border-soft)]">
-                <h3 className="text-white font-bold text-lg">Carrito ({totalItems})</h3>
+                <h3 className="text-[var(--foreground)] font-bold text-lg">Carrito ({totalItems})</h3>
                 <button
                   onClick={closeCart}
-                  className="text-[var(--text-muted)] hover:text-white transition-colors"
+                  className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -75,7 +75,7 @@ export default function FloatingCart() {
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-white font-medium text-sm truncate">{item.name}</h4>
+                        <h4 className="text-[var(--foreground)] font-medium text-sm truncate">{item.name}</h4>
                         <p className="text-[#8e00f7] text-sm font-bold">
                           ${(item.priceUSD || item.price || 0) * item.quantity}
                         </p>
@@ -84,16 +84,16 @@ export default function FloatingCart() {
                         <div className="flex items-center gap-2 mt-2">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-6 h-6 rounded bg-[#2a2a3a] hover:bg-[#3a3a4a] text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center"
+                            className="w-6 h-6 rounded bg-[#2a2a3a] hover:bg-[#3a3a4a] text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors flex items-center justify-center"
                           >
                             <Minus className="h-3 w-3" />
                           </button>
-                          <span className="text-white text-sm font-medium w-8 text-center">
+                          <span className="text-[var(--foreground)] text-sm font-medium w-8 text-center">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-6 h-6 rounded bg-[#2a2a3a] hover:bg-[#3a3a4a] text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center"
+                            className="w-6 h-6 rounded bg-[#2a2a3a] hover:bg-[#3a3a4a] text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors flex items-center justify-center"
                           >
                             <Plus className="h-3 w-3" />
                           </button>
@@ -114,7 +114,7 @@ export default function FloatingCart() {
 
               {/* Footer */}
               <div className="border-t border-[var(--card-border-soft)] p-4 space-y-3">
-                <div className="flex justify-between text-white font-bold">
+                <div className="flex justify-between text-[var(--foreground)] font-bold">
                   <span>Total:</span>
                   <span className="text-[#8e00f7]">${getTotalPrice()}</span>
                 </div>
@@ -122,7 +122,7 @@ export default function FloatingCart() {
                 <div className="flex gap-2">
                   <button
                     onClick={closeCart}
-                    className="flex-1 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-lg transition-colors"
+                    className="flex-1 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] rounded-lg transition-colors"
                   >
                     Seguir Comprando
                   </button>

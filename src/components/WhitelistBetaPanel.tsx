@@ -59,7 +59,7 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="text-[var(--text-muted)] hover:text-white transition-colors"
+              className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
               aria-label="Cerrar panel de modo beta"
             >
               <X className="h-4 w-4" />
@@ -85,7 +85,7 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
                   className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-50 ${
                     isCurrent
                       ? "bg-amber-500/20 text-amber-300"
-                      : "text-[var(--text-muted)] hover:bg-[var(--card-bg-2)] hover:text-white"
+                      : "text-[var(--text-muted)] hover:bg-[var(--card-bg-2)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   <span className="flex items-center gap-2">

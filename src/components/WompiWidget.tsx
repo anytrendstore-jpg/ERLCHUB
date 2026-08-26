@@ -111,8 +111,8 @@ export default function WompiWidget({
   return (
     <div className="flex flex-col gap-4">
       {mostrarBotonReal && (
-        <div className="bg-gray-800 p-6 rounded-xl flex flex-col items-center">
-          <p className="text-white mb-4">Finaliza tu pago seguro aquí:</p>
+        <div className="bg-[var(--card-bg-2)] p-6 rounded-xl flex flex-col items-center">
+          <p className="text-[var(--foreground)] mb-4">Finaliza tu pago seguro aquí:</p>
           <div ref={containerRef}>
           </div>
           <button 
