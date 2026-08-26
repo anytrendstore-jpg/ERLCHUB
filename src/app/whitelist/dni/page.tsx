@@ -294,7 +294,7 @@ export default function DNIPage() {
                   <CreditCard className="h-7 w-7 text-[#8e00f7]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Documento de Identidad</h1>
+                  <h1 className="text-2xl font-bold text-[var(--foreground)]">Documento de Identidad</h1>
                   <p className="text-[var(--text-muted)]">Crea tu DNI oficial del servidor</p>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function DNIPage() {
               {step === "city" && (
                 <div className="space-y-6">
                   <div className="text-center py-4">
-                    <h2 className="text-xl font-bold text-white mb-2">Selecciona tu Ciudad</h2>
+                    <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Selecciona tu Ciudad</h2>
                     <p className="text-[var(--text-muted)]">
                       Elige la ciudad donde residirá tu personaje
                     </p>
@@ -365,7 +365,7 @@ export default function DNIPage() {
                         {CITIES.find(c => c.id === selectedCity)?.flag}
                       </span>
                       <div>
-                        <div className="font-medium text-white">
+                        <div className="font-medium text-[var(--foreground)]">
                           {CITIES.find(c => c.id === selectedCity)?.name}
                         </div>
                         <div className="text-sm text-[var(--text-faint)]">
@@ -390,7 +390,7 @@ export default function DNIPage() {
                       className="w-full flex items-center justify-between p-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-left"
                     >
                       <div>
-                        <div className="font-medium text-white">
+                        <div className="font-medium text-[var(--foreground)]">
                           {documentTypes.find(d => d.id === selectedDocument)?.name}
                         </div>
                         <div className="text-sm text-[var(--text-faint)]">
@@ -417,7 +417,7 @@ export default function DNIPage() {
                                 : "opacity-50 cursor-not-allowed"
                             } ${selectedDocument === doc.id ? "bg-[#8e00f7]/20" : ""}`}
                           >
-                            <div className="font-medium text-white">{doc.name}</div>
+                            <div className="font-medium text-[var(--foreground)]">{doc.name}</div>
                             <div className="text-sm text-[var(--text-faint)]">{doc.description}</div>
                           </button>
                         ))}
@@ -437,7 +437,7 @@ export default function DNIPage() {
                           value={formData.firstName}
                           onChange={(e) => handleFormChange("firstName", e.target.value)}
                           placeholder="Juan Carlos"
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] transition-colors"
+                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7] transition-colors"
                         />
                       </div>
                     </div>
@@ -453,7 +453,7 @@ export default function DNIPage() {
                           value={formData.lastName}
                           onChange={(e) => handleFormChange("lastName", e.target.value)}
                           placeholder="Pérez García"
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] transition-colors"
+                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7] transition-colors"
                         />
                       </div>
                     </div>
@@ -468,7 +468,7 @@ export default function DNIPage() {
                           <select
                             value={birthDay}
                             onChange={(e) => setBirthDay(e.target.value)}
-                            className="w-full h-12 pl-9 pr-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                            className="w-full h-12 pl-9 pr-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                           >
                             <option value="">Día</option>
                             {Array.from(
@@ -482,7 +482,7 @@ export default function DNIPage() {
                         <select
                           value={birthMonth}
                           onChange={(e) => setBirthMonth(e.target.value)}
-                          className="w-full h-12 px-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                          className="w-full h-12 px-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                         >
                           <option value="">Mes</option>
                           {BIRTH_MONTHS.map((m, i) => (
@@ -492,7 +492,7 @@ export default function DNIPage() {
                         <select
                           value={birthYear}
                           onChange={(e) => setBirthYear(e.target.value)}
-                          className="w-full h-12 px-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                          className="w-full h-12 px-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                         >
                           <option value="">Año</option>
                           {BIRTH_YEARS.map((y) => (
@@ -519,7 +519,7 @@ export default function DNIPage() {
                         <select
                           value={formData.birthPlace}
                           onChange={(e) => handleFormChange("birthPlace", e.target.value)}
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                         >
                           <option value="">Seleccionar...</option>
                           {BIRTHPLACE_OPTIONS.map((b) => (
@@ -536,7 +536,7 @@ export default function DNIPage() {
                       <select
                         value={formData.gender}
                         onChange={(e) => handleFormChange("gender", e.target.value)}
-                        className="w-full h-12 px-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                        className="w-full h-12 px-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                       >
                         <option value="">Seleccionar...</option>
                         <option value="male">Masculino</option>
@@ -552,7 +552,7 @@ export default function DNIPage() {
                       <select
                         value={formData.height}
                         onChange={(e) => handleFormChange("height", e.target.value)}
-                        className="w-full h-12 px-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                        className="w-full h-12 px-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                       >
                         <option value="">Seleccionar...</option>
                         {HEIGHT_OPTIONS.map((h) => (
@@ -570,7 +570,7 @@ export default function DNIPage() {
                         <select
                           value={formData.nationality}
                           onChange={(e) => handleFormChange("nationality", e.target.value)}
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                         >
                           <option value="">Seleccionar...</option>
                           {NATIONALITY_OPTIONS.map((n) => (
@@ -589,7 +589,7 @@ export default function DNIPage() {
                         <select
                           value={formData.group}
                           onChange={(e) => handleFormChange("group", e.target.value)}
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
+                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
                         >
                           <option value="">Seleccionar...</option>
                           {GROUP_OPTIONS.map((g) => (
@@ -631,7 +631,7 @@ export default function DNIPage() {
                         />
                         <label
                           htmlFor="photo-upload"
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-lg cursor-pointer transition-colors"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] rounded-lg cursor-pointer transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -664,7 +664,7 @@ export default function DNIPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-sm text-[var(--text-muted)]">Usuario de Roblox</div>
-                        <div className="text-white font-medium">{formData.robloxUsername}</div>
+                        <div className="text-[var(--foreground)] font-medium">{formData.robloxUsername}</div>
                       </div>
                       <Lock className="w-5 h-5 text-[var(--text-faint)]" />
                     </div>
@@ -701,7 +701,7 @@ export default function DNIPage() {
               {step === "preview" && documentData && (
                 <div className="space-y-6">
                   <div className="text-center py-4">
-                    <h2 className="text-xl font-bold text-white mb-2">Tu Documento</h2>
+                    <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Tu Documento</h2>
                     <p className="text-[var(--text-muted)]">
                       Documento generado y guardado en tu solicitud
                     </p>
@@ -734,7 +734,7 @@ export default function DNIPage() {
                     <div className="flex items-start gap-3">
                       <AlertCircle className="w-5 h-5 text-[#8e00f7] flex-shrink-0 mt-0.5" />
                       <div className="text-sm text-[var(--text-muted)]">
-                        <strong className="text-white">Importante:</strong> Este documento será tu identificación
+                        <strong className="text-[var(--foreground)]">Importante:</strong> Este documento será tu identificación
                         oficial dentro del servidor. Asegúrate de que los datos sean correctos antes de confirmar.
                         Una vez generado, no podrás modificarlo.
                       </div>
@@ -758,7 +758,7 @@ export default function DNIPage() {
                     <Check className="h-10 w-10 text-[#22c55e]" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Documento Generado</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Documento Generado</h2>
                     <p className="text-[var(--text-muted)]">
                       Tu documento de identidad ha sido creado exitosamente
                     </p>
@@ -788,7 +788,7 @@ export default function DNIPage() {
                     <CreditCard className="w-6 h-6 text-[#8e00f7]" />
                     <div className="text-left">
                       <div className="text-sm text-[var(--text-muted)]">Número de documento</div>
-                      <div className="text-xl font-mono font-bold text-white">{documentData.number}</div>
+                      <div className="text-xl font-mono font-bold text-[var(--foreground)]">{documentData.number}</div>
                     </div>
                   </div>
 
@@ -796,7 +796,7 @@ export default function DNIPage() {
                     <button
                       type="button"
                       onClick={() => setShowDocumentModal(true)}
-                      className="flex items-center gap-2 px-6 py-3 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
+                      className="flex items-center gap-2 px-6 py-3 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] rounded-xl transition-colors"
                     >
                       <Eye className="w-5 h-5" />
                       Ver Documento

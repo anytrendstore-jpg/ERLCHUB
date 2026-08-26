@@ -156,13 +156,13 @@ export default function ReviewWaitingPage() {
                 <div className="space-y-6">
                   <div className="grid sm:grid-cols-3 gap-4">
                     <div className="bg-[var(--background)] rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-white mb-1">
+                      <div className="text-2xl font-bold text-[var(--foreground)] mb-1">
                         #{queue?.position ?? "—"}
                       </div>
                       <div className="text-sm text-[var(--text-faint)]">Posición en cola</div>
                     </div>
                     <div className="bg-[var(--background)] rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-white mb-1">
+                      <div className="text-2xl font-bold text-[var(--foreground)] mb-1">
                         {queue?.total ?? 0}
                       </div>
                       <div className="text-sm text-[var(--text-faint)]">En revisión</div>
@@ -185,7 +185,7 @@ export default function ReviewWaitingPage() {
                           <CheckCircle className="w-4 h-4 text-white" />
                         </div>
                         <div className="flex-1">
-                          <div className="text-white font-medium">Solicitud enviada</div>
+                          <div className="text-[var(--foreground)] font-medium">Solicitud enviada</div>
                           <div className="text-sm text-[var(--text-faint)]">{formatDate(application.submittedAt)}</div>
                         </div>
                       </div>
@@ -200,7 +200,7 @@ export default function ReviewWaitingPage() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <div className={status === "in_review" ? "text-white font-medium" : "text-[var(--text-faint)]"}>
+                          <div className={status === "in_review" ? "text-[var(--foreground)] font-medium" : "text-[var(--text-faint)]"}>
                             {status === "in_review" ? "En revisión por staff" : "Esperando revisión"}
                           </div>
                         </div>
@@ -224,7 +224,7 @@ export default function ReviewWaitingPage() {
                       type="button"
                       onClick={checkStatus}
                       disabled={isRefreshing}
-                      className="flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] disabled:opacity-50 text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] disabled:opacity-50 text-[var(--foreground)] rounded-lg transition-colors"
                     >
                       <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
                       Actualizar
@@ -244,7 +244,7 @@ export default function ReviewWaitingPage() {
                     <CheckCircle className="h-12 w-12 text-[#22c55e]" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">¡Felicitaciones!</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">¡Felicitaciones!</h2>
                     <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Tu solicitud de whitelist ha sido aprobada. Ahora puedes crear tu documento de identidad
                       y comenzar a jugar en ERLC HUB.
@@ -291,7 +291,7 @@ export default function ReviewWaitingPage() {
                     <XCircle className="h-12 w-12 text-red-400" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Solicitud Rechazada</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Solicitud Rechazada</h2>
                     <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Lamentablemente tu solicitud no cumple con los requisitos necesarios.
                     </p>
@@ -307,7 +307,7 @@ export default function ReviewWaitingPage() {
                   <div className="flex items-center justify-center gap-4">
                     <Link
                       href="/"
-                      className="px-6 py-3 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
+                      className="px-6 py-3 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] rounded-xl transition-colors"
                     >
                       Volver al inicio
                     </Link>
@@ -330,7 +330,7 @@ export default function ReviewWaitingPage() {
                     <AlertCircle className="h-12 w-12 text-orange-400" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Correcciones Necesarias</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Correcciones Necesarias</h2>
                     <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Tu solicitud está casi lista, pero necesita algunas correcciones antes de ser aprobada.
                     </p>

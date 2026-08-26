@@ -77,7 +77,7 @@ export default function CompletedPage() {
                 </div>
               </div>
 
-              <h1 className="text-4xl font-black text-white mt-6 mb-2">
+              <h1 className="text-4xl font-black text-[var(--foreground)] mt-6 mb-2">
                 ¡Whitelist Completada!
               </h1>
               <p className="text-[var(--text-muted)] text-lg">
@@ -90,23 +90,23 @@ export default function CompletedPage() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Sparkles className="w-6 h-6 text-[#8e00f7] mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-white">100%</div>
+                  <div className="text-2xl font-bold text-[var(--foreground)]">100%</div>
                   <div className="text-xs text-[var(--text-faint)]">Completado</div>
                 </div>
                 <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Star className="w-6 h-6 text-[#fbbf24] mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-white">{application.questionnaireScore ?? 0}%</div>
+                  <div className="text-2xl font-bold text-[var(--foreground)]">{application.questionnaireScore ?? 0}%</div>
                   <div className="text-xs text-[var(--text-faint)]">Puntuación</div>
                 </div>
                 <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Users className="w-6 h-6 text-[#22c55e] mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-white">#{application.memberNumber ?? 1}</div>
+                  <div className="text-2xl font-bold text-[var(--foreground)]">#{application.memberNumber ?? 1}</div>
                   <div className="text-xs text-[var(--text-faint)]">Miembro</div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-white">Próximos pasos</h2>
+                <h2 className="text-lg font-bold text-[var(--foreground)]">Próximos pasos</h2>
 
                 <div className="space-y-3">
                   <div className="flex items-start gap-4 p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)]">
@@ -114,7 +114,7 @@ export default function CompletedPage() {
                       1
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-white">Únete al servidor de Discord</div>
+                      <div className="font-medium text-[var(--foreground)]">Únete al servidor de Discord</div>
                       <p className="text-sm text-[var(--text-muted)] mt-1">
                         Accede a canales exclusivos y conoce a otros jugadores
                       </p>
@@ -135,7 +135,7 @@ export default function CompletedPage() {
                       2
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-white">Tu número de documento</div>
+                      <div className="font-medium text-[var(--foreground)]">Tu número de documento</div>
                       <p className="text-sm text-[var(--text-muted)] mt-1">
                         Guárdalo: es tu identificación dentro del servidor
                       </p>
@@ -147,7 +147,7 @@ export default function CompletedPage() {
                           type="button"
                           onClick={handleCopyCode}
                           className={`p-1.5 rounded-lg transition-colors ${
-                            codeCopied ? "bg-[#22c55e] text-white" : "bg-[var(--card-bg-2)] text-[var(--text-muted)] hover:text-white"
+                            codeCopied ? "bg-[#22c55e] text-white" : "bg-[var(--card-bg-2)] text-[var(--text-muted)] hover:text-[var(--foreground)]"
                           }`}
                         >
                           {codeCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -170,7 +170,7 @@ export default function CompletedPage() {
                       3
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-white">Revisa tu documento</div>
+                      <div className="font-medium text-[var(--foreground)]">Revisa tu documento</div>
                       <p className="text-sm text-[var(--text-muted)] mt-1">
                         {application.character
                           ? `${application.character.firstName} ${application.character.lastName} · válido hasta ${application.document?.expiryDate}`
@@ -179,7 +179,7 @@ export default function CompletedPage() {
                     </div>
                     <Link
                       href="/whitelist/dni"
-                      className="flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white text-sm font-medium rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] text-sm font-medium rounded-lg transition-colors"
                     >
                       <CreditCard className="w-4 h-4" />
                       Ver DNI
@@ -190,7 +190,7 @@ export default function CompletedPage() {
 
               <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#8e00f7]/20 to-[#22c55e]/20 rounded-xl border border-[#8e00f7]/30">
                 <div>
-                  <div className="font-medium text-white">Comparte tu logro</div>
+                  <div className="font-medium text-[var(--foreground)]">Comparte tu logro</div>
                   <div className="text-sm text-[var(--text-muted)]">Invita a tus amigos a unirse</div>
                 </div>
                 <button
@@ -215,7 +215,7 @@ export default function CompletedPage() {
                 </Link>
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white font-medium rounded-xl transition-all"
+                  className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] font-medium rounded-xl transition-all"
                 >
                   Ir al Inicio
                 </Link>
