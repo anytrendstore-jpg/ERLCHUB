@@ -340,7 +340,7 @@ export default function CartPage() {
               <ShoppingCart className="h-12 w-12 text-[#8e00f7]" />
             </div>
             
-            <h1 className="text-3xl font-bold text-white mb-4">Tu carrito está vacío</h1>
+            <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">Tu carrito está vacío</h1>
             <p className="text-[var(--text-muted)] text-lg mb-8">
               Parece que aún no has agregado productos a tu carrito
             </p>
@@ -380,7 +380,7 @@ export default function CartPage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Carrito de Compras</h1>
+              <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">Carrito de Compras</h1>
               <p className="text-[var(--text-muted)]">
                 {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
               </p>
@@ -419,7 +419,7 @@ export default function CartPage() {
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h3 className="text-white font-semibold text-lg">{item.name}</h3>
+                          <h3 className="text-[var(--foreground)] font-semibold text-lg">{item.name}</h3>
                           <p className="text-[var(--text-muted)] text-sm">{item.category}</p>
                         </div>
                         
@@ -440,7 +440,7 @@ export default function CartPage() {
                             >
                               <Minus className="h-4 w-4 text-[var(--text-muted)]" />
                             </button>
-                            <span className="px-3 py-1 text-white font-medium">
+                            <span className="px-3 py-1 text-[var(--foreground)] font-medium">
                               {item.quantity}
                             </span>
                             <button
@@ -510,7 +510,7 @@ export default function CartPage() {
             </div>
 
             <div className="lg:sticky lg:top-24 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
-              <h2 className="text-xl font-bold text-white mb-6">Resumen del Pedido</h2>
+              <h2 className="text-xl font-bold text-[var(--foreground)] mb-6">Resumen del Pedido</h2>
 
               <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
               {items.map((item) => (
@@ -583,7 +583,7 @@ export default function CartPage() {
                             value={discountCode}
                             onChange={(e) => setDiscountCode(e.target.value)}
                             placeholder="Ingresa tu código de descuento" 
-                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-white text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
+                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-[var(--foreground)] text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
                           />
                           <button 
                             onClick={validateDiscountCode}
@@ -612,7 +612,7 @@ export default function CartPage() {
                             value={referralCode}
                             onChange={(e) => setReferralCode(e.target.value)}
                             placeholder="Ingresa tu código de referido" 
-                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-white text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
+                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-[var(--foreground)] text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
                           />
                           <button 
                             onClick={async () => {
@@ -637,7 +637,7 @@ export default function CartPage() {
                 )}
                   
                   {hubCoinsTotal > 0 && usdTotal === 0 && (
-                    <div className="flex justify-between text-white font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
+                    <div className="flex justify-between text-[var(--foreground)] font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total Hub Coins</span>
                       <span className="text-[#fbbf24] flex items-center gap-1">
                         <Image
@@ -652,13 +652,13 @@ export default function CartPage() {
                     </div>
                   )}
                   {usdTotal > 0 && hubCoinsTotal === 0 && (
-                    <div className="flex justify-between text-white font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
+                    <div className="flex justify-between text-[var(--foreground)] font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total</span>
                       <span className="text-[#8e00f7]">{getConvertedPrice(finalUsdTotal)}</span>
                     </div>
                   )}
                   {usdTotal === 0 && hubCoinsTotal > 0 && (
-                    <div className="flex justify-between text-white font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
+                    <div className="flex justify-between text-[var(--foreground)] font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total</span>
                       <span className="text-[#fbbf24] flex items-center gap-1">
                         <Image

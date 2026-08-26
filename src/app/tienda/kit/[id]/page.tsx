@@ -64,7 +64,7 @@ export default function KitPage() {
     return (
       <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Kit no encontrado</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)] mb-4">Kit no encontrado</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
             Volver a la tienda
           </Link>
@@ -97,13 +97,13 @@ export default function KitPage() {
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
-            <Link href="/tienda" className="hover:text-white flex items-center gap-1">
+            <Link href="/tienda" className="hover:text-[var(--foreground)] flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" /> Tienda
             </Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href="/tienda#kits" className="hover:text-white">Kits</Link>
+            <Link href="/tienda#kits" className="hover:text-[var(--foreground)]">Kits</Link>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-white">{kit.name}</span>
+            <span className="text-[var(--foreground)]">{kit.name}</span>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-10">
@@ -128,7 +128,7 @@ export default function KitPage() {
                 )}
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Package className="h-8 w-8" style={{ color }} />
-                  <span className="text-2xl font-bold text-white">{kit.name}</span>
+                  <span className="text-2xl font-bold text-[var(--foreground)]">{kit.name}</span>
                 </div>
               </div>
 
@@ -147,7 +147,7 @@ export default function KitPage() {
                 {isWhitelistFast ? "WHITELIST" : kit.category.toUpperCase()}
               </div>
 
-              <h1 className="text-4xl font-bold text-white mb-4">{kit.name}</h1>
+              <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">{kit.name}</h1>
               <p className="text-[var(--text-muted)] text-lg mb-4">{kit.description}</p>
 
               {slotsGranted ? (
@@ -167,7 +167,7 @@ export default function KitPage() {
                 {isWhitelistFast ? (
                   <div>
                     <div className="flex items-center gap-2 text-4xl font-bold mb-4">
-                      <span className="text-white">{convertPrice(whitelistFastKit.priceDollars, selectedCurrency)}</span>
+                      <span className="text-[var(--foreground)]">{convertPrice(whitelistFastKit.priceDollars, selectedCurrency)}</span>
                     </div>
                     <div className="text-[var(--text-faint)] text-sm">≈ ${whitelistFastKit.priceDollars}.00</div>
                     <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} className="mt-4" />
@@ -216,7 +216,7 @@ export default function KitPage() {
           </div>
 
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Contenido del kit</h2>
+            <h2 className="text-2xl font-bold text-[var(--foreground)] mb-6">Contenido del kit</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               {kit.items.map((item, index) => (
                 <div
@@ -227,7 +227,7 @@ export default function KitPage() {
                   <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
                     <Check className="h-4 w-4" style={{ color }} />
                   </div>
-                  <span className="text-white">{item}</span>
+                  <span className="text-[var(--foreground)]">{item}</span>
                 </div>
               ))}
             </div>
@@ -235,10 +235,10 @@ export default function KitPage() {
 
           <div className="mt-10 grid sm:grid-cols-2 gap-4">
             <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-5">
-              <h3 className="text-white font-semibold mb-2 text-sm">Otros kits que te podrían interesar</h3>
+              <h3 className="text-[var(--foreground)] font-semibold mb-2 text-sm">Otros kits que te podrían interesar</h3>
               <div className="space-y-2">
                 {kits.filter((k) => k.id !== kit.id && k.category === (kit as any).category).slice(0, 3).map((k) => (
-                  <Link key={k.id} href={`/tienda/kit/${k.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors group">
+                  <Link key={k.id} href={`/tienda/kit/${k.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors group">
                     <span className="truncate">{k.name}</span>
                     <span className="flex items-center gap-1 text-xs flex-shrink-0" style={{ color: k.color }}>
                       {formatNumber(k.priceHubCoins)}
@@ -253,7 +253,7 @@ export default function KitPage() {
             </div>
 
             <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">Términos importantes</h3>
               <ul className="space-y-2 text-[var(--text-muted)] text-sm">
                 <li>Los kits se compran exclusivamente con Hub Coins.</li>
                 <li>Los items se entregan inmediatamente después de la compra.</li>

@@ -50,7 +50,7 @@ function WhitelistFastSuccessContent() {
             <Check className="h-12 w-12 text-purple-500" />
           </div>
 
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
             ¡Whitelist Fast Comprada Exitosamente!
           </h1>
           <p className="text-xl text-[var(--text-muted)] mb-8">
@@ -66,14 +66,14 @@ function WhitelistFastSuccessContent() {
           </div>
 
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">¿Qué sucede ahora?</h2>
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-4">¿Qué sucede ahora?</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-1">
                   <Zap className="h-4 w-4 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Acceso Inmediato</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold mb-1">Acceso Inmediato</h3>
                   <p className="text-[var(--text-muted)] text-sm">
                     Sin entrevistas ni esperas, acceso directo al servidor
                   </p>
@@ -85,7 +85,7 @@ function WhitelistFastSuccessContent() {
                   <Users className="h-4 w-4 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">DM en Discord</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold mb-1">DM en Discord</h3>
                   <p className="text-[var(--text-muted)] text-sm">
                     Recibirás mensaje con selección de servidor y enlace de unión
                   </p>
@@ -97,7 +97,7 @@ function WhitelistFastSuccessContent() {
                   <Star className="h-4 w-4 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Comienza a Rolear</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold mb-1">Comienza a Rolear</h3>
                   <p className="text-[var(--text-muted)] text-sm">
                     Crea tu personaje y únete a la acción inmediatamente
                   </p>
@@ -107,7 +107,7 @@ function WhitelistFastSuccessContent() {
           </div>
 
           <div className="bg-gradient-to-r from-[#8b5cf6]/20 to-[#a64dfa]/20 border border-[#8b5cf6]/30 rounded-xl p-6 mb-8">
-            <h3 className="text-lg font-bold text-white mb-3 flex items-center justify-center gap-2">
+            <h3 className="text-lg font-bold text-[var(--foreground)] mb-3 flex items-center justify-center gap-2">
               <Shield className="h-5 w-5 text-[#8b5cf6]" />
               Beneficios de tu Whitelist Fast
             </h3>
@@ -132,7 +132,7 @@ function WhitelistFastSuccessContent() {
           </div>
 
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8">
-            <h3 className="text-lg font-bold text-white mb-4">Información del Servidor</h3>
+            <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">Información del Servidor</h3>
             <div className="space-y-4">
               <div className="bg-[var(--card-bg-2)] rounded-lg p-4">
                 <h4 className="text-purple-400 font-semibold mb-2">{purchaseInfo?.serverName || 'Los Santos'}</h4>
@@ -168,7 +168,7 @@ function WhitelistFastSuccessContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 href="/perfil"
-                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-[var(--foreground)] px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
               >
                 <Home className="h-4 w-4" />
                 Ver Mi Perfil
@@ -176,7 +176,7 @@ function WhitelistFastSuccessContent() {
 
               <Link
                 href="/tienda"
-                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-[var(--foreground)] px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
               >
                 <ArrowRight className="h-4 w-4" />
                 Ver Más Productos

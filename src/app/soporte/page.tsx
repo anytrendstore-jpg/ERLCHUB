@@ -50,7 +50,7 @@ export default function SoportePage() {
               <LifeBuoy className="h-6 w-6 text-[#8e00f7]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Soporte</h1>
+              <h1 className="text-2xl font-bold text-[var(--foreground)]">Soporte</h1>
               <p className="text-sm text-[var(--text-muted)]">Abre un ticket o reporta a otro jugador — llega directo al staff</p>
             </div>
           </div>
@@ -60,7 +60,7 @@ export default function SoportePage() {
               type="button"
               onClick={() => setTab("tickets")}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition ${
-                tab === "tickets" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-white"
+                tab === "tickets" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
               }`}
             >
               <Ticket className="h-4 w-4" /> Mis Tickets
@@ -69,7 +69,7 @@ export default function SoportePage() {
               type="button"
               onClick={() => setTab("report")}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition ${
-                tab === "report" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-white"
+                tab === "report" ? "bg-[#8e00f7] text-white" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
               }`}
             >
               <Flag className="h-4 w-4" /> Reportar Jugador
@@ -81,7 +81,7 @@ export default function SoportePage() {
           ) : !isAuthenticated ? (
             <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-10 text-center">
               <Lock className="h-9 w-9 text-gray-600 mx-auto mb-3" />
-              <h2 className="text-white font-semibold mb-1">Inicia sesión para continuar</h2>
+              <h2 className="text-[var(--foreground)] font-semibold mb-1">Inicia sesión para continuar</h2>
               <p className="text-sm text-[var(--text-muted)]">Necesitas tu cuenta de Discord para abrir tickets o reportar jugadores.</p>
             </div>
           ) : tab === "tickets" ? (
@@ -177,10 +177,10 @@ function TicketsTab({ playerName }: { playerName: string }) {
       <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl overflow-hidden animate-modal-card">
         <div className="p-5 border-b border-[var(--card-border-soft)] flex items-center justify-between">
           <div className="min-w-0">
-            <button type="button" onClick={() => setSelectedId(null)} className="text-xs text-[var(--text-faint)] hover:text-white transition mb-1">
+            <button type="button" onClick={() => setSelectedId(null)} className="text-xs text-[var(--text-faint)] hover:text-[var(--foreground)] transition mb-1">
               ← Volver a mis tickets
             </button>
-            <h2 className="text-white font-bold truncate">{selected.subject}</h2>
+            <h2 className="text-[var(--foreground)] font-bold truncate">{selected.subject}</h2>
             <p className="text-xs text-[var(--text-faint)] font-mono">#{selected.ticketNumber} · {selected.category}</p>
           </div>
           <span className={`px-2.5 py-1 rounded-md text-xs font-medium ring-1 flex-shrink-0 ${STATUS_LABEL[selected.status].tone}`}>
@@ -212,9 +212,9 @@ function TicketsTab({ playerName }: { playerName: string }) {
                     </span>
                   )}
                 </div>
-                {m.body && <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{m.body}</p>}
+                {m.body && <p className="text-sm text-[var(--foreground)] whitespace-pre-wrap leading-relaxed">{m.body}</p>}
                 <TicketAttachments attachments={m.attachments} />
-                <div className="text-[10px] text-gray-600 mt-1">{formatDate(m.createdAt)}</div>
+                <div className="text-[10px] text-[var(--text-faint)] mt-1">{formatDate(m.createdAt)}</div>
               </div>
             </div>
           ))}
@@ -228,7 +228,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
                   {replyAttachments.map((a, i) => (
                     <span key={i} className="flex items-center gap-1.5 text-xs bg-[#8e00f7]/10 border border-[#8e00f7]/30 text-[var(--text-muted)] rounded-lg px-2.5 py-1.5">
                       {a.name}
-                      <button type="button" onClick={() => setReplyAttachments((prev) => prev.filter((_, idx) => idx !== i))} className="text-[var(--text-faint)] hover:text-white">
+                      <button type="button" onClick={() => setReplyAttachments((prev) => prev.filter((_, idx) => idx !== i))} className="text-[var(--text-faint)] hover:text-[var(--foreground)]">
                         <X className="w-3 h-3" />
                       </button>
                     </span>
@@ -249,7 +249,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
                   onChange={(e) => setReply(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendReply()}
                   placeholder="Escribe tu respuesta..."
-                  className="flex-1 h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+                  className="flex-1 h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7]"
                 />
                 <button
                   type="button"
@@ -295,13 +295,13 @@ function TicketsTab({ playerName }: { playerName: string }) {
               value={form.subject}
               onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
               placeholder="Asunto"
-              className="h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+              className="h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7]"
               required
             />
             <select
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as TicketCategory }))}
-              className="h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white focus:outline-none focus:border-[#8e00f7]"
+              className="h-11 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7]"
             >
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -311,7 +311,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
             onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
             placeholder="Cuéntanos qué necesitas..."
             rows={4}
-            className="w-full p-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
+            className="w-full p-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7] resize-none"
             required
           />
           {error && <p className="text-sm text-red-400 flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {error}</p>}
@@ -356,7 +356,7 @@ function TicketsTab({ playerName }: { playerName: string }) {
                   </span>
                   <span className="text-[11px] text-[var(--text-faint)]">{t.category}</span>
                 </div>
-                <div className="text-white font-medium truncate">{t.subject}</div>
+                <div className="text-[var(--foreground)] font-medium truncate">{t.subject}</div>
                 <div className="text-xs text-[var(--text-faint)]">{formatDate(t.updatedAt)}</div>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-600 flex-shrink-0" />
@@ -396,7 +396,7 @@ function ReportTab() {
     return (
       <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-10 text-center">
         <CheckCircle2 className="h-10 w-10 text-[#22c55e] mx-auto mb-3" />
-        <h2 className="text-white font-semibold mb-1">Reporte enviado</h2>
+        <h2 className="text-[var(--foreground)] font-semibold mb-1">Reporte enviado</h2>
         <p className="text-sm text-[var(--text-muted)] mb-4">El staff lo revisará en su panel. Gracias por ayudar a mantener la comunidad sana.</p>
         <button type="button" onClick={() => setSent(false)} className="text-sm text-[#8e00f7] hover:underline">
           Enviar otro reporte
@@ -411,14 +411,14 @@ function ReportTab() {
         value={form.targetName}
         onChange={(e) => setForm((f) => ({ ...f, targetName: e.target.value }))}
         placeholder="Usuario o personaje reportado"
-        className="w-full h-12 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+        className="w-full h-12 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7]"
         required
       />
       <input
         value={form.reason}
         onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))}
         placeholder="Motivo (ej. RDM, VDM, Fail RP, lenguaje inapropiado...)"
-        className="w-full h-12 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7]"
+        className="w-full h-12 px-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7]"
         required
       />
       <textarea
@@ -426,7 +426,7 @@ function ReportTab() {
         onChange={(e) => setForm((f) => ({ ...f, details: e.target.value }))}
         placeholder="Describe lo que ocurrió, con la mayor cantidad de detalles posible (hora, lugar, testigos, evidencia si tienes)..."
         rows={5}
-        className="w-full p-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#8e00f7] resize-none"
+        className="w-full p-4 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#8e00f7] resize-none"
       />
       {error && <p className="text-sm text-red-400 flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {error}</p>}
       <button

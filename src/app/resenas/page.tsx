@@ -86,7 +86,7 @@ export default function ReviewsPage() {
 
       <div className="container mx-auto px-4 py-4">
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4 flex items-center justify-center gap-3">
             Reseñas de la Comunidad
             {loading && (
               <div className="w-5 h-5 border-2 border-[#8e00f7] border-t-transparent rounded-full animate-spin"></div>
@@ -108,24 +108,24 @@ export default function ReviewsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 max-w-5xl mx-auto">
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 text-center">
             <MessageSquare className="w-5 h-5 text-[#8e00f7] mx-auto mb-1.5" />
-            <div className="text-2xl font-bold text-white">{stats?.total || 0}</div>
+            <div className="text-2xl font-bold text-[var(--foreground)]">{stats?.total || 0}</div>
             <div className="text-[var(--text-muted)] text-sm">Total Reseñas</div>
           </div>
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 text-center">
             <MessageSquare className="w-5 h-5 mx-auto mb-1.5" style={{ color: TAG_COLOR['Comunidad'] }} />
-            <div className="text-xl font-bold text-white">{stats?.comunidad?.count || 0}</div>
+            <div className="text-xl font-bold text-[var(--foreground)]">{stats?.comunidad?.count || 0}</div>
             <div className="text-[var(--text-muted)] text-xs mb-1">Comunidad</div>
             <div className="flex justify-center"><Stars rating={Math.round(stats?.comunidad?.avgRating || 0)} size="w-3.5 h-3.5" /></div>
           </div>
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 text-center">
             <ShoppingBag className="w-5 h-5 mx-auto mb-1.5" style={{ color: TAG_COLOR['Tienda'] }} />
-            <div className="text-xl font-bold text-white">{stats?.tienda?.count || 0}</div>
+            <div className="text-xl font-bold text-[var(--foreground)]">{stats?.tienda?.count || 0}</div>
             <div className="text-[var(--text-muted)] text-xs mb-1">Tienda</div>
             <div className="flex justify-center"><Stars rating={Math.round(stats?.tienda?.avgRating || 0)} size="w-3.5 h-3.5" /></div>
           </div>
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 text-center">
             <Coins className="w-5 h-5 mx-auto mb-1.5" style={{ color: TAG_COLOR['Hub Coins'] }} />
-            <div className="text-xl font-bold text-white">{stats?.hubCoins?.count || 0}</div>
+            <div className="text-xl font-bold text-[var(--foreground)]">{stats?.hubCoins?.count || 0}</div>
             <div className="text-[var(--text-muted)] text-xs mb-1">Hub Coins</div>
             <div className="flex justify-center"><Stars rating={Math.round(stats?.hubCoins?.avgRating || 0)} size="w-3.5 h-3.5" /></div>
           </div>
@@ -138,7 +138,7 @@ export default function ReviewsPage() {
                 key={tag}
                 onClick={() => handleTagChange(tag)}
                 className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                  selectedTag === tag ? 'bg-[#8e00f7] text-white' : 'text-[var(--text-muted)] hover:text-white'
+                  selectedTag === tag ? 'bg-[#8e00f7] text-white' : 'text-[var(--text-muted)] hover:text-[var(--foreground)]'
                 }`}
               >
                 {tag}
@@ -190,7 +190,7 @@ export default function ReviewsPage() {
                         </div>
                       )}
                       <div className="min-w-0">
-                        <div className="text-white font-medium truncate">{review?.username || review?.name || "Usuario"}</div>
+                        <div className="text-[var(--foreground)] font-medium truncate">{review?.username || review?.name || "Usuario"}</div>
                         <div className="text-[var(--text-muted)] text-sm">
                           {review?.userId ? 'Usuario Discord' : 'Usuario Invitado'}
                         </div>
@@ -233,14 +233,14 @@ export default function ReviewsPage() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">Escribir Reseña</h2>
-              <button onClick={() => setShowReviewForm(false)} className="text-[var(--text-muted)] hover:text-white">
+              <h2 className="text-2xl font-bold text-[var(--foreground)]">Escribir Reseña</h2>
+              <button onClick={() => setShowReviewForm(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-white mb-2 text-sm">¿Qué estás reseñando?</label>
+                <label className="block text-[var(--foreground)] mb-2 text-sm">¿Qué estás reseñando?</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['Comunidad', 'Tienda', 'Hub Coins'] as const).map((t) => (
                     <button
@@ -257,7 +257,7 @@ export default function ReviewsPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-white mb-2 text-sm">Calificación</label>
+                <label className="block text-[var(--foreground)] mb-2 text-sm">Calificación</label>
                 <div className="flex gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -272,11 +272,11 @@ export default function ReviewsPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-white mb-2 text-sm">Tu Reseña</label>
+                <label className="block text-[var(--foreground)] mb-2 text-sm">Tu Reseña</label>
                 <textarea
                   value={formData.comment}
                   onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
-                  className="w-full px-4 py-3 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-white text-sm h-32 resize-none focus:border-[#8e00f7] outline-none"
+                  className="w-full px-4 py-3 bg-[var(--background-alt)] border border-[var(--card-border-soft)] rounded-xl text-[var(--foreground)] text-sm h-32 resize-none focus:border-[#8e00f7] outline-none"
                   placeholder="Comparte tu experiencia..."
                   required
                 />
@@ -291,7 +291,7 @@ export default function ReviewsPage() {
                 <button
                   type="button"
                   onClick={() => setShowReviewForm(false)}
-                  className="flex-1 px-4 py-3 bg-[var(--card-bg-2)] text-white rounded-xl text-sm"
+                  className="flex-1 px-4 py-3 bg-[var(--card-bg-2)] text-[var(--foreground)] rounded-xl text-sm"
                 >
                   Cancelar
                 </button>

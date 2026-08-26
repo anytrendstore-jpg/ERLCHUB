@@ -28,7 +28,7 @@ export default function ItemPage() {
     return (
       <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Artículo no encontrado</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)] mb-4">Artículo no encontrado</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
             Volver a la tienda
           </Link>
@@ -57,11 +57,11 @@ export default function ItemPage() {
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
-            <Link href="/tienda" className="hover:text-white">Tienda</Link>
+            <Link href="/tienda" className="hover:text-[var(--foreground)]">Tienda</Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href="/tienda#items" className="hover:text-white">Artículos</Link>
+            <Link href="/tienda#items" className="hover:text-[var(--foreground)]">Artículos</Link>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-white">{item.name}</span>
+            <span className="text-[var(--foreground)]">{item.name}</span>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-10">
@@ -76,7 +76,7 @@ export default function ItemPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <TypeIcon className="h-8 w-8 text-[#8e00f7]" />
-                  <span className="text-xl font-bold text-white">{item.name}</span>
+                  <span className="text-xl font-bold text-[var(--foreground)]">{item.name}</span>
                 </div>
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function ItemPage() {
                 {item.category}
               </div>
 
-              <h1 className="text-4xl font-bold text-white mb-4">{item.name}</h1>
+              <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">{item.name}</h1>
               <p className="text-[var(--text-muted)] text-lg mb-6">{item.description}</p>
 
               <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-6">
@@ -124,7 +124,7 @@ export default function ItemPage() {
           </div>
 
           <div className="mt-12 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
-            <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
+            <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">Términos importantes</h3>
             <ul className="space-y-2 text-[var(--text-muted)] text-sm">
               <li>Los artículos se compran exclusivamente con Hub Coins.</li>
               <li>El artículo se entrega inmediatamente después de la compra.</li>

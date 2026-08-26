@@ -40,7 +40,7 @@ export default function CheckoutCancelledPage() {
             </div>
 
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-white mb-4">
+              <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">
                 Transacción Cancelada
               </h1>
               <p className="text-[var(--text-muted)] text-lg mb-2">
@@ -55,7 +55,7 @@ export default function CheckoutCancelledPage() {
               <div className="bg-[var(--card-bg-2)] border border-[#2a2a38] rounded-xl p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <AlertCircle className="h-5 w-5 text-orange-400" />
-                  <h3 className="text-white font-semibold">¿Qué pasó?</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold">¿Qué pasó?</h3>
                 </div>
                 <p className="text-[var(--text-muted)] text-sm">
                   La transacción fue cancelada o rechazada. Esto puede ocurrir por:
@@ -71,7 +71,7 @@ export default function CheckoutCancelledPage() {
               <div className="bg-[var(--card-bg-2)] border border-[#2a2a38] rounded-xl p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <RefreshCw className="h-5 w-5 text-[#8e00f7]" />
-                  <h3 className="text-white font-semibold">¿Qué hacer?</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold">¿Qué hacer?</h3>
                 </div>
                 <p className="text-[var(--text-muted)] text-sm">
                   Puedes intentar realizar la compra nuevamente:
@@ -97,7 +97,7 @@ export default function CheckoutCancelledPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Link
                   href="/tienda"
-                  className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-[var(--foreground)] px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Volver a la Tienda
@@ -125,7 +125,7 @@ export default function CheckoutCancelledPage() {
           </div>
 
           <div className="mt-8 text-center">
-            <h3 className="text-white font-semibold mb-4">¿Necesitas ayuda?</h3>
+            <h3 className="text-[var(--foreground)] font-semibold mb-4">¿Necesitas ayuda?</h3>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="https://discord.gg/xKJqNX7uC3"

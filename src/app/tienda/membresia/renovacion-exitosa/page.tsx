@@ -51,7 +51,7 @@ function RenewalSuccessContent() {
             <Check className="h-12 w-12 text-green-500" />
           </div>
 
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
             ¡Membresía Renovada Exitosamente!
           </h1>
           <p className="text-xl text-[var(--text-muted)] mb-8">
@@ -67,14 +67,14 @@ function RenewalSuccessContent() {
           </div>
 
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">¿Qué sucede ahora?</h2>
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-4">¿Qué sucede ahora?</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-1">
                   <Check className="h-4 w-4 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Beneficios Reactivados</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold mb-1">Beneficios Reactivados</h3>
                   <p className="text-[var(--text-muted)] text-sm">
                     Todos tus beneficios especiales han sido restaurados inmediatamente
                   </p>
@@ -86,7 +86,7 @@ function RenewalSuccessContent() {
                   <Calendar className="h-4 w-4 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Próxima Renovación</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold mb-1">Próxima Renovación</h3>
                   <p className="text-[var(--text-muted)] text-sm">
                     Se te recordará 5 días antes de tu próximo vencimiento
                   </p>
@@ -98,7 +98,7 @@ function RenewalSuccessContent() {
                   <Gift className="h-4 w-4 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">Acceso Inmediato</h3>
+                  <h3 className="text-[var(--foreground)] font-semibold mb-1">Acceso Inmediato</h3>
                   <p className="text-[var(--text-muted)] text-sm">
                     Ya puedes disfrutar de todos los beneficios en el servidor
                   </p>
@@ -108,7 +108,7 @@ function RenewalSuccessContent() {
           </div>
 
           <div className="bg-gradient-to-r from-[#8e00f7]/20 to-[#a64dfa]/20 border border-[#8e00f7]/30 rounded-xl p-6 mb-8">
-            <h3 className="text-lg font-bold text-white mb-3 flex items-center justify-center gap-2">
+            <h3 className="text-lg font-bold text-[var(--foreground)] mb-3 flex items-center justify-center gap-2">
               <Star className="h-5 w-5 text-[#fbbf24]" />
               Beneficios de tu {membershipInfo?.name || 'Membresía'}
             </h3>
@@ -144,7 +144,7 @@ function RenewalSuccessContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 href="/tienda/membresia"
-                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-[var(--foreground)] px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
               >
                 <ArrowRight className="h-4 w-4" />
                 Ver Otras Membresías

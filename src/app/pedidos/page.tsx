@@ -74,7 +74,7 @@ export default function PedidosPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-4">Mis Compras</h1>
+            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">Mis Compras</h1>
             <p className="text-[var(--text-muted)] text-lg">
               Historial completo de tus transacciones de Hub Coins
             </p>
@@ -91,7 +91,7 @@ export default function PedidosPage() {
                   key={f.value}
                   onClick={() => setFilter(f.value as any)}
                   className={`px-6 py-2 rounded-lg font-medium transition-all ${
-                    filter === f.value ? 'bg-[#8e00f7] text-white' : 'text-[var(--text-muted)] hover:text-white'
+                    filter === f.value ? 'bg-[#8e00f7] text-white' : 'text-[var(--text-muted)] hover:text-[var(--foreground)]'
                   }`}
                 >
                   {f.label}
@@ -146,7 +146,7 @@ export default function PedidosPage() {
 
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium">
+                          <span className="text-[var(--foreground)] font-medium">
                             {transaction.user?.username || 'Usuario'}
                           </span>
                           <span className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -186,7 +186,7 @@ export default function PedidosPage() {
 
           {filteredTransactions.length > 0 && (
             <div className="mt-8 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
-              <h3 className="text-white font-bold mb-4">Resumen</h3>
+              <h3 className="text-[var(--foreground)] font-bold mb-4">Resumen</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">

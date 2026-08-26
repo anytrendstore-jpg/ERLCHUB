@@ -192,12 +192,12 @@ export default function QuestionnairePage() {
                     <FileText className="h-7 w-7 text-[#8e00f7]" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-white">Formulario de Evaluación</h1>
+                    <h1 className="text-2xl font-bold text-[var(--foreground)]">Formulario de Evaluación</h1>
                     <p className="text-[var(--text-muted)]">Demuestra tus conocimientos de roleplay</p>
                   </div>
                 </div>
                 <div className="hidden sm:block text-right">
-                  <div className="text-2xl font-bold text-white">{currentQuestion + 1}/{totalQuestions}</div>
+                  <div className="text-2xl font-bold text-[var(--foreground)]">{currentQuestion + 1}/{totalQuestions}</div>
                   <div className="text-sm text-[var(--text-faint)]">Preguntas</div>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function QuestionnairePage() {
                       {currentQuestion + 1}
                     </span>
                     <div className="flex-1">
-                      <h2 className="text-lg font-semibold text-white leading-relaxed">
+                      <h2 className="text-lg font-semibold text-[var(--foreground)] leading-relaxed">
                         {question.question}
                         {question.required && <span className="text-red-400 ml-1">*</span>}
                       </h2>
@@ -277,7 +277,7 @@ export default function QuestionnairePage() {
                           placeholder="Escribe tu respuesta aquí..."
                           rows={6}
                           maxLength={question.maxLength}
-                          className={`w-full p-4 bg-[var(--background)] border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-colors resize-none ${
+                          className={`w-full p-4 bg-[var(--background)] border rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none transition-colors resize-none ${
                             errors[question.id]
                               ? "border-red-500 focus:border-red-500"
                               : "border-[var(--card-border)] focus:border-[#8e00f7]"
@@ -296,7 +296,7 @@ export default function QuestionnairePage() {
                         onChange={(e) => handleAnswerChange(e.target.value)}
                         placeholder="Escribe tu respuesta..."
                         maxLength={question.maxLength}
-                        className={`w-full h-14 px-4 bg-[var(--background)] border rounded-xl text-white placeholder-gray-500 focus:outline-none transition-colors ${
+                        className={`w-full h-14 px-4 bg-[var(--background)] border rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none transition-colors ${
                           errors[question.id]
                             ? "border-red-500 focus:border-red-500"
                             : "border-[var(--card-border)] focus:border-[#8e00f7]"
@@ -314,7 +314,7 @@ export default function QuestionnairePage() {
                             className={`w-full p-4 rounded-xl text-left transition-colors ${
                               answers[question.id] === option
                                 ? "bg-[#8e00f7] text-white"
-                                : "bg-[var(--background)] border border-[var(--card-border)] text-[var(--text-muted)] hover:border-[#8e00f7] hover:text-white"
+                                : "bg-[var(--background)] border border-[var(--card-border)] text-[var(--text-muted)] hover:border-[#8e00f7] hover:text-[var(--foreground)]"
                             }`}
                           >
                             {option}
@@ -345,13 +345,13 @@ export default function QuestionnairePage() {
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                               answers[question.id] === option
                                 ? "border-[#8e00f7] bg-[#8e00f7]"
-                                : "border-gray-500"
+                                : "border-[var(--card-border)]"
                             }`}>
                               {answers[question.id] === option && (
                                 <div className="w-2 h-2 rounded-full bg-white" />
                               )}
                             </div>
-                            <span className={answers[question.id] === option ? "text-white" : "text-[var(--text-muted)]"}>
+                            <span className={answers[question.id] === option ? "text-[var(--foreground)]" : "text-[var(--text-muted)]"}>
                               {option}
                             </span>
                           </label>
@@ -373,7 +373,7 @@ export default function QuestionnairePage() {
                     type="button"
                     onClick={goPrev}
                     disabled={currentQuestion === 0}
-                    className="flex items-center gap-2 px-4 py-2 text-[var(--text-muted)] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft className="w-5 h-5" />
                     Anterior
@@ -404,7 +404,7 @@ export default function QuestionnairePage() {
                   <div className="w-16 h-16 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-4">
                     <FileText className="h-8 w-8 text-[#8e00f7]" />
                   </div>
-                  <h2 className="text-xl font-bold text-white mb-2">Revisar y Enviar</h2>
+                  <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Revisar y Enviar</h2>
                   <p className="text-[var(--text-muted)]">
                     Revisa tus respuestas antes de enviar. Una vez enviadas no podrás modificarlas.
                   </p>
@@ -425,12 +425,12 @@ export default function QuestionnairePage() {
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="w-6 h-6 rounded-full bg-[var(--card-bg-2)] flex items-center justify-center text-xs text-white font-bold">
+                              <span className="w-6 h-6 rounded-full bg-[var(--card-bg-2)] flex items-center justify-center text-xs text-[var(--foreground)] font-bold">
                                 {index + 1}
                               </span>
                               <span className="text-sm font-medium text-[var(--text-muted)] truncate">{q.question}</span>
                             </div>
-                            <p className={`text-sm ${answer ? "text-white" : "text-red-400 italic"}`}>
+                            <p className={`text-sm ${answer ? "text-[var(--foreground)]" : "text-red-400 italic"}`}>
                               {answer || "Sin respuesta"}
                             </p>
                           </div>
@@ -454,7 +454,7 @@ export default function QuestionnairePage() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmation(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-[var(--text-muted)] hover:text-white transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
                   >
                     <ChevronLeft className="w-5 h-5" />
                     Volver al formulario

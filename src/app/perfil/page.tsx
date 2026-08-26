@@ -124,7 +124,7 @@ export default function PerfilPage() {
     return (
       <div className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">Acceso Restringido</h1>
+          <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">Acceso Restringido</h1>
           <p className="text-[var(--text-muted)] mb-8">Debes iniciar sesión para ver tu perfil</p>
           <a
             href="/ingresar"
@@ -140,7 +140,7 @@ export default function PerfilPage() {
   return (
     <div className="min-h-screen bg-[var(--background-alt)]">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Mi Perfil</h1>
+        <h1 className="text-3xl font-bold text-[var(--foreground)] mb-8">Mi Perfil</h1>
 
         {/* Acceso al panel de staff: solo para cuentas de staff */}
         {isStaff && (
@@ -170,7 +170,7 @@ export default function PerfilPage() {
             <LayoutDashboard className="h-6 w-6 text-[#8e00f7]" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-white font-bold">
+            <div className="text-[var(--foreground)] font-bold">
               {hasApplication && !completed ? "Continuar mi whitelist" : "Mi Dashboard"}
             </div>
             <div className="text-sm text-[var(--text-muted)]">
@@ -191,7 +191,7 @@ export default function PerfilPage() {
               />
             )}
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
                 {user?.global_name || user?.username}
               </h2>
               <div className="flex items-center gap-4 text-[var(--text-muted)]">
@@ -241,7 +241,7 @@ export default function PerfilPage() {
               />
               <span className="text-[var(--text-muted)] text-base">Hub Coins</span>
             </div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-3xl font-bold text-[var(--foreground)] mb-1">
               {profileData.hubCoinsBalance || hubCoinsBalance || 0}
             </div>
             <p className="text-[var(--text-muted)] text-sm">Saldo actual</p>
@@ -252,7 +252,7 @@ export default function PerfilPage() {
               <TrendingUp className="h-6 w-6 text-[#8e00f7]" />
               <span className="text-[var(--text-muted)] text-base">Total Gastado</span>
             </div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-3xl font-bold text-[var(--foreground)] mb-1">
               ${profileData.totalSpent || 0}
             </div>
             <p className="text-[var(--text-muted)] text-sm">En compras</p>
@@ -266,16 +266,16 @@ export default function PerfilPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-green-400 text-sm">Aceptadas:</span>
-                <span className="text-white font-bold text-lg">{profileData.completedOrders || 0}</span>
+                <span className="text-[var(--foreground)] font-bold text-lg">{profileData.completedOrders || 0}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-red-400 text-sm">Rechazadas:</span>
-                <span className="text-white font-bold text-lg">{profileData.rejectedOrders || 0}</span>
+                <span className="text-[var(--foreground)] font-bold text-lg">{profileData.rejectedOrders || 0}</span>
               </div>
               <div className="border-t border-[var(--card-border-soft)] pt-2 mt-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[var(--text-muted)] text-sm">Total:</span>
-                  <span className="text-white font-bold text-xl">{profileData.recentActivity?.length || 0}</span>
+                  <span className="text-[var(--foreground)] font-bold text-xl">{profileData.recentActivity?.length || 0}</span>
                 </div>
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function PerfilPage() {
         </div>
 
         <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
-          <h3 className="text-xl font-bold text-white mb-6">Actividad Reciente</h3>
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">Actividad Reciente</h3>
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8e00f7] mx-auto"></div>
@@ -314,7 +314,7 @@ export default function PerfilPage() {
                     )}
                   </div>
                   <div>
-                    <p className="text-white font-medium">
+                    <p className="text-[var(--foreground)] font-medium">
                       {activity.isHubCoins ? 'Hub Coins' : 'Compra'}
                     </p>
                     <p className="text-[var(--text-muted)] text-sm">
@@ -323,7 +323,7 @@ export default function PerfilPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-bold">
+                  <p className="text-[var(--foreground)] font-bold">
                     {activity.isHubCoins ? (
                       <span className="flex items-center gap-1">
                         <Image
@@ -364,7 +364,7 @@ export default function PerfilPage() {
 
         {profileData.membership && profileData.membership.type === 'permanent' && profileData.membership.status === 'active' && (
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
               <Crown className="h-5 w-5 text-[#fbbf24]" />
               Gestión de Membresía Permanente
             </h3>
@@ -385,7 +385,7 @@ export default function PerfilPage() {
                   </button>
                   <button
                     onClick={() => window.location.href = '/tienda/membresia'}
-                    className="px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-white font-medium rounded-lg transition-all"
+                    className="px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a38] text-[var(--foreground)] font-medium rounded-lg transition-all"
                   >
                     Ver Otras Membresías
                   </button>

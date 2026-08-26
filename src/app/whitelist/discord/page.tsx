@@ -65,7 +65,7 @@ export default function DiscordVerificationPage() {
                   <MessageCircle className="h-7 w-7 text-[#5865F2]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Verificación de Discord</h1>
+                  <h1 className="text-2xl font-bold text-[var(--foreground)]">Verificación de Discord</h1>
                   <p className="text-[var(--text-muted)]">Únete al servidor y acepta las reglas</p>
                 </div>
               </div>
@@ -80,16 +80,16 @@ export default function DiscordVerificationPage() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={discord.avatar} alt={discord.username} className="w-12 h-12 rounded-full" />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-[#5865F2]/30 flex items-center justify-center text-white font-bold text-lg">
+                        <div className="w-12 h-12 rounded-full bg-[#5865F2]/30 flex items-center justify-center text-[var(--foreground)] font-bold text-lg">
                           {discord.username.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#22c55e] rounded-full border-2 border-[#12121c] flex items-center justify-center">
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#22c55e] rounded-full border-2 border-[var(--card-bg)] flex items-center justify-center">
                         <Check className="w-3 h-3 text-white" />
                       </div>
                     </div>
                     <div>
-                      <div className="font-semibold text-white">{discord.globalName || discord.username}</div>
+                      <div className="font-semibold text-[var(--foreground)]">{discord.globalName || discord.username}</div>
                       <div className="text-sm text-[#5865F2]">@{discord.username}</div>
                       {discord.source === "dev" && (
                         <div className="text-xs text-yellow-400 mt-0.5">Sesión de prueba local</div>
@@ -107,7 +107,7 @@ export default function DiscordVerificationPage() {
                         <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#22c55e]">
                           <Check className="w-4 h-4 text-white" />
                         </div>
-                        <span className="text-white">Cuenta de Discord verificada</span>
+                        <span className="text-[var(--foreground)]">Cuenta de Discord verificada</span>
                       </div>
                       <CheckCircle className="w-5 h-5 text-[#22c55e]" />
                     </div>
@@ -127,7 +127,7 @@ export default function DiscordVerificationPage() {
                             <Users className="w-4 h-4 text-[var(--text-faint)]" />
                           )}
                         </div>
-                        <span className={discord.joinedServer ? "text-white" : "text-[var(--text-muted)]"}>
+                        <span className={discord.joinedServer ? "text-[var(--foreground)]" : "text-[var(--text-muted)]"}>
                           Unirse al servidor de ERLC HUB
                         </span>
                       </div>
@@ -167,7 +167,7 @@ export default function DiscordVerificationPage() {
                             <Bell className="w-4 h-4 text-[var(--text-faint)]" />
                           )}
                         </div>
-                        <span className={discord.acceptedRules ? "text-white" : "text-[var(--text-muted)]"}>
+                        <span className={discord.acceptedRules ? "text-[var(--foreground)]" : "text-[var(--text-muted)]"}>
                           Aceptar las reglas del servidor
                         </span>
                       </div>
@@ -203,7 +203,7 @@ export default function DiscordVerificationPage() {
                     <CheckCircle className="h-10 w-10 text-[#22c55e]" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Discord Verificado</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Discord Verificado</h2>
                     <p className="text-[var(--text-muted)]">
                       Tu cuenta de Discord ha sido vinculada exitosamente.
                     </p>
@@ -214,12 +214,12 @@ export default function DiscordVerificationPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={discord.avatar} alt={discord.username} className="w-10 h-10 rounded-full" />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#5865F2]/30 flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 rounded-full bg-[#5865F2]/30 flex items-center justify-center text-[var(--foreground)] font-bold">
                         {discord.username.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div className="text-left">
-                      <div className="font-semibold text-white">{discord.globalName || discord.username}</div>
+                      <div className="font-semibold text-[var(--foreground)]">{discord.globalName || discord.username}</div>
                       <div className="text-sm text-[#5865F2]">@{discord.username}</div>
                     </div>
                   </div>

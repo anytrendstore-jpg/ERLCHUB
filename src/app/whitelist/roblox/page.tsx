@@ -138,7 +138,7 @@ function RobloxVerificationContent() {
                   <Gamepad2 className="h-7 w-7 text-[#e2231a]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Verificación de Roblox</h1>
+                  <h1 className="text-2xl font-bold text-[var(--foreground)]">Verificación de Roblox</h1>
                   <p className="text-[var(--text-muted)]">Vincula tu cuenta de Roblox para continuar</p>
                 </div>
               </div>
@@ -151,7 +151,7 @@ function RobloxVerificationContent() {
                     <div className="w-20 h-20 rounded-full bg-[#e2231a]/20 flex items-center justify-center mx-auto mb-6">
                       <Gamepad2 className="h-10 w-10 text-[#e2231a]" />
                     </div>
-                    <h2 className="text-xl font-bold text-white mb-2">Ingresa tu usuario de Roblox</h2>
+                    <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Ingresa tu usuario de Roblox</h2>
                     <p className="text-[var(--text-muted)] max-w-md mx-auto">
                       Buscaremos tu cuenta en Roblox y te daremos un código para demostrar que es tuya.
                     </p>
@@ -194,7 +194,7 @@ function RobloxVerificationContent() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Tu nombre de usuario"
-                        className="w-full h-14 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#e2231a] transition-colors text-lg"
+                        className="w-full h-14 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder-[var(--text-faint)] focus:outline-none focus:border-[#e2231a] transition-colors text-lg"
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                       />
                     </div>
@@ -227,7 +227,7 @@ function RobloxVerificationContent() {
                   </button>
 
                   <div className="bg-[var(--background)] rounded-xl p-4 border border-[var(--card-border)]">
-                    <h3 className="text-sm font-semibold text-white mb-2">¿Cómo funciona?</h3>
+                    <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">¿Cómo funciona?</h3>
                     <ol className="space-y-2 text-sm text-[var(--text-muted)]">
                       {[
                         "Ingresa tu nombre de usuario de Roblox",
@@ -236,7 +236,7 @@ function RobloxVerificationContent() {
                         "Verifica tu cuenta",
                       ].map((text, index) => (
                         <li key={text} className="flex items-start gap-2">
-                          <span className="w-5 h-5 rounded-full bg-[var(--card-bg-2)] flex items-center justify-center flex-shrink-0 text-xs text-white">
+                          <span className="w-5 h-5 rounded-full bg-[var(--card-bg-2)] flex items-center justify-center flex-shrink-0 text-xs text-[var(--foreground)]">
                             {index + 1}
                           </span>
                           {text}
@@ -260,7 +260,7 @@ function RobloxVerificationContent() {
                         )}
                       </div>
                       <div>
-                        <div className="font-semibold text-white">{roblox.displayName || roblox.username}</div>
+                        <div className="font-semibold text-[var(--foreground)]">{roblox.displayName || roblox.username}</div>
                         <div className="text-sm text-[#e2231a]">@{roblox.username}</div>
                         {!roblox.id && (
                           <div className="text-xs text-yellow-400 mt-0.5">
@@ -272,14 +272,14 @@ function RobloxVerificationContent() {
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="text-sm text-[var(--text-muted)] hover:text-white transition-colors"
+                      className="text-sm text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
                     >
                       Cambiar
                     </button>
                   </div>
 
                   <div className="bg-[var(--background)] rounded-xl p-6 border border-[var(--card-border)]">
-                    <h3 className="text-lg font-bold text-white mb-4">Verificación de propiedad</h3>
+                    <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">Verificación de propiedad</h3>
 
                     <div className="space-y-4">
                       <p className="text-[var(--text-muted)] text-sm">
@@ -339,7 +339,7 @@ function RobloxVerificationContent() {
                       : `https://www.roblox.com/search/users?keyword=${encodeURIComponent(roblox.username)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full h-12 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-white rounded-xl transition-colors"
+                    className="flex items-center justify-center gap-2 w-full h-12 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] rounded-xl transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Abrir perfil de Roblox
@@ -379,7 +379,7 @@ function RobloxVerificationContent() {
                     <CheckCircle className="h-10 w-10 text-[#22c55e]" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Roblox Verificado</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Roblox Verificado</h2>
                     <p className="text-[var(--text-muted)]">
                       Tu cuenta de Roblox ha sido vinculada exitosamente.
                     </p>
@@ -395,7 +395,7 @@ function RobloxVerificationContent() {
                       )}
                     </div>
                     <div className="text-left">
-                      <div className="font-semibold text-white">{roblox.displayName || roblox.username}</div>
+                      <div className="font-semibold text-[var(--foreground)]">{roblox.displayName || roblox.username}</div>
                       <div className="text-sm text-[#e2231a]">@{roblox.username}</div>
                     </div>
                   </div>

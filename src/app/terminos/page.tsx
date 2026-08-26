@@ -131,16 +131,16 @@ export default function TerminosPage() {
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
-            <Link href="/" className="hover:text-white">Inicio</Link>
+            <Link href="/" className="hover:text-[var(--foreground)]">Inicio</Link>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-white">Términos de Servicio</span>
+            <span className="text-[var(--foreground)]">Términos de Servicio</span>
           </div>
 
           <div className="text-center mb-12">
             <div className="w-16 h-16 rounded-2xl bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-6">
               <FileText className="h-8 w-8 text-[#8e00f7]" />
             </div>
-            <h1 className="text-4xl font-bold text-white mb-4">Términos de Servicio</h1>
+            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">Términos de Servicio</h1>
             <p className="text-[var(--text-muted)] max-w-2xl mx-auto">
               Por favor, lea cuidadosamente estos términos antes de utilizar nuestros servicios.
             </p>
@@ -150,7 +150,7 @@ export default function TerminosPage() {
           </div>
 
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
-            <h2 className="text-lg font-bold text-white mb-4">Contenido</h2>
+            <h2 className="text-lg font-bold text-[var(--foreground)] mb-4">Contenido</h2>
             <div className="grid sm:grid-cols-2 gap-2">
               {sections.map((section) => (
                 <a
@@ -176,7 +176,7 @@ export default function TerminosPage() {
                   <div className="w-10 h-10 rounded-xl bg-[#8e00f7]/20 flex items-center justify-center">
                     <section.icon className="h-5 w-5 text-[#8e00f7]" />
                   </div>
-                  <h2 className="text-xl font-bold text-white">{section.title}</h2>
+                  <h2 className="text-xl font-bold text-[var(--foreground)]">{section.title}</h2>
                 </div>
                 <div className="text-[var(--text-muted)] whitespace-pre-line leading-relaxed">
                   {section.content}

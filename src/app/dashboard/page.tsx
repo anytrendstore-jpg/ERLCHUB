@@ -102,7 +102,7 @@ export default function DashboardPage() {
       <main className="w-screen h-screen overflow-hidden bg-[var(--background)] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <AlertCircle className="h-14 w-14 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-white text-xl font-bold mb-2">Necesitas una cuenta</h2>
+          <h2 className="text-[var(--foreground)] text-xl font-bold mb-2">Necesitas una cuenta</h2>
           <p className="text-[var(--text-muted)] mb-6">
             Inicia sesión con Discord o completa la whitelist para entrar a tu escritorio.
           </p>

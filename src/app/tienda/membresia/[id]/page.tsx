@@ -26,7 +26,7 @@ export default function MembershipPage() {
     return (
       <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Membresía no encontrada</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)] mb-4">Membresía no encontrada</h1>
           <Link href="/tienda" className="text-[#8e00f7] hover:underline">
             Volver a la tienda
           </Link>
@@ -58,13 +58,13 @@ export default function MembershipPage() {
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8">
-            <Link href="/tienda" className="hover:text-white flex items-center gap-1">
+            <Link href="/tienda" className="hover:text-[var(--foreground)] flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" /> Tienda
             </Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href="/tienda#membresias" className="hover:text-white">Membresías</Link>
+            <Link href="/tienda#membresias" className="hover:text-[var(--foreground)]">Membresías</Link>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-white">{membership.name}</span>
+            <span className="text-[var(--foreground)]">{membership.name}</span>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-10">
@@ -89,7 +89,7 @@ export default function MembershipPage() {
                 )}
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <Crown className="h-8 w-8" style={{ color: membership.color }} />
-                  <span className="text-2xl font-bold text-white">{membership.name}</span>
+                  <span className="text-2xl font-bold text-[var(--foreground)]">{membership.name}</span>
                 </div>
               </div>
             </div>
@@ -141,8 +141,8 @@ export default function MembershipPage() {
                   <span className="text-[var(--text-muted)] block mb-2">Moneda</span>
                   <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} />
                 </div>
-                <div className="text-4xl font-bold text-white mb-1">
-                  <span className="text-white">
+                <div className="text-4xl font-bold text-[var(--foreground)] mb-1">
+                  <span className="text-[var(--foreground)]">
                     {convertPrice(currentPrice, selectedCurrency)}
                   </span>
                   {paymentType === "monthly" && <span className="text-lg text-[var(--text-muted)]">/mes</span>}
@@ -188,7 +188,7 @@ export default function MembershipPage() {
           </div>
 
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Beneficios incluidos</h2>
+            <h2 className="text-2xl font-bold text-[var(--foreground)] mb-6">Beneficios incluidos</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               {membership.benefits.map((benefit, index) => (
                 <div
@@ -198,7 +198,7 @@ export default function MembershipPage() {
                   <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${membership.color}20` }}>
                     <Check className="h-4 w-4" style={{ color: membership.color }} />
                   </div>
-                  <span className="text-white">{benefit}</span>
+                  <span className="text-[var(--foreground)]">{benefit}</span>
                 </div>
               ))}
             </div>
@@ -206,10 +206,10 @@ export default function MembershipPage() {
 
           <div className="mt-10 grid sm:grid-cols-2 gap-4">
             <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-5">
-              <h3 className="text-white font-semibold mb-2 text-sm">Otros niveles de membresía</h3>
+              <h3 className="text-[var(--foreground)] font-semibold mb-2 text-sm">Otros niveles de membresía</h3>
               <div className="space-y-2">
                 {memberships.filter((m) => m.id !== membership.id).map((m) => (
-                  <Link key={m.id} href={`/tienda/membresia/${m.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors group">
+                  <Link key={m.id} href={`/tienda/membresia/${m.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors group">
                     <span className="truncate">{m.name}</span>
                     <span className="flex items-center gap-1 text-xs flex-shrink-0" style={{ color: m.color }}>
                       ${m.pricePermanent} único pago
@@ -221,7 +221,7 @@ export default function MembershipPage() {
             </div>
 
             <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4">Términos importantes</h3>
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">Términos importantes</h3>
               <ul className="space-y-2 text-[var(--text-muted)] text-sm">
                 <li>Las membresías mensuales se renuevan automáticamente. Puedes cancelar en cualquier momento.</li>
                 <li>Las membresías permanentes son de un solo pago y no requieren renovación.</li>
