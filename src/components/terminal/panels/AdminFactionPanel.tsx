@@ -87,12 +87,12 @@ export default function AdminFactionPanel() {
 
   return (
     <div className="h-full flex flex-col text-[11px]">
-      <div className="flex border-b border-[#151d31] flex-shrink-0">
+      <div className="flex border-b border-[var(--dept-window-border,#151d31)] flex-shrink-0">
         {(["members", "ranks"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-3 py-2 text-[10px] font-semibold uppercase tracking-wide ${tab === t ? "text-[#6f93d6] border-b-2 border-[#3c68c9]" : "text-[#454f6b] hover:text-[#6d7999]"}`}
+            className={`px-3 py-2 text-[10px] font-semibold uppercase tracking-wide ${tab === t ? "text-[var(--dept-accent,#6f93d6)] border-b-2 border-[var(--dept-accent,#3c68c9)]" : "text-[#454f6b] hover:text-[#6d7999]"}`}
           >
             {t === "members" ? "Miembros" : "Rangos"}
           </button>
@@ -103,17 +103,17 @@ export default function AdminFactionPanel() {
 
       {tab === "members" && (
         <div className="flex-1 overflow-y-auto p-3 space-y-3">
-          <div className="space-y-1.5 bg-[#121a2e] border border-[#1e2a45] rounded p-2">
-            <input placeholder="Nombre" value={memberForm.playerName} onChange={(e) => setMemberForm({ ...memberForm, playerName: e.target.value })} className="w-full bg-[#0d1424] border border-[#1e2a45] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] placeholder-[#454f6b] focus:outline-none focus:border-[#3c68c9]" />
-            <input placeholder="ID de Discord (opcional)" value={memberForm.playerId} onChange={(e) => setMemberForm({ ...memberForm, playerId: e.target.value.trim() })} className="w-full bg-[#0d1424] border border-[#1e2a45] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] placeholder-[#454f6b] focus:outline-none focus:border-[#3c68c9]" />
-            <select value={memberForm.rankId} onChange={(e) => setMemberForm({ ...memberForm, rankId: e.target.value })} className="w-full bg-[#0d1424] border border-[#1e2a45] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] focus:outline-none focus:border-[#3c68c9]">
+          <div className="space-y-1.5 bg-[var(--dept-window-title-inactive,#121a2e)] border border-[var(--dept-window-border,#1e2a45)] rounded p-2">
+            <input placeholder="Nombre" value={memberForm.playerName} onChange={(e) => setMemberForm({ ...memberForm, playerName: e.target.value })} className="w-full bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#1e2a45)] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] placeholder-[#454f6b] focus:outline-none focus:border-[var(--dept-accent,#3c68c9)]" />
+            <input placeholder="ID de Discord (opcional)" value={memberForm.playerId} onChange={(e) => setMemberForm({ ...memberForm, playerId: e.target.value.trim() })} className="w-full bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#1e2a45)] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] placeholder-[#454f6b] focus:outline-none focus:border-[var(--dept-accent,#3c68c9)]" />
+            <select value={memberForm.rankId} onChange={(e) => setMemberForm({ ...memberForm, rankId: e.target.value })} className="w-full bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#1e2a45)] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] focus:outline-none focus:border-[var(--dept-accent,#3c68c9)]">
               <option value="">Rango...</option>
               {faction.ranks.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
             <button
               disabled={busy || !memberForm.playerName.trim() || !memberForm.rankId}
               onClick={async () => { await act({ action: "add_member", ...memberForm, playerId: memberForm.playerId || undefined }); setMemberForm({ playerId: "", playerName: "", rankId: "" }); }}
-              className="w-full flex items-center justify-center gap-1 bg-[#3c68c9] hover:bg-[#4d78d6] disabled:opacity-40 text-white rounded py-1 text-[10.5px] font-semibold"
+              className="w-full flex items-center justify-center gap-1 bg-[var(--dept-accent,#3c68c9)] hover:bg-[var(--dept-accent-hover,#4d78d6)] disabled:opacity-40 text-[var(--dept-accent-fg,#fff)] rounded py-1 text-[10.5px] font-semibold"
             >
               <Plus className="w-3 h-3" /> Añadir miembro
             </button>
@@ -122,7 +122,7 @@ export default function AdminFactionPanel() {
           <div className="space-y-1">
             {faction.members.length === 0 && <p className="text-[#454f6b] text-[10.5px]">Sin miembros registrados.</p>}
             {faction.members.map((m) => (
-              <div key={m.playerName} className="flex items-center justify-between gap-2 px-2 py-1.5 rounded bg-[#0d1424] border border-[#151d31]">
+              <div key={m.playerName} className="flex items-center justify-between gap-2 px-2 py-1.5 rounded bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#151d31)]">
                 <div className="min-w-0">
                   <p className="text-[#dde3f2] truncate">{m.playerName}</p>
                   <p className="text-[#454f6b] text-[9.5px] font-mono">{m.playerId ? "● vinculado" : "○ sin vincular"}</p>
@@ -131,7 +131,7 @@ export default function AdminFactionPanel() {
                   <select
                     value={m.rankId}
                     onChange={(e) => act({ action: "change_member_rank", playerName: m.playerName, rankId: e.target.value })}
-                    className="bg-[#121a2e] border border-[#1e2a45] rounded px-1.5 py-1 text-[10px] text-[#dde3f2] focus:outline-none"
+                    className="bg-[var(--dept-window-title-inactive,#121a2e)] border border-[var(--dept-window-border,#1e2a45)] rounded px-1.5 py-1 text-[10px] text-[#dde3f2] focus:outline-none"
                   >
                     {faction.ranks.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
@@ -147,13 +147,13 @@ export default function AdminFactionPanel() {
 
       {tab === "ranks" && (
         <div className="flex-1 overflow-y-auto p-3 space-y-3">
-          <div className="flex gap-1.5 bg-[#121a2e] border border-[#1e2a45] rounded p-2">
-            <input placeholder="Nombre" value={rankForm.name} onChange={(e) => setRankForm({ ...rankForm, name: e.target.value })} className="flex-1 min-w-0 bg-[#0d1424] border border-[#1e2a45] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] placeholder-[#454f6b] focus:outline-none focus:border-[#3c68c9]" />
-            <input type="number" placeholder="Nivel" value={rankForm.level} onChange={(e) => setRankForm({ ...rankForm, level: Number(e.target.value) })} className="w-16 bg-[#0d1424] border border-[#1e2a45] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] focus:outline-none focus:border-[#3c68c9]" />
+          <div className="flex gap-1.5 bg-[var(--dept-window-title-inactive,#121a2e)] border border-[var(--dept-window-border,#1e2a45)] rounded p-2">
+            <input placeholder="Nombre" value={rankForm.name} onChange={(e) => setRankForm({ ...rankForm, name: e.target.value })} className="flex-1 min-w-0 bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#1e2a45)] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] placeholder-[#454f6b] focus:outline-none focus:border-[var(--dept-accent,#3c68c9)]" />
+            <input type="number" placeholder="Nivel" value={rankForm.level} onChange={(e) => setRankForm({ ...rankForm, level: Number(e.target.value) })} className="w-16 bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#1e2a45)] rounded px-2 py-1 text-[10.5px] text-[#dde3f2] focus:outline-none focus:border-[var(--dept-accent,#3c68c9)]" />
             <button
               disabled={busy || !rankForm.name.trim()}
               onClick={async () => { await act({ action: "add_rank", ...rankForm }); setRankForm({ name: "", level: 1, salary: 0 }); }}
-              className="flex items-center justify-center gap-1 bg-[#3c68c9] hover:bg-[#4d78d6] disabled:opacity-40 text-white rounded px-2 text-[10.5px] font-semibold flex-shrink-0"
+              className="flex items-center justify-center gap-1 bg-[var(--dept-accent,#3c68c9)] hover:bg-[var(--dept-accent-hover,#4d78d6)] disabled:opacity-40 text-[var(--dept-accent-fg,#fff)] rounded px-2 text-[10.5px] font-semibold flex-shrink-0"
             >
               <Plus className="w-3 h-3" />
             </button>
@@ -161,7 +161,7 @@ export default function AdminFactionPanel() {
 
           <div className="space-y-1">
             {[...faction.ranks].sort((a, b) => b.level - a.level).map((r) => (
-              <div key={r.id} className="flex items-center justify-between px-2 py-1.5 rounded bg-[#0d1424] border border-[#151d31]">
+              <div key={r.id} className="flex items-center justify-between px-2 py-1.5 rounded bg-[var(--dept-window-body,#0d1424)] border border-[var(--dept-window-border,#151d31)]">
                 <span className="text-[#dde3f2]">{r.name}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-[#454f6b] text-[9.5px] font-mono">NIVEL {r.level}</span>

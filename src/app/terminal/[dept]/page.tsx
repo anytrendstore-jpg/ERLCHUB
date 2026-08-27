@@ -7,7 +7,7 @@ import { useDiscordAuth } from '@/hooks/useDiscordAuth';
 import { MDTProvider } from '@/contexts/MDTContext';
 import { FDProvider } from '@/contexts/FDContext';
 import { DepartmentProvider } from '@/contexts/DepartmentContext';
-import { getDepartment } from '@/lib/departments';
+import { getDepartment, type DepartmentConfig } from '@/lib/departments';
 import InstitutionalTerminalApp from '@/components/terminal/InstitutionalTerminalApp';
 import FDTerminalApp from '@/components/terminal/FDTerminalApp';
 
@@ -20,9 +20,27 @@ type AccessState =
   | { status: 'allowed' }
   | { status: 'demo' };
 
-function AccessScreen({ badge, title, message, onDemo }: { badge?: string; title: string; message: string; onDemo?: () => void }) {
+/** Variables CSS que las piezas de shell compartidas entre departamentos (TerminalWindow, TerminalFuncBar, AdminFactionPanel) leen para no quedar pegadas al azul navy de LSPD. */
+function deptAccentVars(dept: Pick<DepartmentConfig, 'accentColor' | 'accentForeground' | 'windowChrome'>): React.CSSProperties {
+  const { accentColor, accentForeground, windowChrome } = dept;
+  return {
+    ['--dept-accent' as any]: accentColor,
+    ['--dept-accent-fg' as any]: accentForeground,
+    ['--dept-accent-hover' as any]: `color-mix(in srgb, ${accentColor} 85%, white)`,
+    ['--dept-accent-60' as any]: `color-mix(in srgb, ${accentColor} 60%, transparent)`,
+    ['--dept-accent-25' as any]: `color-mix(in srgb, ${accentColor} 25%, transparent)`,
+    ['--dept-accent-15' as any]: `color-mix(in srgb, ${accentColor} 15%, transparent)`,
+    ['--dept-window-title-active' as any]: windowChrome.titleActive,
+    ['--dept-window-title-inactive' as any]: windowChrome.titleInactive,
+    ['--dept-window-body' as any]: windowChrome.body,
+    ['--dept-window-border' as any]: windowChrome.border,
+    ['--dept-window-deep' as any]: windowChrome.deep,
+  };
+}
+
+function AccessScreen({ badge, department, title, message, onDemo }: { badge?: string; department?: DepartmentConfig; title: string; message: string; onDemo?: () => void }) {
   return (
-    <div className="h-screen w-screen bg-[#05070d] flex items-center justify-center text-center px-6">
+    <div className="h-screen w-screen bg-[#05070d] flex items-center justify-center text-center px-6" style={department ? deptAccentVars(department) : undefined}>
       <div>
         {badge && <img src={badge} alt="" className="h-16 w-auto mx-auto mb-5" />}
         <p className="text-white font-semibold mb-1">{title}</p>
@@ -30,7 +48,7 @@ function AccessScreen({ badge, title, message, onDemo }: { badge?: string; title
         {onDemo && (
           <button
             onClick={onDemo}
-            className="mt-5 px-4 py-2 rounded-lg bg-[#121a2e] border border-[#1e2a45] text-[#6f93d6] text-xs font-semibold hover:border-[#3c68c9] hover:text-white transition-colors"
+            className="mt-5 px-4 py-2 rounded-lg bg-[var(--dept-window-title-inactive,#121a2e)] border border-[var(--dept-window-border,#1e2a45)] text-[var(--dept-accent,#6f93d6)] text-xs font-semibold hover:border-[var(--dept-accent,#3c68c9)] hover:text-white transition-colors"
           >
             Entrar en modo demo (solo desarrollo)
           </button>
@@ -82,7 +100,7 @@ export default function DepartmentTerminalPage() {
 
   if (access.status === 'demo') {
     return (
-      <div className="h-screen w-screen overflow-hidden">
+      <div className="h-screen w-screen overflow-hidden" style={deptAccentVars(department)}>
         <DepartmentProvider department={department}>
           {department.kind === 'fire' ? (
             <FDProvider>
@@ -100,8 +118,8 @@ export default function DepartmentTerminalPage() {
 
   if (authLoading || access.status === 'checking') {
     return (
-      <div className="h-screen w-screen bg-[#05070d] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-[#6f93d6] animate-spin" />
+      <div className="h-screen w-screen bg-[#05070d] flex items-center justify-center" style={deptAccentVars(department)}>
+        <Loader2 className="w-6 h-6 text-[var(--dept-accent,#6f93d6)] animate-spin" />
       </div>
     );
   }
@@ -109,16 +127,16 @@ export default function DepartmentTerminalPage() {
   if (access.status === 'denied') {
     const demoProp = DEMO_ALLOWED ? enterDemo : undefined;
     if (access.reason === 'not_logged_in') {
-      return <AccessScreen badge={department.badge} title="Acceso restringido" message={`Iniciá sesión con Discord para acceder a la terminal del ${department.factionAbbreviation}.`} onDemo={demoProp} />;
+      return <AccessScreen badge={department.badge} department={department} title="Acceso restringido" message={`Iniciá sesión con Discord para acceder a la terminal del ${department.factionAbbreviation}.`} onDemo={demoProp} />;
     }
     if (access.reason === 'not_member' || access.reason === 'faction_missing') {
-      return <AccessScreen badge={department.badge} title="Acceso restringido" message={`Esta terminal es solo para miembros activos de ${department.name}. Si creés que esto es un error, contactá a tu superior.`} onDemo={demoProp} />;
+      return <AccessScreen badge={department.badge} department={department} title="Acceso restringido" message={`Esta terminal es solo para miembros activos de ${department.name}. Si creés que esto es un error, contactá a tu superior.`} onDemo={demoProp} />;
     }
-    return <AccessScreen badge={department.badge} title="Error de conexión" message="No se pudo verificar tu acceso. Probá de nuevo en unos segundos." onDemo={demoProp} />;
+    return <AccessScreen badge={department.badge} department={department} title="Error de conexión" message="No se pudo verificar tu acceso. Probá de nuevo en unos segundos." onDemo={demoProp} />;
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden">
+    <div className="h-screen w-screen overflow-hidden" style={deptAccentVars(department)}>
       <DepartmentProvider department={department}>
         {department.kind === 'fire' ? (
           <FDProvider>

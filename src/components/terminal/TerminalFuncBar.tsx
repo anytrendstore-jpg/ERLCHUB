@@ -20,7 +20,7 @@ export default function TerminalFuncBar({ onSearch, onDirectory, onLogout }: Ter
   const handlers: Record<string, () => void> = { F1: onSearch, F2: onDirectory, F6: onLogout };
 
   return (
-    <div className="h-[30px] flex items-center border-t border-[#1e2a45] bg-[#080b13] flex-shrink-0">
+    <div className="h-[30px] flex items-center border-t border-[var(--dept-window-border,#1e2a45)] bg-[var(--dept-window-deep,#080b13)] flex-shrink-0">
       {KEYS.map(({ key, label }) => {
         const handler = handlers[key];
         return (
@@ -28,9 +28,9 @@ export default function TerminalFuncBar({ onSearch, onDirectory, onLogout }: Ter
             key={key}
             onClick={handler}
             disabled={!handler}
-            className={`h-full flex items-center gap-1.5 px-3 border-r border-[#151d31] font-mono text-[9.5px] tracking-wide ${handler ? "text-[#6d7999] hover:text-[#dde3f2] hover:bg-[#111a2c]" : "text-[#3a4256] cursor-default"}`}
+            className={`h-full flex items-center gap-1.5 px-3 border-r border-[var(--dept-window-border,#151d31)] font-mono text-[9.5px] tracking-wide ${handler ? "text-[#6d7999] hover:text-[#dde3f2] hover:bg-[var(--dept-window-title-inactive,#111a2c)]" : "text-[#3a4256] cursor-default"}`}
           >
-            <b className="text-[#0d1424] bg-[#3c68c9] rounded-sm px-1 py-px">{key}</b>
+            <b className="text-[#0d1424] bg-[var(--dept-accent,#3c68c9)] rounded-sm px-1 py-px">{key}</b>
             {label}
           </button>
         );

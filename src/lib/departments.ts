@@ -30,6 +30,28 @@ export interface DepartmentConfig {
   sidebarModules: SidebarModule[];
   /** Qué identidad/datos monta terminal/[dept]/page.tsx: MDT (policía) o FD (bomberos) — cada uno con su propio contexto y colecciones, sin compartir identidad de personal. */
   kind: "police" | "fire";
+  /**
+   * Color de acento del departamento (hex sólido) — usado por las piezas del
+   * shell que SÍ se comparten entre departamentos (TerminalWindow,
+   * TerminalFuncBar, AdminFactionPanel) vía la variable CSS --dept-accent
+   * que arma terminal/[dept]/page.tsx. Tomado del escudo real de cada uno.
+   */
+  accentColor: string;
+  /** Color de texto legible sobre accentColor sólido (blanco para el azul de LSPD, casi negro para el dorado de LSFD). */
+  accentForeground: string;
+  /**
+   * Fondos neutros del marco de ventana (TerminalWindow.tsx) — sin esto el
+   * chrome de las ventanas queda con el navy azulado de LSPD sin importar
+   * el departamento, aunque el borde de acento ya varíe.
+   */
+  windowChrome: {
+    titleActive: string;
+    titleInactive: string;
+    body: string;
+    border: string;
+    /** El tono más oscuro del shell (barra de funciones, spinners de carga). */
+    deep: string;
+  };
 }
 
 const LSPD_SIDEBAR: SidebarModule[] = [
@@ -82,6 +104,9 @@ export const DEPARTMENTS: Record<string, DepartmentConfig> = {
     terminalKey: "LS-04",
     sidebarModules: LSPD_SIDEBAR,
     kind: "police",
+    accentColor: "#3c68c9",
+    accentForeground: "#ffffff",
+    windowChrome: { titleActive: "#1c2436", titleInactive: "#121a2e", body: "#0d1424", border: "#1e2a45", deep: "#080b13" },
   },
   lsfd: {
     slug: "lsfd",
@@ -92,6 +117,9 @@ export const DEPARTMENTS: Record<string, DepartmentConfig> = {
     terminalKey: "LS-07",
     sidebarModules: LSFD_SIDEBAR,
     kind: "fire",
+    accentColor: "#d4af37",
+    accentForeground: "#0a0a0c",
+    windowChrome: { titleActive: "#201f1c", titleInactive: "#161514", body: "#141312", border: "#2a2620", deep: "#0a0a0c" },
   },
 };
 

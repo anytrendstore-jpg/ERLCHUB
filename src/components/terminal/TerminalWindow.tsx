@@ -102,12 +102,12 @@ export default function TerminalWindow({ win, children }: TerminalWindowProps) {
 
   return (
     <div
-      className={`absolute flex flex-col overflow-hidden rounded-md border transition-shadow ${isActive ? "border-[#3c68c9]/60 shadow-[0_24px_60px_-20px_rgba(3,6,16,0.85)]" : "border-[#1e2a45] shadow-[0_16px_40px_-18px_rgba(3,6,16,0.7)]"}`}
+      className={`absolute flex flex-col overflow-hidden rounded-md border transition-shadow ${isActive ? "border-[var(--dept-accent-60,#3c68c9)] shadow-[0_24px_60px_-20px_rgba(3,6,16,0.85)]" : "border-[var(--dept-window-border,#1e2a45)] shadow-[0_16px_40px_-18px_rgba(3,6,16,0.7)]"}`}
       style={style}
       onMouseDown={() => focusWindow(win.id)}
     >
       <div
-        className={`h-7 flex items-center justify-between px-2.5 flex-shrink-0 select-none cursor-move font-mono text-[10.5px] tracking-wide ${isActive ? "bg-[#1c2436] text-[#dde3f2]" : "bg-[#121a2e] text-[#6d7999]"}`}
+        className={`h-7 flex items-center justify-between px-2.5 flex-shrink-0 select-none cursor-move font-mono text-[10.5px] tracking-wide ${isActive ? "bg-[var(--dept-window-title-active,#1c2436)] text-[#dde3f2]" : "bg-[var(--dept-window-title-inactive,#121a2e)] text-[#6d7999]"}`}
         onMouseDown={handleMouseDown}
       >
         <span className="truncate uppercase">{win.title}</span>
@@ -124,15 +124,15 @@ export default function TerminalWindow({ win, children }: TerminalWindowProps) {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 bg-[#0d1424] overflow-hidden">{children}</div>
+      <div className="flex-1 min-h-0 bg-[var(--dept-window-body,#0d1424)] overflow-hidden">{children}</div>
 
       {!win.maximized && (
         <>
-          <div onMouseDown={handleResizeStart("right")} className="absolute top-0 -right-1 w-2.5 h-full cursor-ew-resize hover:bg-[#3c68c9]/25 transition-colors" />
-          <div onMouseDown={handleResizeStart("bottom")} className="absolute -bottom-1 left-0 w-full h-2.5 cursor-ns-resize hover:bg-[#3c68c9]/25 transition-colors" />
+          <div onMouseDown={handleResizeStart("right")} className="absolute top-0 -right-1 w-2.5 h-full cursor-ew-resize hover:bg-[var(--dept-accent-25,#3c68c9)] transition-colors" />
+          <div onMouseDown={handleResizeStart("bottom")} className="absolute -bottom-1 left-0 w-full h-2.5 cursor-ns-resize hover:bg-[var(--dept-accent-25,#3c68c9)] transition-colors" />
           <div
             onMouseDown={handleResizeStart("corner")}
-            className="absolute -bottom-1 -right-1 w-5 h-5 cursor-nwse-resize flex items-end justify-end p-0.5 hover:bg-[#3c68c9]/25 transition-colors rounded-tl"
+            className="absolute -bottom-1 -right-1 w-5 h-5 cursor-nwse-resize flex items-end justify-end p-0.5 hover:bg-[var(--dept-accent-25,#3c68c9)] transition-colors rounded-tl"
           >
             <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-[#4a5372]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
               <path d="M8.5 1.5 1.5 8.5" />
