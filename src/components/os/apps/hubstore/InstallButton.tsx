@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Download, Check, Coins } from 'lucide-react';
+import { Download, Check, Coins, Loader2 } from 'lucide-react';
 
 type Phase = 'idle' | 'confirm' | 'installing' | 'done';
 
@@ -15,18 +15,24 @@ type Phase = 'idle' | 'confirm' | 'installing' | 'done';
  * (una compra real de HubCoins no debería dispararse con un solo click accidental).
  * El caller es responsable de mostrar el motivo del error (ej. saldo insuficiente)
  * antes de que `onInstall` resuelva en false — este botón solo vuelve a "idle".
+ *
+ * `compact` renderiza el mismo estado como una píldora chica (para tarjetas de
+ * catálogo) en vez del botón ancho de la ficha de detalle — misma máquina de
+ * estados, dos presentaciones.
  */
-export default function InstallButton({ label, onInstall, accent, price }: {
+export default function InstallButton({ label, onInstall, accent, price, compact }: {
   label?: string;
   onInstall: () => Promise<boolean>;
   accent: string;
   price?: number;
+  compact?: boolean;
 }) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [progress, setProgress] = useState(0);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const run = async () => {
+  const run = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setPhase('installing');
     setProgress(6);
     tickRef.current = setInterval(() => {
@@ -48,11 +54,50 @@ export default function InstallButton({ label, onInstall, accent, price }: {
     }
   };
 
-  const start = () => {
+  const start = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (phase !== 'idle') return;
     if (price) { setPhase('confirm'); return; }
     run();
   };
+
+  if (compact) {
+    if (phase === 'installing') {
+      return (
+        <span className="px-3 py-1.5 rounded-lg bg-white/10 text-white/60 text-xs font-semibold flex items-center gap-1.5">
+          <Loader2 className="w-3 h-3 animate-spin" /> {Math.round(progress)}%
+        </span>
+      );
+    }
+    if (phase === 'done') {
+      return (
+        <span className="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" style={{ background: `${accent}25`, color: accent }}>
+          <Check className="w-3 h-3" /> Instalada
+        </span>
+      );
+    }
+    if (phase === 'confirm') {
+      return (
+        <span className="flex items-center gap-1">
+          <button onClick={run} className="px-2.5 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1" style={{ background: accent }}>
+            <Coins className="w-3 h-3" /> {price}
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); setPhase('idle'); }} className="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 text-xs">
+            ✕
+          </button>
+        </span>
+      );
+    }
+    return (
+      <button
+        onClick={start}
+        className="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors flex-shrink-0"
+        style={price ? { background: `${accent}20`, color: accent } : { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)' }}
+      >
+        {price ? <><Coins className="w-3 h-3" /> {price}</> : 'Gratis'}
+      </button>
+    );
+  }
 
   if (phase === 'installing') {
     return (
