@@ -113,6 +113,19 @@ export interface FDCertification {
   createdAt: Date;
 }
 
+export type FDAuditAction =
+  | "login" | "logout" | "create_report" | "edit_report" | "assign_command"
+  | "issue_certification" | "revoke_certification" | "update_equipment" | "send_message" | "modify_call" | "other";
+
+export interface FDAuditLog {
+  id: string;
+  firefighterId: string;
+  firefighterName: string;
+  action: FDAuditAction;
+  description: string;
+  timestamp: Date;
+}
+
 export interface FDState {
   isAuthenticated: boolean;
   currentFirefighter: (Firefighter & { rankName: string; rankLevel: number }) | null;

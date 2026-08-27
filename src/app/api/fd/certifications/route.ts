@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentMDTUser } from '@/lib/mdtServer';
-import { fdCertificationsCollection } from '@/lib/fdServer';
+import { fdCertificationsCollection, logFDAudit } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       createdAt: now,
     };
     await col.insertOne(doc as any);
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'issue_certification', description: `Certificación emitida: ${doc.name} → ${doc.firefighterName}` });
     return NextResponse.json({ success: true, certification: doc });
   } catch (error) {
     console.error('Error emitiendo certificación de LSFD:', error);
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const ctx = await requireAccess();
   if ('error' in ctx) return ctx.error;
-  const { rankLevel } = ctx;
+  const { user, rankLevel } = ctx;
 
   if (rankLevel < COMMAND_LEVEL) {
     return NextResponse.json({ success: false, error: `Necesitás jerarquía de mando (nivel ${COMMAND_LEVEL}+) para revocar certificaciones` }, { status: 403 });
@@ -84,7 +85,9 @@ export async function PATCH(request: NextRequest) {
     if (!id) return NextResponse.json({ success: false, error: 'Falta el id' }, { status: 400 });
 
     const col = await fdCertificationsCollection();
+    const existing = await col.findOne({ id });
     await col.updateOne({ id }, { $set: { status: 'Revoked' } });
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'revoke_certification', description: `Certificación revocada: ${existing?.name || id}${existing ? ' — ' + existing.firefighterName : ''}` });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error revocando certificación de LSFD:', error);

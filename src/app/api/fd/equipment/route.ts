@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentMDTUser } from '@/lib/mdtServer';
-import { fdEquipmentCollection } from '@/lib/fdServer';
+import { fdEquipmentCollection, logFDAudit } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const ctx = await requireAccess();
   if ('error' in ctx) return ctx.error;
+  const { user } = ctx;
 
   try {
     const { id, ...updates } = await request.json();
@@ -69,6 +70,7 @@ export async function PATCH(request: NextRequest) {
     await col.updateOne({ id }, { $set: { ...updates, updatedAt: new Date() } });
     const fresh = await col.findOne({ id });
     const { _id, ...clean } = fresh as any;
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'update_equipment', description: `Equipo actualizado: ${clean.name || id}` });
     return NextResponse.json({ success: true, item: clean });
   } catch (error) {
     console.error('Error actualizando equipo de LSFD:', error);

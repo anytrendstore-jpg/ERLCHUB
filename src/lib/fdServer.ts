@@ -1,6 +1,7 @@
 import type { Collection } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
-import type { Firefighter, FireIncidentReport, FDMessage, IncidentCommand, FDEquipment, FDCertification } from '@/lib/fdTypes';
+import crypto from 'crypto';
+import type { Firefighter, FireIncidentReport, FDMessage, IncidentCommand, FDEquipment, FDCertification, FDAuditLog, FDAuditAction } from '@/lib/fdTypes';
 
 export interface FDFirefighterDoc extends Firefighter {
   discordId: string;
@@ -52,6 +53,20 @@ export async function fdCertificationsCollection(): Promise<Collection<FDCertifi
   await col.createIndex({ firefighterId: 1 }).catch(() => {});
   await col.createIndex({ expiresAt: 1 }).catch(() => {});
   return col;
+}
+
+export async function fdAuditCollection(): Promise<Collection<FDAuditLog>> {
+  const db = await connectToDatabase();
+  const col = db.collection<FDAuditLog>('fd_audit');
+  await col.createIndex({ timestamp: -1 }).catch(() => {});
+  return col;
+}
+
+/** Registra una entrada de auditoría — llamado server-side desde otras rutas /api/fd/*, nunca expuesto como endpoint público (evita entradas forjadas desde el cliente). */
+export async function logFDAudit(entry: { firefighterId: string; firefighterName: string; action: FDAuditAction; description: string }): Promise<void> {
+  const col = await fdAuditCollection();
+  const doc: FDAuditLog = { id: crypto.randomUUID(), timestamp: new Date(), ...entry };
+  await col.insertOne(doc).catch(() => {});
 }
 
 function randomBadge(): string {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentMDTUser, mdtCallsCollection } from '@/lib/mdtServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
+import { logFDAudit } from '@/lib/fdServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,7 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   const ctx = await requireAccess();
   if ('error' in ctx) return ctx.error;
+  const { user } = ctx;
 
   try {
     const { id, ...updates } = await request.json();
@@ -47,6 +49,7 @@ export async function PATCH(request: NextRequest) {
     await col.updateOne({ id }, { $set: { ...updates, updatedAt: new Date() } });
     const fresh = await col.findOne({ id });
     const { _id, ...clean } = fresh as any;
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'modify_call', description: `Incidente actualizado: ${existing.location || id}` });
     return NextResponse.json({ success: true, call: clean });
   } catch (error) {
     console.error('Error actualizando incidente de LSFD:', error);

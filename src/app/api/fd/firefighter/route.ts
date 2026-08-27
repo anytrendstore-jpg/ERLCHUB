@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentMDTUser } from '@/lib/mdtServer';
-import { ensureFirefighterProfile, fdFirefightersCollection } from '@/lib/fdServer';
+import { ensureFirefighterProfile, fdFirefightersCollection, logFDAudit } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +43,16 @@ export async function PATCH(request: NextRequest) {
     await col.updateOne({ discordId: user.id }, { $set: allowed });
     const fresh = await col.findOne({ discordId: user.id });
     const { _id, ...clean } = fresh as any;
+
+    if ('onDuty' in body) {
+      logFDAudit({
+        firefighterId: user.id,
+        firefighterName: user.displayName,
+        action: body.onDuty ? 'login' : 'logout',
+        description: body.onDuty ? `${user.displayName} entró en servicio` : `${user.displayName} salió de servicio`,
+      });
+    }
+
     return NextResponse.json({ success: true, firefighter: clean });
   } catch (error) {
     console.error('Error actualizando perfil de bombero:', error);

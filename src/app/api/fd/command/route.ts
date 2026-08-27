@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentMDTUser, mdtCallsCollection } from '@/lib/mdtServer';
-import { fdIncidentCommandCollection } from '@/lib/fdServer';
+import { fdIncidentCommandCollection, logFDAudit } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
@@ -74,6 +74,7 @@ export async function PATCH(request: NextRequest) {
         updatedAt: now,
       };
       await col.insertOne(doc as any);
+      logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'assign_command', description: `Comando establecido en incidente ${callId}: ${role} → ${firefighterName || 'sin asignar'}` });
       return NextResponse.json({ success: true, command: doc });
     }
 
@@ -84,6 +85,7 @@ export async function PATCH(request: NextRequest) {
     await col.updateOne({ callId }, { $set: { assignments: nextAssignments, updatedAt: now } });
     const fresh = await col.findOne({ callId });
     const { _id, ...clean } = fresh as any;
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'assign_command', description: `Asignación de comando actualizada en incidente ${callId}: ${role} → ${firefighterName || 'sin asignar'}` });
     return NextResponse.json({ success: true, command: clean });
   } catch (error) {
     console.error('Error actualizando comando de incidente:', error);

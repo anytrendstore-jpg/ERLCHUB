@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentMDTUser } from '@/lib/mdtServer';
-import { fdReportsCollection } from '@/lib/fdServer';
+import { fdReportsCollection, logFDAudit } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
@@ -31,6 +31,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const ctx = await requireAccess();
   if ('error' in ctx) return ctx.error;
+  const { user } = ctx;
 
   try {
     const body = await request.json();
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     };
     await col.insertOne(doc as any);
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'create_report', description: `Reporte creado: ${doc.reportNumber} — ${doc.title || ''}` });
     return NextResponse.json({ success: true, report: doc });
   } catch (error) {
     console.error('Error creando reporte de LSFD:', error);
@@ -56,6 +58,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const ctx = await requireAccess();
   if ('error' in ctx) return ctx.error;
+  const { user } = ctx;
 
   try {
     const { id, ...updates } = await request.json();
@@ -65,6 +68,7 @@ export async function PATCH(request: NextRequest) {
     await col.updateOne({ id }, { $set: { ...updates, updatedAt: new Date() } });
     const fresh = await col.findOne({ id });
     const { _id, ...clean } = fresh as any;
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'edit_report', description: `Reporte actualizado: ${clean.reportNumber || id}` });
     return NextResponse.json({ success: true, report: clean });
   } catch (error) {
     console.error('Error actualizando reporte de LSFD:', error);

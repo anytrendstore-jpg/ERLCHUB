@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentMDTUser } from '@/lib/mdtServer';
-import { fdMessagesCollection } from '@/lib/fdServer';
+import { fdMessagesCollection, logFDAudit } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
@@ -33,6 +33,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const ctx = await requireAccess();
   if ('error' in ctx) return ctx.error;
+  const { user } = ctx;
 
   try {
     const body = await request.json();
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
       sentAt: new Date(),
     };
     await col.insertOne(doc as any);
+    logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'send_message', description: `Mensaje enviado a ${doc.toName || doc.to}` });
     return NextResponse.json({ success: true, message: doc });
   } catch (error) {
     console.error('Error enviando mensaje de LSFD:', error);
