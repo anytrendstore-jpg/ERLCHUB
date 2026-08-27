@@ -1,7 +1,7 @@
 'use client';
 
 import { AppIcon } from '@/components/icons/AppIcons';
-import { Check } from 'lucide-react';
+import { Check, Coins } from 'lucide-react';
 import type { OSApp } from '@/lib/osTypes';
 
 export default function AppCard({ app, categoryLabel, installed, active, onClick }: {
@@ -32,7 +32,14 @@ export default function AppCard({ app, categoryLabel, installed, active, onClick
         <p className="text-white font-semibold text-sm truncate">{app.name}</p>
         <p className="text-white/40 text-xs line-clamp-2 mt-0.5">{app.description}</p>
       </div>
-      <span className="text-white/30 text-[10px] uppercase tracking-wider font-medium">{categoryLabel}</span>
+      <div className="flex items-center gap-2 w-full">
+        <span className="text-white/30 text-[10px] uppercase tracking-wider font-medium">{categoryLabel}</span>
+        {app.priceHubCoins && !installed && (
+          <span className="ml-auto flex items-center gap-1 text-amber-400 text-[10px] font-semibold">
+            <Coins className="w-3 h-3" /> {app.priceHubCoins}
+          </span>
+        )}
+      </div>
     </button>
   );
 }

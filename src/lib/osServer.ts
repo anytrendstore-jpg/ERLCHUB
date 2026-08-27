@@ -1,8 +1,10 @@
 import type { Collection } from 'mongodb';
+import crypto from 'crypto';
 import { connectToDatabase } from '@/lib/mongodb';
 import { currentDiscordUser, applications } from '@/lib/whitelistServer';
 import { osApps } from '@/lib/osData';
 import { currentActiveCharacterId } from '@/lib/characterServer';
+import { usersCollection } from '@/lib/hubPayServer';
 import type { OSUserPreferences, OSModuleConfig } from '@/lib/osTypes';
 
 /**
@@ -13,6 +15,32 @@ import type { OSUserPreferences, OSModuleConfig } from '@/lib/osTypes';
 export async function currentOSUserId(): Promise<string | null> {
   if (!currentDiscordUser()) return null;
   return currentActiveCharacterId();
+}
+
+/**
+ * Descuenta HubCoins del usuario de la SESIÓN (nunca de un userId mandado por el cliente —
+ * a diferencia de POST /api/hub-coins/transactions, que confía en el body). El $gte en el
+ * filtro hace el chequeo de saldo y el descuento atómicos: si matchedCount es 0, no había
+ * saldo suficiente y no se descontó nada. Escribe en la misma colección `hubcoins_transactions`
+ * que ya lee useHubCoins(), para que el historial de HubStore aparezca junto al resto.
+ */
+export async function spendHubCoins(discordId: string, amount: number, description: string, metadata?: Record<string, unknown>): Promise<boolean> {
+  const users = await usersCollection();
+  const result = await users.updateOne({ discordId, hubCoins: { $gte: amount } }, { $inc: { hubCoins: -amount } });
+  if (result.matchedCount === 0) return false;
+
+  const db = await connectToDatabase();
+  await db.collection('hubcoins_transactions').insertOne({
+    id: crypto.randomUUID(),
+    userId: discordId,
+    amount,
+    type: 'spend',
+    description,
+    metadata: metadata || {},
+    timestamp: new Date(),
+    status: 'completed',
+  });
+  return true;
 }
 
 /** Apps con las que arranca un usuario nuevo: el resto se instala desde Hub Store. */

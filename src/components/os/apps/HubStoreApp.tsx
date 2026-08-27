@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useOS } from '@/contexts/OSContext';
 import { AppIcon } from '@/components/icons/AppIcons';
-import { Search, Trash2, ExternalLink, Clock, LayoutGrid, Pin, PinOff, HelpCircle } from 'lucide-react';
+import { Search, Trash2, ExternalLink, Clock, LayoutGrid, Pin, PinOff, HelpCircle, Coins } from 'lucide-react';
 import type { OSApp } from '@/lib/osTypes';
 import { useToast } from '@/components/os/ui';
 import InstallButton from './hubstore/InstallButton';
@@ -27,13 +27,19 @@ const CATEGORIES: (OSApp['category'] | 'todas')[] = ['todas', 'finance', 'market
 
 export default function HubStoreApp() {
   const toast = useToast();
-  const { apps, isAppInstalled, installApp, uninstallApp, isAppPinned, togglePinnedApp, openApp, preferences, preferencesLoaded } = useOS();
+  const { apps, isAppInstalled, installApp, buyApp, uninstallApp, isAppPinned, togglePinnedApp, openApp, preferences, preferencesLoaded } = useOS();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<OSApp['category'] | 'todas'>('todas');
   const [selected, setSelected] = useState<OSApp | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [tutorialStart, setTutorialStart] = useState(0);
+  const [coins, setCoins] = useState<number | null>(null);
+
+  const refreshCoins = () => {
+    fetch('/api/os/apps', { cache: 'no-store' }).then((r) => r.json()).then((d) => { if (d.success) setCoins(d.hubCoinsBalance ?? 0); });
+  };
+  useEffect(() => { refreshCoins(); }, []);
 
   useEffect(() => {
     if (!preferencesLoaded) return;
@@ -76,6 +82,11 @@ export default function HubStoreApp() {
             className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-amber-500/50 transition-colors"
           />
         </div>
+        {coins !== null && (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-semibold flex-shrink-0">
+            <Coins className="w-4 h-4" /> {coins.toLocaleString('es-ES')}
+          </div>
+        )}
         <button
           onClick={() => { setTutorialStart(0); setTutorialOpen(true); }}
           title="Cómo funciona Hub Store"
@@ -177,6 +188,17 @@ export default function HubStoreApp() {
                   </button>
                 )}
               </div>
+            ) : selected.priceHubCoins ? (
+              <InstallButton
+                accent={STORE_ACCENT}
+                price={selected.priceHubCoins}
+                onInstall={async () => {
+                  const result = await buyApp(selected.id);
+                  if (result.ok) { refreshCoins(); toast.success(`${selected.name} instalada`); }
+                  else toast.error(result.error === 'Saldo de HubCoins insuficiente' ? `Saldo insuficiente — te faltan ${selected.priceHubCoins! - (result.balance ?? 0)} HubCoins` : (result.error || 'No se pudo completar la compra'));
+                  return result.ok;
+                }}
+              />
             ) : (
               <InstallButton accent={STORE_ACCENT} onInstall={() => installApp(selected.id)} />
             )}

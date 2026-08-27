@@ -38,6 +38,7 @@ interface OSContextType {
   installedApps: OSApp[];
   isAppInstalled: (appId: string) => boolean;
   installApp: (appId: string) => Promise<boolean>;
+  buyApp: (appId: string) => Promise<{ ok: boolean; error?: string; balance?: number }>;
   uninstallApp: (appId: string) => Promise<boolean>;
   pinnedApps: OSApp[];
   isAppPinned: (appId: string) => boolean;
@@ -320,6 +321,31 @@ export function OSProvider({ children, discordSession }: { children: ReactNode; 
       return false;
     } catch {
       return false;
+    }
+  }, []);
+
+  /**
+   * A diferencia de installApp, NO actualiza el estado local antes de la respuesta del server:
+   * es una compra real (descuenta HubCoins), así que nunca debe mostrarse "instalada" hasta
+   * que el pago se confirmó. Devuelve el motivo del error para mostrarlo (ej. saldo insuficiente).
+   */
+  const buyApp = useCallback(async (appId: string): Promise<{ ok: boolean; error?: string; balance?: number }> => {
+    try {
+      const res = await fetch('/api/os/apps', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'buy', appId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPreferences((prev) => {
+          const next = { ...prev, installedApps: data.installedApps };
+          localStorage.setItem(PREFS_CACHE_KEY, JSON.stringify(next));
+          return next;
+        });
+        return { ok: true };
+      }
+      return { ok: false, error: data.error, balance: data.balance };
+    } catch {
+      return { ok: false, error: 'No se pudo completar la compra' };
     }
   }, []);
 
@@ -647,6 +673,7 @@ export function OSProvider({ children, discordSession }: { children: ReactNode; 
       installedApps,
       isAppInstalled,
       installApp,
+      buyApp,
       uninstallApp,
       pinnedApps,
       isAppPinned,

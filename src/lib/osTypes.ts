@@ -38,6 +38,8 @@ export interface OSApp {
   category: 'finance' | 'roleplay' | 'social' | 'system' | 'market' | 'police';
   description: string;
   comingSoon?: boolean;
+  /** Precio en HubCoins (moneda premium). Sin definir = instalación gratis, como hoy. */
+  priceHubCoins?: number;
 }
 
 export interface OSWindow {
