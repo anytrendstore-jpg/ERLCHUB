@@ -9,6 +9,7 @@ import FDReports from "@/components/os/apps/fd/FDReports";
 import FDInvestigations from "@/components/os/apps/fd/FDInvestigations";
 import FDMessages from "@/components/os/apps/fd/FDMessages";
 import FDIncidentCommand from "@/components/os/apps/fd/FDIncidentCommand";
+import FDMap from "@/components/os/apps/fd/FDMap";
 import FDEquipment from "@/components/os/apps/fd/FDEquipment";
 import FDAcademy from "@/components/os/apps/fd/FDAcademy";
 import FDAudit from "./panels/FDAudit";
@@ -28,6 +29,7 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-radio": "Radio",
   "fd-alerts": "Alertas",
   "fd-command": "Comando de Incidentes",
+  "fd-map": "Mapa Operativo",
   "fd-equipment": "Equipo",
   "fd-academy": "Academia",
   "fd-personnel": "Personal",
@@ -53,6 +55,7 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-radio": bareFullBleed(RadioApp),
   "fd-alerts": bareFullBleed(FDAlertsPanel),
   "fd-command": bareFullBleed(FDIncidentCommand),
+  "fd-map": bareFullBleed(FDMap),
   "fd-equipment": bareFullBleed(FDEquipment),
   "fd-academy": bareFullBleed(FDAcademy),
   "fd-personnel": bareFullBleed(FDPersonnelPanel),

@@ -81,6 +81,7 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "radio", label: "Radio", icon: "Radio", minLevel: 1, contentKind: "fd-radio" },
   { id: "alerts", label: "Alertas", icon: "AlertTriangle", minLevel: 1, contentKind: "fd-alerts" },
   { id: "command", label: "Comando", icon: "Shield", minLevel: 1, contentKind: "fd-command" },
+  { id: "map", label: "Mapa Operativo", icon: "Map", minLevel: 1, contentKind: "fd-map" },
   { id: "equipment", label: "Equipo", icon: "Truck", minLevel: 1, contentKind: "fd-equipment" },
   { id: "academy", label: "Academia", icon: "GraduationCap", minLevel: 1, contentKind: "fd-academy" },
   { id: "personnel", label: "Personal", icon: "Users", minLevel: 1, contentKind: "fd-personnel" },

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  LayoutDashboard, Siren, Users, FileText, MessageSquare, Shield, Lock, AlertTriangle, Truck as TruckIcon, Radio as RadioLucide, GraduationCap, Briefcase, BarChart3, ScrollText,
+  LayoutDashboard, Siren, Users, FileText, MessageSquare, Shield, Lock, AlertTriangle, Truck as TruckIcon, Radio as RadioLucide, GraduationCap, Briefcase, BarChart3, ScrollText, Map as MapIcon,
 } from "lucide-react";
 import { useFD } from "@/contexts/FDContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -11,7 +11,7 @@ import type { SidebarIconKey } from "@/lib/departments";
 
 const ICONS: Record<SidebarIconKey, React.ElementType> = {
   LayoutDashboard, Radio: RadioLucide, Users, Car: Siren, FileWarning: FileText, AlertTriangle,
-  FileText, ShieldAlert: Shield, Receipt: FileText, Package: FileText, MessageSquare, Map: Siren,
+  FileText, ShieldAlert: Shield, Receipt: FileText, Package: FileText, MessageSquare, Map: MapIcon,
   BarChart3, ScrollText, Briefcase, FolderOpen: FileText, Shield,
   Flame: Siren, Siren, Truck: TruckIcon, GraduationCap,
 };
