@@ -59,6 +59,28 @@ export interface FDMessage {
   readAt?: Date;
 }
 
+/**
+ * Sistema de Comando de Incidentes — organigrama estándar (Comandante +
+ * plana mayor Operaciones/Planificación/Logística/Seguridad) atado a un
+ * incidente puntual. Concepto sin análogo en el MDT de policía.
+ */
+export type CommandRoleKey = "commander" | "operations" | "planning" | "logistics" | "safety";
+
+export interface CommandAssignment {
+  role: CommandRoleKey;
+  firefighterId?: string;
+  firefighterName?: string;
+}
+
+export interface IncidentCommand {
+  id: string;
+  callId: string;
+  assignments: CommandAssignment[];
+  establishedBy: string;
+  establishedAt: Date;
+  updatedAt: Date;
+}
+
 export interface FDState {
   isAuthenticated: boolean;
   currentFirefighter: (Firefighter & { rankName: string; rankLevel: number }) | null;

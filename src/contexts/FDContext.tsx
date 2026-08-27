@@ -28,6 +28,8 @@ interface FDContextType {
   markMessageRead: (id: string) => void;
 
   hasPermission: (action: "view" | "create" | "edit" | "delete") => boolean;
+  /** Mismo umbral que ya usa Administración (AdminFactionPanel) — rango real de facción, no un rango de terminal. */
+  isCommand: boolean;
 }
 
 const FDContext = createContext<FDContextType | undefined>(undefined);
@@ -190,12 +192,15 @@ export function FDProvider({ children }: { children: ReactNode }) {
     return state.currentFirefighter.rankLevel >= 1;
   }, [state.currentFirefighter]);
 
+  const isCommand = (state.currentFirefighter?.rankLevel ?? 0) >= COMMAND_LEVEL;
+
   const value: FDContextType = {
     state, login, loginDemo, logout, setScreen,
     updateCall, assignUnitToCall,
     createReport, updateReport, signReport,
     sendMessage, markMessageRead,
     hasPermission,
+    isCommand,
   };
 
   return <FDContext.Provider value={value}>{children}</FDContext.Provider>;
