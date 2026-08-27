@@ -11,6 +11,7 @@ import TerminalWindow from "./TerminalWindow";
 import InstitutionalTransition from "@/components/os/InstitutionalTransition";
 import { rememberPersonalChoice } from "@/lib/systemChoice";
 import { FD_MODULE_CONTENT, FD_MODULE_TITLES } from "./fdModuleContent";
+import FDGlobalSearch from "@/components/os/apps/fd/FDGlobalSearch";
 
 function WindowsLayer() {
   const { windows } = useTerminalWindows();
@@ -62,6 +63,7 @@ export default function FDDesktop() {
   const department = useDepartment();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   if (loggingOut) {
     return (
@@ -77,22 +79,24 @@ export default function FDDesktop() {
     <TerminalWindowProvider>
       <div className="h-full w-full flex flex-col bg-[#0a0a0c]">
         <FDTopBar />
-        <div className="flex-1 flex min-h-0">
+        <div className="flex-1 flex min-h-0 relative">
           <FDSidebar />
           <DesktopWorkspace />
+          {showSearch && <FDGlobalSearch onClose={() => setShowSearch(false)} />}
         </div>
-        <FuncBarWithWindows onLogout={() => setLoggingOut(true)} />
+        <FuncBarWithWindows onLogout={() => setLoggingOut(true)} onSearch={() => setShowSearch(true)} />
       </div>
     </TerminalWindowProvider>
   );
 }
 
-function FuncBarWithWindows({ onLogout }: { onLogout: () => void }) {
+function FuncBarWithWindows({ onLogout, onSearch }: { onLogout: () => void; onSearch: () => void }) {
   const { openWindow } = useTerminalWindows();
   return (
     <TerminalFuncBar
-      onSearch={() => openWindow("fd-personnel", { title: FD_MODULE_TITLES["fd-personnel"], maximized: true, focusExisting: true })}
-      onDirectory={() => openWindow("fd-cad", { title: FD_MODULE_TITLES["fd-cad"], maximized: true, focusExisting: true })}
+      onSearch={onSearch}
+      onDirectory={() => openWindow("fd-personnel", { title: FD_MODULE_TITLES["fd-personnel"], maximized: true, focusExisting: true })}
+      onSettings={() => openWindow("fd-settings", { title: FD_MODULE_TITLES["fd-settings"], maximized: true, focusExisting: true })}
       onLogout={onLogout}
     />
   );

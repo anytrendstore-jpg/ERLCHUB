@@ -27,6 +27,9 @@ interface FDContextType {
   sendMessage: (message: Omit<FDMessage, "id" | "sentAt" | "isRead">) => void;
   markMessageRead: (id: string) => void;
 
+  /** Autoservicio — unidad/callsign/estado propios, ver PATCH /api/fd/firefighter (misma ruta que ya usa el toggle de onDuty en login/logout). */
+  updateSelf: (updates: Partial<Pick<Firefighter, "unit" | "callsign" | "status" | "onDuty">>) => void;
+
   hasPermission: (action: "view" | "create" | "edit" | "delete") => boolean;
   /** Mismo umbral que ya usa Administración (AdminFactionPanel) — rango real de facción, no un rango de terminal. */
   isCommand: boolean;
@@ -186,6 +189,14 @@ export function FDProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, messages: prev.messages.map((m) => (m.id === id ? { ...m, isRead: true, readAt: new Date() } : m)) }));
   }, []);
 
+  const updateSelf = useCallback((updates: Partial<Pick<Firefighter, "unit" | "callsign" | "status" | "onDuty">>) => {
+    fetch("/api/fd/firefighter", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) });
+    setState((prev) => ({
+      ...prev,
+      currentFirefighter: prev.currentFirefighter ? { ...prev.currentFirefighter, ...updates } : prev.currentFirefighter,
+    }));
+  }, []);
+
   const hasPermission = useCallback((action: "view" | "create" | "edit" | "delete"): boolean => {
     if (!state.currentFirefighter) return false;
     if (action === "delete") return state.currentFirefighter.rankLevel >= COMMAND_LEVEL;
@@ -199,6 +210,7 @@ export function FDProvider({ children }: { children: ReactNode }) {
     updateCall, assignUnitToCall,
     createReport, updateReport, signReport,
     sendMessage, markMessageRead,
+    updateSelf,
     hasPermission,
     isCommand,
   };

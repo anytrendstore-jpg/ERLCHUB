@@ -87,6 +87,7 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "reports", label: "Reportes", icon: "FileText", minLevel: 1, contentKind: "fd-reports" },
   { id: "investigations", label: "Investigaciones", icon: "Briefcase", minLevel: 1, contentKind: "fd-investigations" },
   { id: "messages", label: "Mensajes", icon: "MessageSquare", minLevel: 1, contentKind: "fd-messages" },
+  { id: "stats", label: "Estadísticas", icon: "BarChart3", minLevel: 2, contentKind: "fd-stats" },
   { id: "audit", label: "Auditoría", icon: "ScrollText", minLevel: 4, contentKind: "fd-audit" },
   // Sin minLevel: el panel se auto-gatea por rango REAL dentro de la facción (no un rango de terminal).
   { id: "admin", label: "Administración", icon: "Shield", minLevel: 0, contentKind: "admin" },

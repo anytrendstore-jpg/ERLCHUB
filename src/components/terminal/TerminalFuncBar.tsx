@@ -4,6 +4,8 @@ interface TerminalFuncBarProps {
   onSearch: () => void;
   onDirectory: () => void;
   onLogout: () => void;
+  /** Opcional — departamentos que todavía no tienen un módulo de Configuración dejan F4 deshabilitado, sin cambiar el resto del func bar. */
+  onSettings?: () => void;
 }
 
 const KEYS = [
@@ -16,8 +18,8 @@ const KEYS = [
 ];
 
 /** Barra de funciones fija — refuerza que esto es una terminal especializada, no una web con botones. */
-export default function TerminalFuncBar({ onSearch, onDirectory, onLogout }: TerminalFuncBarProps) {
-  const handlers: Record<string, () => void> = { F1: onSearch, F2: onDirectory, F6: onLogout };
+export default function TerminalFuncBar({ onSearch, onDirectory, onLogout, onSettings }: TerminalFuncBarProps) {
+  const handlers: Record<string, () => void> = { F1: onSearch, F2: onDirectory, F6: onLogout, ...(onSettings ? { F4: onSettings } : {}) };
 
   return (
     <div className="h-[30px] flex items-center border-t border-[var(--dept-window-border,#1e2a45)] bg-[var(--dept-window-deep,#080b13)] flex-shrink-0">
