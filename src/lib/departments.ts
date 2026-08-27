@@ -3,7 +3,7 @@ export type SidebarIconKey =
   | "LayoutDashboard" | "Radio" | "Users" | "Car" | "FileWarning" | "AlertTriangle"
   | "FileText" | "ShieldAlert" | "Receipt" | "Package" | "MessageSquare" | "Map"
   | "BarChart3" | "ScrollText" | "Briefcase" | "FolderOpen" | "Shield"
-  | "Flame" | "Siren" | "Truck";
+  | "Flame" | "Siren" | "Truck" | "GraduationCap";
 
 export interface SidebarModule {
   id: string;
@@ -82,6 +82,7 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "alerts", label: "Alertas", icon: "AlertTriangle", minLevel: 1, contentKind: "fd-alerts" },
   { id: "command", label: "Comando", icon: "Shield", minLevel: 1, contentKind: "fd-command" },
   { id: "equipment", label: "Equipo", icon: "Truck", minLevel: 1, contentKind: "fd-equipment" },
+  { id: "academy", label: "Academia", icon: "GraduationCap", minLevel: 1, contentKind: "fd-academy" },
   { id: "personnel", label: "Personal", icon: "Users", minLevel: 1, contentKind: "fd-personnel" },
   { id: "reports", label: "Reportes", icon: "FileText", minLevel: 1, contentKind: "fd-reports" },
   { id: "messages", label: "Mensajes", icon: "MessageSquare", minLevel: 1, contentKind: "fd-messages" },

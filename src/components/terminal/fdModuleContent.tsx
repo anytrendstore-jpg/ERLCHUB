@@ -9,6 +9,7 @@ import FDReports from "@/components/os/apps/fd/FDReports";
 import FDMessages from "@/components/os/apps/fd/FDMessages";
 import FDIncidentCommand from "@/components/os/apps/fd/FDIncidentCommand";
 import FDEquipment from "@/components/os/apps/fd/FDEquipment";
+import FDAcademy from "@/components/os/apps/fd/FDAcademy";
 import RadioApp from "@/components/os/apps/RadioApp";
 
 function bareFullBleed(Content: React.ComponentType) {
@@ -24,6 +25,7 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-alerts": "Alertas",
   "fd-command": "Comando de Incidentes",
   "fd-equipment": "Equipo",
+  "fd-academy": "Academia",
   "fd-personnel": "Personal",
   "fd-reports": "Reportes",
   "fd-messages": "Mensajes",
@@ -44,6 +46,7 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-alerts": bareFullBleed(FDAlertsPanel),
   "fd-command": bareFullBleed(FDIncidentCommand),
   "fd-equipment": bareFullBleed(FDEquipment),
+  "fd-academy": bareFullBleed(FDAcademy),
   "fd-personnel": bareFullBleed(FDPersonnelPanel),
   "fd-reports": bareFullBleed(FDReports),
   "fd-messages": bareFullBleed(FDMessages),

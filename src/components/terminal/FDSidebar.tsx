@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  LayoutDashboard, Siren, Users, FileText, MessageSquare, Shield, Lock, AlertTriangle, Truck as TruckIcon, Radio as RadioLucide,
+  LayoutDashboard, Siren, Users, FileText, MessageSquare, Shield, Lock, AlertTriangle, Truck as TruckIcon, Radio as RadioLucide, GraduationCap,
 } from "lucide-react";
 import { useFD } from "@/contexts/FDContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -13,7 +13,7 @@ const ICONS: Record<SidebarIconKey, React.ElementType> = {
   LayoutDashboard, Radio: RadioLucide, Users, Car: Siren, FileWarning: FileText, AlertTriangle,
   FileText, ShieldAlert: Shield, Receipt: FileText, Package: FileText, MessageSquare, Map: Siren,
   BarChart3: FileText, ScrollText: FileText, Briefcase: FileText, FolderOpen: FileText, Shield,
-  Flame: Siren, Siren, Truck: TruckIcon,
+  Flame: Siren, Siren, Truck: TruckIcon, GraduationCap,
 };
 
 /** Directorio lateral de LSFD — mismo patrón que TerminalSidebar.tsx, gatea por rango real. */

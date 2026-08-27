@@ -98,6 +98,21 @@ export interface FDEquipment {
   updatedAt: Date;
 }
 
+/** Academia — certificaciones del personal, con vencimiento real (nunca "certificado para siempre"). */
+export type FDCertificationStatus = "Active" | "Expired" | "Revoked";
+
+export interface FDCertification {
+  id: string;
+  firefighterId: string;
+  firefighterName: string;
+  name: string;
+  issuedAt: Date;
+  expiresAt?: Date;
+  instructor?: string;
+  status: FDCertificationStatus;
+  createdAt: Date;
+}
+
 export interface FDState {
   isAuthenticated: boolean;
   currentFirefighter: (Firefighter & { rankName: string; rankLevel: number }) | null;
