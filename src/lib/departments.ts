@@ -3,7 +3,7 @@ export type SidebarIconKey =
   | "LayoutDashboard" | "Radio" | "Users" | "Car" | "FileWarning" | "AlertTriangle"
   | "FileText" | "ShieldAlert" | "Receipt" | "Package" | "MessageSquare" | "Map"
   | "BarChart3" | "ScrollText" | "Briefcase" | "FolderOpen" | "Shield"
-  | "Flame" | "Siren" | "Truck" | "GraduationCap" | "HeartPulse";
+  | "Flame" | "Siren" | "Truck" | "GraduationCap" | "HeartPulse" | "DollarSign" | "Wrench" | "Handshake";
 
 export interface SidebarModule {
   id: string;
@@ -89,6 +89,9 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "reports", label: "Reportes", icon: "FileText", minLevel: 1, contentKind: "fd-reports" },
   { id: "investigations", label: "Investigaciones", icon: "Briefcase", minLevel: 1, contentKind: "fd-investigations" },
   { id: "messages", label: "Mensajes", icon: "MessageSquare", minLevel: 1, contentKind: "fd-messages" },
+  { id: "budget", label: "Presupuesto", icon: "DollarSign", minLevel: 1, contentKind: "fd-budget" },
+  { id: "service-orders", label: "Órdenes de Servicio", icon: "Wrench", minLevel: 1, contentKind: "fd-service-orders" },
+  { id: "mutual-aid", label: "Mutual Aid", icon: "Handshake", minLevel: 1, contentKind: "fd-mutual-aid" },
   { id: "stats", label: "Estadísticas", icon: "BarChart3", minLevel: 2, contentKind: "fd-stats" },
   { id: "audit", label: "Auditoría", icon: "ScrollText", minLevel: 4, contentKind: "fd-audit" },
   // Sin minLevel: el panel se auto-gatea por rango REAL dentro de la facción (no un rango de terminal).

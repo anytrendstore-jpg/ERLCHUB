@@ -160,10 +160,65 @@ export interface FDCase {
   updatedAt: Date;
 }
 
+/** Presupuesto — asignaciones/gastos del departamento. Solo mando registra movimientos (ver COMMAND_LEVEL en /api/fd/budget). */
+export type FDBudgetEntryType = "Allocation" | "Expense";
+
+export interface FDBudgetEntry {
+  id: string;
+  type: FDBudgetEntryType;
+  amount: number;
+  description: string;
+  category?: string;
+  recordedById: string;
+  recordedByName: string;
+  date: Date;
+  createdAt: Date;
+}
+
+/** Órdenes de servicio — pedidos de mantenimiento/trabajo, puede referenciar un ítem de fd_equipment. Baja fricción: cualquier miembro activo abre/actualiza, como los reportes. */
+export type FDServiceOrderPriority = "Low" | "Medium" | "High";
+export type FDServiceOrderStatus = "Open" | "In Progress" | "Completed" | "Cancelled";
+
+export interface FDServiceOrder {
+  id: string;
+  orderNumber: string;
+  subject: string;
+  description: string;
+  priority: FDServiceOrderPriority;
+  status: FDServiceOrderStatus;
+  relatedEquipment?: string;
+  requestedById: string;
+  requestedByName: string;
+  assignedTo?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  completedAt?: Date;
+}
+
+/** Mutual Aid — asistencia solicitada a otra agencia (LSPD, condados vecinos, etc.) durante un incidente mayor. La agencia es texto libre: no hay otro FD en el sistema para referenciar. */
+export type FDMutualAidStatus = "Requested" | "En Route" | "On Scene" | "Completed" | "Cancelled";
+
+export interface FDMutualAidRequest {
+  id: string;
+  requestNumber: string;
+  agency: string;
+  reason: string;
+  callId?: string;
+  status: FDMutualAidStatus;
+  requestedById: string;
+  requestedByName: string;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  resolvedAt?: Date;
+}
+
 export type FDAuditAction =
   | "login" | "logout" | "create_report" | "edit_report" | "assign_command"
   | "issue_certification" | "revoke_certification" | "update_equipment" | "send_message" | "modify_call"
-  | "open_case" | "update_case" | "log_patient" | "update_patient" | "other";
+  | "open_case" | "update_case" | "log_patient" | "update_patient"
+  | "record_budget_entry" | "create_service_order" | "update_service_order"
+  | "log_mutual_aid" | "update_mutual_aid" | "other";
 
 export interface FDAuditLog {
   id: string;

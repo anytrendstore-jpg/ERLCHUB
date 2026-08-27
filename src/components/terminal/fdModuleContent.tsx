@@ -16,6 +16,9 @@ import FDAcademy from "@/components/os/apps/fd/FDAcademy";
 import FDAudit from "./panels/FDAudit";
 import FDSettings from "./panels/FDSettings";
 import FDStats from "./panels/FDStats";
+import FDBudget from "@/components/os/apps/fd/FDBudget";
+import FDServiceOrders from "@/components/os/apps/fd/FDServiceOrders";
+import FDMutualAid from "@/components/os/apps/fd/FDMutualAid";
 import RadioApp from "@/components/os/apps/RadioApp";
 
 function bareFullBleed(Content: React.ComponentType) {
@@ -38,6 +41,9 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-reports": "Reportes",
   "fd-investigations": "Investigaciones",
   "fd-messages": "Mensajes",
+  "fd-budget": "Presupuesto",
+  "fd-service-orders": "Órdenes de Servicio",
+  "fd-mutual-aid": "Mutual Aid",
   "fd-stats": "Estadísticas",
   "fd-audit": "Auditoría",
   "fd-settings": "Configuración",
@@ -65,6 +71,9 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-reports": bareFullBleed(FDReports),
   "fd-investigations": bareFullBleed(FDInvestigations),
   "fd-messages": bareFullBleed(FDMessages),
+  "fd-budget": bareFullBleed(FDBudget),
+  "fd-service-orders": bareFullBleed(FDServiceOrders),
+  "fd-mutual-aid": bareFullBleed(FDMutualAid),
   "fd-stats": bareFullBleed(FDStats),
   "fd-audit": bareFullBleed(FDAudit),
   "fd-settings": bareFullBleed(FDSettings),
