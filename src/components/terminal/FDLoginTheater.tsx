@@ -92,8 +92,8 @@ export default function FDLoginTheater({ onComplete, demo }: FDLoginTheaterProps
           {lines.map((line, i) => {
             const isFinal = (denied && line.startsWith("ACCESS DENIED")) || line === "ACCESS GRANTED.";
             return (
-              <p key={i} className={`text-[11px] tracking-wide ${isFinal ? (denied ? "text-[#c0665c] font-semibold" : "text-[#d18a3f] font-semibold") : "text-[#867e70]"}`}>
-                <span className="text-[#c1975a] mr-1.5">&gt;</span>{line}
+              <p key={i} className={`text-[11px] tracking-wide ${isFinal ? (denied ? "text-[#c0665c] font-semibold" : "text-[#c0392b] font-semibold") : "text-[#867e70]"}`}>
+                <span className="text-[#c0392b] mr-1.5">&gt;</span>{line}
               </p>
             );
           })}
@@ -102,7 +102,7 @@ export default function FDLoginTheater({ onComplete, demo }: FDLoginTheaterProps
         {denied && (
           <div className="mt-3">
             <p className="text-[#c0665c] text-[10px] mb-2">No se pudo verificar el perfil de bombero. Probá de nuevo en unos segundos.</p>
-            <button onClick={() => window.location.reload()} className="text-[10px] text-[#d18a3f] hover:text-white underline underline-offset-2">Reintentar</button>
+            <button onClick={() => window.location.reload()} className="text-[10px] text-[#d4af37] hover:text-white underline underline-offset-2">Reintentar</button>
           </div>
         )}
       </div>

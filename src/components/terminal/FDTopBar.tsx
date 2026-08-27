@@ -27,18 +27,18 @@ export default function FDTopBar() {
 
   return (
     <div className="h-8 flex items-center gap-5 px-4 border-b border-[#2a2620] bg-[#111110] font-mono text-[10.5px] tracking-wide flex-shrink-0 overflow-x-auto">
-      <span className="text-[#d18a3f] font-semibold whitespace-nowrap">{department.factionAbbreviation} // INTERNAL NETWORK</span>
+      <span className="text-[#c0392b] font-semibold whitespace-nowrap">{department.factionAbbreviation} // INTERNAL NETWORK</span>
       {firefighter && (
         <>
           {field("TERMINAL", `${department.terminalKey}-${firefighter.badgeNumber}`)}
           {field("USER", firefighter.lastName.toUpperCase())}
           {field("BADGE", firefighter.badgeNumber)}
           {field("UNIT", firefighter.callsign || firefighter.unit?.toUpperCase() || "SIN ASIGNAR")}
-          {field("CLEARANCE", `LEVEL ${String(firefighter.rankLevel).padStart(2, "0")}`, "text-[#d18a3f]")}
+          {field("CLEARANCE", `LEVEL ${String(firefighter.rankLevel).padStart(2, "0")}`, "text-[#d4af37]")}
         </>
       )}
       <span className="flex-1" />
-      {field("NETWORK", "SECURE", "text-[#c1975a]")}
+      {field("NETWORK", "SECURE", "text-[#d4af37]")}
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.7)]" />
       <span className="text-[#e5e3de] tabular-nums whitespace-nowrap">{clock}</span>
     </div>

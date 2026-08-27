@@ -7,7 +7,7 @@ import type { CallStatus } from "@/lib/mdtTypes";
 
 const PRIORITY_STYLE: Record<string, { label: string; text: string; dot: string }> = {
   Emergency: { label: "CRÍTICA", text: "text-red-400", dot: "bg-red-500" },
-  High: { label: "ALTA", text: "text-[#d18a3f]", dot: "bg-[#d18a3f]" },
+  High: { label: "ALTA", text: "text-[#d4af37]", dot: "bg-[#d4af37]" },
   Medium: { label: "MEDIA", text: "text-amber-300", dot: "bg-amber-400" },
   Low: { label: "BAJA", text: "text-emerald-300", dot: "bg-emerald-400" },
 };
@@ -91,7 +91,7 @@ export default function FDCAD() {
                   <button
                     key={s}
                     onClick={() => updateCall(selected.id, { status: s })}
-                    className={`px-2.5 py-1 rounded text-[10px] font-semibold transition-colors ${selected.status === s ? "bg-[#c1975a] text-[#0a0a0c]" : "bg-[#1a1917] border border-[#2a2620] text-[#867e70] hover:text-[#e5e3de]"}`}
+                    className={`px-2.5 py-1 rounded text-[10px] font-semibold transition-colors ${selected.status === s ? "bg-[#d4af37] text-[#0a0a0c]" : "bg-[#1a1917] border border-[#2a2620] text-[#867e70] hover:text-[#e5e3de]"}`}
                   >
                     {s}
                   </button>
@@ -106,7 +106,7 @@ export default function FDCAD() {
               ) : (
                 <div className="flex flex-wrap gap-1 mb-2">
                   {selected.assignedUnits.map((u) => (
-                    <span key={u} className="px-1.5 py-0.5 rounded bg-[#1a1917] border border-[#2a2620] text-[#d18a3f] font-mono text-[10px]">{u}</span>
+                    <span key={u} className="px-1.5 py-0.5 rounded bg-[#1a1917] border border-[#2a2620] text-[#d4af37] font-mono text-[10px]">{u}</span>
                   ))}
                 </div>
               )}
@@ -115,12 +115,12 @@ export default function FDCAD() {
                   value={unitInput}
                   onChange={(e) => setUnitInput(e.target.value)}
                   placeholder="ej. E12, T3, R5"
-                  className="flex-1 min-w-0 bg-[#141312] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a]"
+                  className="flex-1 min-w-0 bg-[#141312] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37]"
                 />
                 <button
                   disabled={!unitInput.trim()}
                   onClick={() => { assignUnitToCall(selected.id, unitInput.trim()); setUnitInput(""); }}
-                  className="flex items-center gap-1 px-2.5 rounded bg-[#c1975a] disabled:opacity-40 text-[#0a0a0c] font-semibold"
+                  className="flex items-center gap-1 px-2.5 rounded bg-[#d4af37] disabled:opacity-40 text-[#0a0a0c] font-semibold"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>

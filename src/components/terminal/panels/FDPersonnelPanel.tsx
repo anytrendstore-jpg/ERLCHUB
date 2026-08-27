@@ -8,7 +8,7 @@ const STATUS_DOT: Record<string, string> = {
   Dispatched: "bg-amber-400",
   "En Route": "bg-amber-400",
   "On Scene": "bg-red-500",
-  Transporting: "bg-[#c1975a]",
+  Transporting: "bg-[#d4af37]",
   "Out of Service": "bg-[#57534a]",
 };
 

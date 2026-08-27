@@ -41,7 +41,7 @@ export default function FDReports() {
   return (
     <div className="h-full flex flex-col text-[11px]">
       <div className="h-8 flex items-center justify-end px-2.5 border-b border-[#2a2620] flex-shrink-0">
-        <button onClick={() => setShowNew(true)} className="flex items-center gap-1 text-[10px] font-medium text-[#c1975a] hover:text-[#e5e3de] transition-colors">
+        <button onClick={() => setShowNew(true)} className="flex items-center gap-1 text-[10px] font-medium text-[#d4af37] hover:text-[#e5e3de] transition-colors">
           <Plus className="w-3 h-3" /> Nuevo reporte
         </button>
       </div>
@@ -53,13 +53,13 @@ export default function FDReports() {
               <span className="text-[10px] font-semibold text-[#e5e3de] uppercase tracking-wide">Nuevo reporte de incidente</span>
               <button onClick={() => setShowNew(false)}><X className="w-3.5 h-3.5 text-[#57534a]" /></button>
             </div>
-            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as FireReportType })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] focus:outline-none focus:border-[#c1975a]">
+            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as FireReportType })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] focus:outline-none focus:border-[#d4af37]">
               {REPORT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
-            <input placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a]" />
-            <input placeholder="Ubicación" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a]" />
-            <textarea placeholder="Narrativa" value={form.narrative} onChange={(e) => setForm({ ...form, narrative: e.target.value })} rows={4} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a] resize-none" />
-            <button disabled={!form.title.trim() || !form.narrative.trim()} onClick={submit} className="w-full bg-[#c1975a] disabled:opacity-40 text-[#0a0a0c] font-semibold rounded py-1.5">
+            <input placeholder="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37]" />
+            <input placeholder="Ubicación" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37]" />
+            <textarea placeholder="Narrativa" value={form.narrative} onChange={(e) => setForm({ ...form, narrative: e.target.value })} rows={4} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37] resize-none" />
+            <button disabled={!form.title.trim() || !form.narrative.trim()} onClick={submit} className="w-full bg-[#d4af37] disabled:opacity-40 text-[#0a0a0c] font-semibold rounded py-1.5">
               Guardar borrador
             </button>
           </div>

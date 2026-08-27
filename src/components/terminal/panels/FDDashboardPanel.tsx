@@ -38,7 +38,7 @@ export default function FDDashboardPanel() {
     <div className="h-full overflow-y-auto p-3 text-[11px]">
       <div className="mb-3">
         <div className="text-[9px] font-semibold tracking-widest text-[#57534a] uppercase mb-1.5">Personal en servicio</div>
-        <p className="text-[#c1975a] font-mono text-[13px]">{onDutyCount} <span className="text-[#867e70] font-sans text-[10.5px]">de {personnel.length} registrados</span></p>
+        <p className="text-[#d4af37] font-mono text-[13px]">{onDutyCount} <span className="text-[#867e70] font-sans text-[10.5px]">de {personnel.length} registrados</span></p>
       </div>
 
       <div className="mb-3">
@@ -48,7 +48,7 @@ export default function FDDashboardPanel() {
         ) : (
           <div className="flex flex-wrap gap-1">
             {activeUnits.map((u) => (
-              <span key={u} className="px-1.5 py-0.5 rounded bg-[#1a1917] border border-[#2a2620] text-[#d18a3f] font-mono text-[10px]">{u}</span>
+              <span key={u} className="px-1.5 py-0.5 rounded bg-[#1a1917] border border-[#2a2620] text-[#d4af37] font-mono text-[10px]">{u}</span>
             ))}
           </div>
         )}

@@ -29,7 +29,7 @@ export default function FDMessages() {
   return (
     <div className="h-full flex flex-col text-[11px]">
       <div className="h-8 flex items-center justify-end px-2.5 border-b border-[#2a2620] flex-shrink-0">
-        <button onClick={() => setShowNew(true)} className="flex items-center gap-1 text-[10px] font-medium text-[#c1975a] hover:text-[#e5e3de] transition-colors">
+        <button onClick={() => setShowNew(true)} className="flex items-center gap-1 text-[10px] font-medium text-[#d4af37] hover:text-[#e5e3de] transition-colors">
           <Plus className="w-3 h-3" /> Redactar
         </button>
       </div>
@@ -41,11 +41,11 @@ export default function FDMessages() {
               <span className="text-[10px] font-semibold text-[#e5e3de] uppercase tracking-wide">Nuevo mensaje</span>
               <button onClick={() => setShowNew(false)}><X className="w-3.5 h-3.5 text-[#57534a]" /></button>
             </div>
-            <input placeholder="Discord ID del destinatario" value={form.to} onChange={(e) => setForm({ ...form, to: e.target.value.trim() })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a]" />
-            <input placeholder="Nombre del destinatario" value={form.toName} onChange={(e) => setForm({ ...form, toName: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a]" />
-            <input placeholder="Asunto" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a]" />
-            <textarea placeholder="Mensaje" value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} rows={4} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#c1975a] resize-none" />
-            <button disabled={!form.to.trim() || !form.subject.trim()} onClick={submit} className="w-full bg-[#c1975a] disabled:opacity-40 text-[#0a0a0c] font-semibold rounded py-1.5">
+            <input placeholder="Discord ID del destinatario" value={form.to} onChange={(e) => setForm({ ...form, to: e.target.value.trim() })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37]" />
+            <input placeholder="Nombre del destinatario" value={form.toName} onChange={(e) => setForm({ ...form, toName: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37]" />
+            <input placeholder="Asunto" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37]" />
+            <textarea placeholder="Mensaje" value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} rows={4} className="w-full bg-[#0e0d0c] border border-[#2a2620] rounded px-2 py-1.5 text-[#e5e3de] placeholder-[#57534a] focus:outline-none focus:border-[#d4af37] resize-none" />
+            <button disabled={!form.to.trim() || !form.subject.trim()} onClick={submit} className="w-full bg-[#d4af37] disabled:opacity-40 text-[#0a0a0c] font-semibold rounded py-1.5">
               Enviar
             </button>
           </div>
@@ -67,7 +67,7 @@ export default function FDMessages() {
                   className="w-full text-left px-3 py-2 rounded bg-[#141312] border border-[#2a2620] hover:border-[#3d372e] transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-0.5">
-                    {isInbound && !m.isRead ? <Mail className="w-3.5 h-3.5 text-[#c1975a] flex-shrink-0" /> : <MailOpen className="w-3.5 h-3.5 text-[#57534a] flex-shrink-0" />}
+                    {isInbound && !m.isRead ? <Mail className="w-3.5 h-3.5 text-[#d4af37] flex-shrink-0" /> : <MailOpen className="w-3.5 h-3.5 text-[#57534a] flex-shrink-0" />}
                     <span className={`truncate ${isInbound && !m.isRead ? "text-[#e5e3de] font-semibold" : "text-[#867e70]"}`}>{m.subject}</span>
                   </div>
                   <p className="text-[#57534a] text-[10px]">{isInbound ? `De: ${m.fromName}` : `Para: ${m.toName}`}</p>
