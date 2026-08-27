@@ -8,7 +8,8 @@ export const dynamic = 'force-dynamic';
 
 const VALID_TYPES: CallType[] = [
   'Traffic Stop', 'Suspicious Activity', 'Robbery', 'Assault', 'Shots Fired',
-  'Welfare Check', 'Disturbance', 'Traffic Accident', 'Cyber Crime', 'Other',
+  'Welfare Check', 'Disturbance', 'Traffic Accident', 'Cyber Crime',
+  'Structure Fire', 'Vehicle Fire', 'Medical Emergency', 'Hazmat', 'Rescue', 'Other',
 ];
 const VALID_FACTIONS: EmergencyFaction[] = ['Policía', 'Sheriff', 'Bomberos'];
 
@@ -23,6 +24,11 @@ const PRIORITY_BY_TYPE: Record<CallType, CallPriority> = {
   'Welfare Check': 'Medium',
   'Traffic Stop': 'Low',
   'Cyber Crime': 'Low',
+  'Structure Fire': 'Emergency',
+  'Hazmat': 'Emergency',
+  'Medical Emergency': 'High',
+  'Rescue': 'High',
+  'Vehicle Fire': 'High',
   'Other': 'Medium',
 };
 

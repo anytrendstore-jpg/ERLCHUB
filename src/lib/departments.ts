@@ -2,7 +2,8 @@
 export type SidebarIconKey =
   | "LayoutDashboard" | "Radio" | "Users" | "Car" | "FileWarning" | "AlertTriangle"
   | "FileText" | "ShieldAlert" | "Receipt" | "Package" | "MessageSquare" | "Map"
-  | "BarChart3" | "ScrollText" | "Briefcase" | "FolderOpen" | "Shield";
+  | "BarChart3" | "ScrollText" | "Briefcase" | "FolderOpen" | "Shield"
+  | "Flame" | "Siren" | "Truck";
 
 export interface SidebarModule {
   id: string;
@@ -27,6 +28,8 @@ export interface DepartmentConfig {
   terminalKey: string;
   /** Directorio del terminal — solo módulos con contenido real (nada de entradas decorativas). */
   sidebarModules: SidebarModule[];
+  /** Qué identidad/datos monta terminal/[dept]/page.tsx: MDT (policía) o FD (bomberos) — cada uno con su propio contexto y colecciones, sin compartir identidad de personal. */
+  kind: "police" | "fire";
 }
 
 const LSPD_SIDEBAR: SidebarModule[] = [
@@ -50,11 +53,24 @@ const LSPD_SIDEBAR: SidebarModule[] = [
   { id: "admin", label: "Administración", icon: "Shield", minLevel: 0, contentKind: "admin" },
 ];
 
+const LSFD_SIDEBAR: SidebarModule[] = [
+  { id: "dashboard", label: "Dashboard", icon: "LayoutDashboard", minLevel: 1, contentKind: "fd-dashboard" },
+  { id: "cad", label: "Despacho", icon: "Siren", minLevel: 1, contentKind: "fd-cad" },
+  { id: "personnel", label: "Personal", icon: "Users", minLevel: 1, contentKind: "fd-personnel" },
+  { id: "reports", label: "Reportes", icon: "FileText", minLevel: 1, contentKind: "fd-reports" },
+  { id: "messages", label: "Mensajes", icon: "MessageSquare", minLevel: 1, contentKind: "fd-messages" },
+  // Sin minLevel: el panel se auto-gatea por rango REAL dentro de la facción (no un rango de terminal).
+  { id: "admin", label: "Administración", icon: "Shield", minLevel: 0, contentKind: "admin" },
+];
+
 /**
  * Registro central de departamentos con terminal institucional propia.
- * Agregar uno nuevo es: conseguir el escudo real, sumar una entrada acá y
- * crear la facción correspondiente en el panel de Staff — nada de código
- * nuevo, la ruta /terminal/[dept] y el MDT ya son genéricos.
+ * Agregar uno nuevo de policía es: conseguir el escudo real, sumar una
+ * entrada acá y crear la facción correspondiente en el panel de Staff —
+ * nada de código nuevo, la ruta /terminal/[dept] y el MDT ya son genéricos.
+ * Los departamentos `kind:"fire"` usan su propia identidad/colecciones
+ * (ver src/contexts/FDContext.tsx, src/lib/fdServer.ts) — no comparten
+ * `mdt_officers`/`OfficerRank` con la policía.
  */
 export const DEPARTMENTS: Record<string, DepartmentConfig> = {
   lspd: {
@@ -65,6 +81,17 @@ export const DEPARTMENTS: Record<string, DepartmentConfig> = {
     badge: "/LogoLSPD.png",
     terminalKey: "LS-04",
     sidebarModules: LSPD_SIDEBAR,
+    kind: "police",
+  },
+  lsfd: {
+    slug: "lsfd",
+    factionAbbreviation: "LSFD",
+    name: "Los Santos Fire Department",
+    subtitle: "Davis",
+    badge: "/LogoLSFD.png",
+    terminalKey: "LS-07",
+    sidebarModules: LSFD_SIDEBAR,
+    kind: "fire",
   },
 };
 

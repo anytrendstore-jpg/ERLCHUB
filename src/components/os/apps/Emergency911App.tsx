@@ -23,7 +23,8 @@ import {
 
 type CallType =
   | 'Traffic Stop' | 'Suspicious Activity' | 'Robbery' | 'Assault' | 'Shots Fired'
-  | 'Welfare Check' | 'Disturbance' | 'Traffic Accident' | 'Cyber Crime' | 'Other';
+  | 'Welfare Check' | 'Disturbance' | 'Traffic Accident' | 'Cyber Crime'
+  | 'Structure Fire' | 'Vehicle Fire' | 'Medical Emergency' | 'Hazmat' | 'Rescue' | 'Other';
 type CallStatus = 'Pending' | 'En Route' | 'On Scene' | 'Resolved' | 'Cancelled';
 type Priority = 'Low' | 'Medium' | 'High' | 'Emergency';
 type Faction = 'Policía' | 'Sheriff' | 'Bomberos';
@@ -51,13 +52,20 @@ const TYPE_LABEL: Record<CallType, string> = {
   'Disturbance': 'Disturbio',
   'Traffic Accident': 'Accidente de tránsito',
   'Cyber Crime': 'Delito cibernético',
+  'Structure Fire': 'Incendio estructural',
+  'Vehicle Fire': 'Incendio de vehículo',
+  'Medical Emergency': 'Emergencia médica',
+  'Hazmat': 'Materiales peligrosos',
+  'Rescue': 'Rescate',
   'Other': 'Otro',
 };
 
 const PRIORITY_BY_TYPE: Record<CallType, Priority> = {
   'Shots Fired': 'Emergency', 'Robbery': 'Emergency', 'Assault': 'High', 'Traffic Accident': 'High',
   'Disturbance': 'Medium', 'Suspicious Activity': 'Medium', 'Welfare Check': 'Medium',
-  'Traffic Stop': 'Low', 'Cyber Crime': 'Low', 'Other': 'Medium',
+  'Traffic Stop': 'Low', 'Cyber Crime': 'Low',
+  'Structure Fire': 'Emergency', 'Hazmat': 'Emergency', 'Medical Emergency': 'High', 'Rescue': 'High', 'Vehicle Fire': 'High',
+  'Other': 'Medium',
 };
 
 const PRIORITY_STYLE: Record<Priority, { label: string; bg: string; text: string; ring: string; dot: string }> = {
@@ -90,7 +98,7 @@ const FACTIONS: { id: Faction; label: string; blurb: string; icon: React.Element
 const TYPES_BY_FACTION: Record<Faction, CallType[]> = {
   'Policía': ['Robbery', 'Assault', 'Shots Fired', 'Suspicious Activity', 'Disturbance', 'Traffic Stop', 'Cyber Crime', 'Other'],
   'Sheriff': ['Robbery', 'Assault', 'Shots Fired', 'Suspicious Activity', 'Disturbance', 'Welfare Check', 'Other'],
-  'Bomberos': ['Traffic Accident', 'Welfare Check', 'Other'],
+  'Bomberos': ['Structure Fire', 'Vehicle Fire', 'Medical Emergency', 'Hazmat', 'Rescue', 'Traffic Accident', 'Other'],
 };
 
 function timeAgo(iso: string) {

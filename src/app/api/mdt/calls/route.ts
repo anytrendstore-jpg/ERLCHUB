@@ -10,7 +10,9 @@ export async function GET() {
 
   try {
     const col = await mdtCallsCollection();
-    const docs = await col.find({}).sort({ createdAt: -1 }).limit(300).toArray();
+    // LSFD tiene su propia lectura filtrada en /api/fd/calls — acá se excluyen
+    // explícitamente para que el CAD de LSPD no muestre incidentes de Bomberos.
+    const docs = await col.find({ faction: { $ne: 'Bomberos' } }).sort({ createdAt: -1 }).limit(300).toArray();
     return NextResponse.json({ success: true, calls: docs.map(({ _id, ...c }: any) => c) });
   } catch (error) {
     console.error('Error listando llamadas del CAD:', error);

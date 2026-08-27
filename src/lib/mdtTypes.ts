@@ -27,7 +27,7 @@ export interface Officer {
 }
 
 export type CallPriority = "Low" | "Medium" | "High" | "Emergency";
-export type CallType = "Traffic Stop" | "Suspicious Activity" | "Robbery" | "Assault" | "Shots Fired" | "Welfare Check" | "Disturbance" | "Traffic Accident" | "Cyber Crime" | "Other";
+export type CallType = "Traffic Stop" | "Suspicious Activity" | "Robbery" | "Assault" | "Shots Fired" | "Welfare Check" | "Disturbance" | "Traffic Accident" | "Cyber Crime" | "Structure Fire" | "Vehicle Fire" | "Medical Emergency" | "Hazmat" | "Rescue" | "Other";
 export type CallStatus = "Pending" | "En Route" | "On Scene" | "Resolved" | "Cancelled";
 
 export interface CallSuspect {

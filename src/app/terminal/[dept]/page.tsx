@@ -5,9 +5,11 @@ import { useParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useDiscordAuth } from '@/hooks/useDiscordAuth';
 import { MDTProvider } from '@/contexts/MDTContext';
+import { FDProvider } from '@/contexts/FDContext';
 import { DepartmentProvider } from '@/contexts/DepartmentContext';
 import { getDepartment } from '@/lib/departments';
 import InstitutionalTerminalApp from '@/components/terminal/InstitutionalTerminalApp';
+import FDTerminalApp from '@/components/terminal/FDTerminalApp';
 
 /** Solo en desarrollo — nunca debe estar disponible en producción. */
 const DEMO_ALLOWED = process.env.NODE_ENV !== 'production';
@@ -82,9 +84,15 @@ export default function DepartmentTerminalPage() {
     return (
       <div className="h-screen w-screen overflow-hidden">
         <DepartmentProvider department={department}>
-          <MDTProvider>
-            <InstitutionalTerminalApp demo />
-          </MDTProvider>
+          {department.kind === 'fire' ? (
+            <FDProvider>
+              <FDTerminalApp demo />
+            </FDProvider>
+          ) : (
+            <MDTProvider>
+              <InstitutionalTerminalApp demo />
+            </MDTProvider>
+          )}
         </DepartmentProvider>
       </div>
     );
@@ -112,9 +120,15 @@ export default function DepartmentTerminalPage() {
   return (
     <div className="h-screen w-screen overflow-hidden">
       <DepartmentProvider department={department}>
-        <MDTProvider>
-          <InstitutionalTerminalApp />
-        </MDTProvider>
+        {department.kind === 'fire' ? (
+          <FDProvider>
+            <FDTerminalApp />
+          </FDProvider>
+        ) : (
+          <MDTProvider>
+            <InstitutionalTerminalApp />
+          </MDTProvider>
+        )}
       </DepartmentProvider>
     </div>
   );
