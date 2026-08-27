@@ -1,7 +1,7 @@
 import type { Collection } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import crypto from 'crypto';
-import type { Firefighter, FireIncidentReport, FDMessage, IncidentCommand, FDEquipment, FDCertification, FDCase, FDAuditLog, FDAuditAction } from '@/lib/fdTypes';
+import type { Firefighter, FireIncidentReport, FDMessage, IncidentCommand, FDEquipment, FDCertification, FDCase, FDPatient, FDAuditLog, FDAuditAction } from '@/lib/fdTypes';
 
 export interface FDFirefighterDoc extends Firefighter {
   discordId: string;
@@ -60,6 +60,14 @@ export async function fdCasesCollection(): Promise<Collection<FDCase>> {
   const col = db.collection<FDCase>('fd_cases');
   await col.createIndex({ createdAt: -1 }).catch(() => {});
   await col.createIndex({ status: 1 }).catch(() => {});
+  return col;
+}
+
+export async function fdPatientsCollection(): Promise<Collection<FDPatient>> {
+  const db = await connectToDatabase();
+  const col = db.collection<FDPatient>('fd_patients');
+  await col.createIndex({ createdAt: -1 }).catch(() => {});
+  await col.createIndex({ callId: 1 }).catch(() => {});
   return col;
 }
 

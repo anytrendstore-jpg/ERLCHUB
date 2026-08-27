@@ -11,6 +11,7 @@ import FDMessages from "@/components/os/apps/fd/FDMessages";
 import FDIncidentCommand from "@/components/os/apps/fd/FDIncidentCommand";
 import FDMap from "@/components/os/apps/fd/FDMap";
 import FDEquipment from "@/components/os/apps/fd/FDEquipment";
+import FDPatients from "@/components/os/apps/fd/FDPatients";
 import FDAcademy from "@/components/os/apps/fd/FDAcademy";
 import FDAudit from "./panels/FDAudit";
 import FDSettings from "./panels/FDSettings";
@@ -30,6 +31,7 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-alerts": "Alertas",
   "fd-command": "Comando de Incidentes",
   "fd-map": "Mapa Operativo",
+  "fd-patients": "Pacientes",
   "fd-equipment": "Equipo",
   "fd-academy": "Academia",
   "fd-personnel": "Personal",
@@ -56,6 +58,7 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-alerts": bareFullBleed(FDAlertsPanel),
   "fd-command": bareFullBleed(FDIncidentCommand),
   "fd-map": bareFullBleed(FDMap),
+  "fd-patients": bareFullBleed(FDPatients),
   "fd-equipment": bareFullBleed(FDEquipment),
   "fd-academy": bareFullBleed(FDAcademy),
   "fd-personnel": bareFullBleed(FDPersonnelPanel),

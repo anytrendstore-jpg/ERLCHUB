@@ -113,6 +113,33 @@ export interface FDCertification {
   createdAt: Date;
 }
 
+/** Pacientes/EMS — registro de atención prehospitalaria (PCR), separado de FireIncidentReport (ese es el reporte del incidente, no del paciente). */
+export type FDPatientStatus = "Treated on Scene" | "Transported" | "Refused Care" | "DOA";
+
+export interface FDVitals {
+  bp?: string;
+  hr?: string;
+  rr?: string;
+  spo2?: string;
+  gcs?: string;
+}
+
+export interface FDPatient {
+  id: string;
+  callId?: string;
+  name: string;
+  ageEstimate?: string;
+  chiefComplaint: string;
+  vitals: FDVitals;
+  treatment?: string;
+  hospital?: string;
+  status: FDPatientStatus;
+  treatedById: string;
+  treatedByName: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 /** Investigaciones — casos de incendio sospechoso/causa a determinar, distintos de un reporte de incidente de rutina. */
 export type FDCaseStatus = "Open" | "Under Investigation" | "Closed" | "Referred";
 
@@ -136,7 +163,7 @@ export interface FDCase {
 export type FDAuditAction =
   | "login" | "logout" | "create_report" | "edit_report" | "assign_command"
   | "issue_certification" | "revoke_certification" | "update_equipment" | "send_message" | "modify_call"
-  | "open_case" | "update_case" | "other";
+  | "open_case" | "update_case" | "log_patient" | "update_patient" | "other";
 
 export interface FDAuditLog {
   id: string;
