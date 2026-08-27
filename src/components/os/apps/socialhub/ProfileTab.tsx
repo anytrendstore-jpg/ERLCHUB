@@ -11,6 +11,7 @@ import VerifiedBadge from './VerifiedBadge';
 import EditProfileModal from './EditProfileModal';
 import ProfileGrid from './ProfileGrid';
 import PostDetailModal from './PostDetailModal';
+import FollowListModal from './FollowListModal';
 
 export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpenProfile, onOpenPage }: {
   discordId: string;
@@ -28,6 +29,7 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
   const [editing, setEditing] = useState(false);
   const [messaging, setMessaging] = useState(false);
   const [openPost, setOpenPost] = useState<Post | null>(null);
+  const [followList, setFollowList] = useState<'followers' | 'following' | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/social/profile?discordId=${discordId}`, { cache: 'no-store' });
@@ -136,8 +138,12 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
 
           <div className="flex items-center gap-6 mb-3">
             <span className="text-sm"><b className="text-white tabular-nums">{stats.postsCount}</b> <span className="text-white/50">publicaciones</span></span>
-            <span className="text-sm"><b className="text-white tabular-nums">{stats.followersCount}</b> <span className="text-white/50">seguidores</span></span>
-            <span className="text-sm"><b className="text-white tabular-nums">{stats.followingCount}</b> <span className="text-white/50">seguidos</span></span>
+            <button onClick={() => setFollowList('followers')} className="text-sm hover:opacity-80 transition-opacity">
+              <b className="text-white tabular-nums">{stats.followersCount}</b> <span className="text-white/50">seguidores</span>
+            </button>
+            <button onClick={() => setFollowList('following')} className="text-sm hover:opacity-80 transition-opacity">
+              <b className="text-white tabular-nums">{stats.followingCount}</b> <span className="text-white/50">seguidos</span>
+            </button>
           </div>
 
           {profile.bio && <p className="text-white/70 text-sm whitespace-pre-wrap leading-relaxed">{profile.bio}</p>}
@@ -191,6 +197,15 @@ export default function ProfileTab({ discordId, me, onBack, onUpdatedSelf, onOpe
             setProfile(updated);
             onUpdatedSelf(updated);
           }}
+        />
+      )}
+
+      {followList && (
+        <FollowListModal
+          discordId={discordId}
+          type={followList}
+          onClose={() => setFollowList(null)}
+          onOpenProfile={onOpenProfile}
         />
       )}
 
