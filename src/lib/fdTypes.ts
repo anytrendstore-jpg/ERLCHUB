@@ -113,9 +113,30 @@ export interface FDCertification {
   createdAt: Date;
 }
 
+/** Investigaciones — casos de incendio sospechoso/causa a determinar, distintos de un reporte de incidente de rutina. */
+export type FDCaseStatus = "Open" | "Under Investigation" | "Closed" | "Referred";
+
+export interface FDCase {
+  id: string;
+  caseNumber: string;
+  title: string;
+  narrative: string;
+  status: FDCaseStatus;
+  relatedCallId?: string;
+  leadFirefighterId: string;
+  leadFirefighterName: string;
+  location: string;
+  openedAt: Date;
+  closedAt?: Date;
+  findings?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type FDAuditAction =
   | "login" | "logout" | "create_report" | "edit_report" | "assign_command"
-  | "issue_certification" | "revoke_certification" | "update_equipment" | "send_message" | "modify_call" | "other";
+  | "issue_certification" | "revoke_certification" | "update_equipment" | "send_message" | "modify_call"
+  | "open_case" | "update_case" | "other";
 
 export interface FDAuditLog {
   id: string;

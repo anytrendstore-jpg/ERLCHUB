@@ -6,6 +6,7 @@ import FDAlertsPanel from "./panels/FDAlertsPanel";
 import AdminFactionPanel from "./panels/AdminFactionPanel";
 import FDCAD from "@/components/os/apps/fd/FDCAD";
 import FDReports from "@/components/os/apps/fd/FDReports";
+import FDInvestigations from "@/components/os/apps/fd/FDInvestigations";
 import FDMessages from "@/components/os/apps/fd/FDMessages";
 import FDIncidentCommand from "@/components/os/apps/fd/FDIncidentCommand";
 import FDEquipment from "@/components/os/apps/fd/FDEquipment";
@@ -29,6 +30,7 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-academy": "Academia",
   "fd-personnel": "Personal",
   "fd-reports": "Reportes",
+  "fd-investigations": "Investigaciones",
   "fd-messages": "Mensajes",
   "fd-audit": "Auditoría",
   admin: "Administración",
@@ -51,6 +53,7 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-academy": bareFullBleed(FDAcademy),
   "fd-personnel": bareFullBleed(FDPersonnelPanel),
   "fd-reports": bareFullBleed(FDReports),
+  "fd-investigations": bareFullBleed(FDInvestigations),
   "fd-messages": bareFullBleed(FDMessages),
   "fd-audit": bareFullBleed(FDAudit),
   admin: AdminFactionPanel,
