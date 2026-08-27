@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { currentMDTUser, mdtCallsCollection } from '@/lib/mdtServer';
+import { currentMDTUser, mdtCallsCollection, mdtPersonsCollection, mdtVehiclesCollection } from '@/lib/mdtServer';
 import { fdFirefightersCollection, fdCasesCollection, fdEquipmentCollection, fdCertificationsCollection } from '@/lib/fdServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
 
 export const dynamic = 'force-dynamic';
 
 const RESULTS_PER_CATEGORY = 6;
-const EMPTY = { personnel: [], calls: [], cases: [], equipment: [], certifications: [] };
+const EMPTY = { personnel: [], calls: [], cases: [], equipment: [], certifications: [], persons: [], vehicles: [] };
 
 /** Búsqueda global de LSFD — espejo de /api/mdt/search, sobre las colecciones propias de bomberos. */
 export async function GET(request: NextRequest) {
@@ -21,16 +21,19 @@ export async function GET(request: NextRequest) {
   const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
 
   try {
-    const [personnelCol, callsCol, casesCol, equipmentCol, certsCol] = await Promise.all([
-      fdFirefightersCollection(), mdtCallsCollection(), fdCasesCollection(), fdEquipmentCollection(), fdCertificationsCollection(),
+    const [personnelCol, callsCol, casesCol, equipmentCol, certsCol, personsCol, vehiclesCol] = await Promise.all([
+      fdFirefightersCollection(), mdtCallsCollection(), fdCasesCollection(), fdEquipmentCollection(), fdCertificationsCollection(), mdtPersonsCollection(), mdtVehiclesCollection(),
     ]);
 
-    const [personnelDocs, callDocs, caseDocs, equipmentDocs, certDocs] = await Promise.all([
+    const [personnelDocs, callDocs, caseDocs, equipmentDocs, certDocs, personDocs, vehicleDocs] = await Promise.all([
       personnelCol.find({ $or: [{ firstName: rx }, { lastName: rx }, { badgeNumber: rx }, { callsign: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
       callsCol.find({ faction: 'Bomberos', $or: [{ title: rx }, { location: rx }, { type: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
       casesCol.find({ $or: [{ caseNumber: rx }, { title: rx }, { location: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
       equipmentCol.find({ $or: [{ name: rx }, { assetTag: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
       certsCol.find({ $or: [{ name: rx }, { firefighterName: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
+      // Solo lectura — consulta situacional en escena (¿quién vive acá? ¿de quién es este vehículo?), LSFD nunca edita estas colecciones.
+      personsCol.find({ $or: [{ firstName: rx }, { lastName: rx }, { address: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
+      vehiclesCol.find({ $or: [{ plate: rx }, { make: rx }, { model: rx }, { registeredOwner: rx }] }).limit(RESULTS_PER_CATEGORY).toArray(),
     ]);
 
     return NextResponse.json({
@@ -41,6 +44,8 @@ export async function GET(request: NextRequest) {
         cases: caseDocs.map((c: any) => ({ id: c.id, caseNumber: c.caseNumber, title: c.title, status: c.status })),
         equipment: equipmentDocs.map((e: any) => ({ id: e.id, name: e.name, category: e.category, status: e.status })),
         certifications: certDocs.map((c: any) => ({ id: c.id, name: c.name, firefighterName: c.firefighterName, status: c.status })),
+        persons: personDocs.map((p: any) => ({ id: p.id, firstName: p.firstName, lastName: p.lastName, address: p.address, flags: p.flags })),
+        vehicles: vehicleDocs.map((v: any) => ({ id: v.id, plate: v.plate, make: v.make, model: v.model, registeredOwner: v.registeredOwner, isStolen: v.isStolen })),
       },
     });
   } catch (error) {
