@@ -79,6 +79,7 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "dashboard", label: "Dashboard", icon: "LayoutDashboard", minLevel: 1, contentKind: "fd-dashboard" },
   { id: "cad", label: "Despacho", icon: "Siren", minLevel: 1, contentKind: "fd-cad" },
   { id: "radio", label: "Radio", icon: "Radio", minLevel: 1, contentKind: "fd-radio" },
+  { id: "alerts", label: "Alertas", icon: "AlertTriangle", minLevel: 1, contentKind: "fd-alerts" },
   { id: "personnel", label: "Personal", icon: "Users", minLevel: 1, contentKind: "fd-personnel" },
   { id: "reports", label: "Reportes", icon: "FileText", minLevel: 1, contentKind: "fd-reports" },
   { id: "messages", label: "Mensajes", icon: "MessageSquare", minLevel: 1, contentKind: "fd-messages" },

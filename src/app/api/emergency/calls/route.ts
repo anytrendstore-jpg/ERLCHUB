@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { currentSocialUser, isSocialSuspended } from '@/lib/socialServer';
 import { mdtCallsCollection } from '@/lib/mdtServer';
+import { fdFirefightersCollection } from '@/lib/fdServer';
+import { notifyUser } from '@/lib/notificationsServer';
 import type { CallType, CallPriority, EmergencyFaction } from '@/lib/mdtTypes';
 
 export const dynamic = 'force-dynamic';
@@ -91,6 +93,23 @@ export async function POST(request: NextRequest) {
       notes: [],
     };
     await col.insertOne(doc as any);
+
+    // Alerta crítica real al personal de LSFD en servicio — nunca a todos los bomberos
+    // registrados, solo a quien esté onDuty, y solo para incidentes de prioridad Emergency.
+    if (faction === 'Bomberos' && doc.priority === 'Emergency') {
+      const firefighters = await fdFirefightersCollection();
+      const onDuty = await firefighters.find({ onDuty: true }).toArray();
+      await Promise.all(
+        onDuty.map((f) =>
+          notifyUser(f.discordId, {
+            title: `Alerta crítica — ${type}`,
+            message: `${location}: ${description.slice(0, 120)}`,
+            type: 'error',
+            appId: 'lsfd',
+          }).catch(() => {})
+        )
+      );
+    }
 
     return NextResponse.json({ success: true, call: doc });
   } catch (error) {

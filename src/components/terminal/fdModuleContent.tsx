@@ -2,6 +2,7 @@
 
 import FDDashboardPanel from "./panels/FDDashboardPanel";
 import FDPersonnelPanel from "./panels/FDPersonnelPanel";
+import FDAlertsPanel from "./panels/FDAlertsPanel";
 import AdminFactionPanel from "./panels/AdminFactionPanel";
 import FDCAD from "@/components/os/apps/fd/FDCAD";
 import FDReports from "@/components/os/apps/fd/FDReports";
@@ -18,6 +19,7 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-dashboard": "Dashboard",
   "fd-cad": "Despacho",
   "fd-radio": "Radio",
+  "fd-alerts": "Alertas",
   "fd-personnel": "Personal",
   "fd-reports": "Reportes",
   "fd-messages": "Mensajes",
@@ -35,6 +37,7 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-dashboard": bareFullBleed(FDDashboardPanel),
   "fd-cad": bareFullBleed(FDCAD),
   "fd-radio": bareFullBleed(RadioApp),
+  "fd-alerts": bareFullBleed(FDAlertsPanel),
   "fd-personnel": bareFullBleed(FDPersonnelPanel),
   "fd-reports": bareFullBleed(FDReports),
   "fd-messages": bareFullBleed(FDMessages),
