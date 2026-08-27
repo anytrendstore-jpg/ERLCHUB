@@ -81,6 +81,23 @@ export interface IncidentCommand {
   updatedAt: Date;
 }
 
+/** Inventario de equipo/flota — SCBA, mangueras, aparatos, EPP. Concepto sin análogo en el MDT de policía. */
+export type FDEquipmentCategory = "Apparatus" | "SCBA" | "Hose" | "Medical" | "Tool" | "PPE" | "Other";
+export type FDEquipmentStatus = "In Service" | "Out of Service" | "Maintenance" | "Reserve";
+
+export interface FDEquipment {
+  id: string;
+  name: string;
+  category: FDEquipmentCategory;
+  assetTag?: string;
+  unit?: string;
+  status: FDEquipmentStatus;
+  lastInspection?: Date;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface FDState {
   isAuthenticated: boolean;
   currentFirefighter: (Firefighter & { rankName: string; rankLevel: number }) | null;
