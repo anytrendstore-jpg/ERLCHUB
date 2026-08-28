@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Loader2, AlertCircle,
   Shield, Users, MessageCircle,
-  Gamepad2, FileText, CreditCard
+  Gamepad2, FileText, CreditCard, Zap
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
@@ -164,6 +164,22 @@ export default function WhitelistPage() {
                   <div className="text-[var(--text-faint)] text-xs">Revisión Máx.</div>
                 </div>
               </div>
+
+              <Link
+                href="/tienda#whitelist-fast"
+                className="flex items-center gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#8e00f7]/15 to-[#a64dfa]/10 border border-[#8e00f7]/30 hover:border-[#8e00f7]/50 transition-colors group"
+              >
+                <div className="w-11 h-11 rounded-xl bg-[#8e00f7]/25 flex items-center justify-center flex-shrink-0">
+                  <Zap className="h-5 w-5 text-[#8e00f7]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[var(--foreground)] font-semibold text-sm">¿No querés esperar la revisión?</h3>
+                  <p className="text-[var(--text-muted)] text-xs mt-0.5">Con Whitelist Fast activás tu acceso al instante, sin entrevista.</p>
+                </div>
+                <span className="flex-shrink-0 text-xs font-semibold bg-[#8e00f7] group-hover:bg-[#7a00d4] text-white px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap">
+                  Ver oferta
+                </span>
+              </Link>
             </div>
 
             <div className="order-1 lg:order-2 animate-modal-card">

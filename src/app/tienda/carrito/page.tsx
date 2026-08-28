@@ -48,8 +48,29 @@ export default function CartPage() {
   }, [currencies]);
 
   useEffect(() => {
-    if (appliedDiscount || appliedReferral) setShowCodes(true);
+    if ((appliedDiscount && !appliedDiscount.autoApplied) || appliedReferral) setShowCodes(true);
   }, [appliedDiscount, appliedReferral]);
+
+  const [firstPurchaseEligible, setFirstPurchaseEligible] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) {
+      setFirstPurchaseEligible(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/discounts/first-purchase?userId=${user.id}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled || !d.success) return;
+        setFirstPurchaseEligible(d.eligible);
+        setAppliedDiscount((prev: any) => {
+          if (prev || !d.eligible) return prev;
+          return { code: d.code, discountPercentage: d.discountPercentage, description: 'Descuento de bienvenida', autoApplied: true };
+        });
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthenticated, user?.id]);
 
   const [recommended, setRecommended] = useState<any[]>([]);
   useEffect(() => {
@@ -109,7 +130,7 @@ export default function CartPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code: discountCode.trim() })
+        body: JSON.stringify({ code: discountCode.trim(), userId: user?.id })
       });
 
       const result = await response.json();
@@ -195,7 +216,7 @@ export default function CartPage() {
       const response = await fetch('/api/shop/checkout/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, items: checkoutItems }),
+        body: JSON.stringify({ userId: user.id, items: checkoutItems, discountCode: appliedDiscount?.code }),
       });
 
       const data = await response.json();
@@ -392,6 +413,23 @@ export default function CartPage() {
     notify('success', `${c._kind === 'hub-coins' ? `${c.coins.toLocaleString()} Hub Coins` : c.name} agregado al carrito`);
   };
 
+  const renderWelcomeBanner = () => {
+    if (firstPurchaseEligible === false) return null;
+    return (
+      <div className="flex items-center gap-3 bg-gradient-to-r from-[#8e00f7]/15 to-emerald-500/10 border border-[#8e00f7]/30 rounded-xl px-4 py-3 mb-6">
+        <div className="w-9 h-9 rounded-lg bg-[#8e00f7]/25 flex items-center justify-center flex-shrink-0">
+          <Sparkles className="h-4.5 w-4.5 text-[#8e00f7]" />
+        </div>
+        <p className="text-sm text-[var(--foreground)]">
+          <strong className="text-[#8e00f7]">15% OFF</strong> en tu primera compra
+          {isAuthenticated
+            ? " — ya está aplicado automáticamente a tu carrito."
+            : ". Iniciá sesión y se aplica solo, sin códigos que recordar."}
+        </p>
+      </div>
+    );
+  };
+
   const renderRecommended = () => {
     if (recommended.length === 0) return null;
     return (
@@ -478,6 +516,8 @@ export default function CartPage() {
 
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
+            <div className="text-left mb-8">{renderWelcomeBanner()}</div>
+
             <div className="w-24 h-24 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="h-12 w-12 text-[#8e00f7]" />
             </div>
@@ -524,6 +564,8 @@ export default function CartPage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
+          {renderWelcomeBanner()}
+
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">Carrito de Compras</h1>
@@ -760,7 +802,7 @@ export default function CartPage() {
                             </div>
                             {appliedDiscount && (
                               <div className="text-green-500 text-xs mt-2">
-                                ✓ Cupón aplicado: {appliedDiscount.discountPercentage}% de descuento
+                                ✓ {appliedDiscount.autoApplied ? 'Descuento de bienvenida' : 'Cupón aplicado'}: {appliedDiscount.discountPercentage}% de descuento
                               </div>
                             )}
                           </div>

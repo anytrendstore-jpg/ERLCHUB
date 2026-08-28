@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { shopCatalogCollection } from '@/lib/shopCatalogServer';
 import { createOrder, type ShopOrderItem } from '@/lib/shopOrdersServer';
 import { getUsdToCopRate } from '@/lib/exchangeRatesServer';
+import { connectToDatabase } from '@/lib/mongodb';
+import { hasCompletedPurchase } from '@/lib/firstPurchaseDiscountServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Pagos no configurados (falta WOMPI_INTEGRITY_KEY)' }, { status: 500 });
     }
 
-    const { userId, items } = await request.json();
+    const { userId, items, discountCode } = await request.json();
     if (!userId) return NextResponse.json({ success: false, error: 'Sin sesión' }, { status: 401 });
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ success: false, error: 'El carrito está vacío' }, { status: 400 });
@@ -65,11 +67,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Monto inválido' }, { status: 400 });
     }
 
+    const originalAmountUSD = amountUSD;
+    let appliedDiscountCode: string | undefined;
+    let appliedDiscountPercentage: number | undefined;
+
+    if (discountCode && typeof discountCode === 'string') {
+      const normalizedCode = discountCode.toUpperCase().trim();
+      const db = await connectToDatabase();
+      const codeDoc = await db.collection('discount_codes').findOne({ code: normalizedCode, isActive: true });
+
+      if (!codeDoc) {
+        return NextResponse.json({ success: false, error: 'Código de descuento no válido o expirado' }, { status: 400 });
+      }
+      if (new Date(codeDoc.expiresAt) < new Date()) {
+        return NextResponse.json({ success: false, error: 'Código de descuento expirado' }, { status: 400 });
+      }
+      if (codeDoc.maxUses && codeDoc.usageCount >= codeDoc.maxUses) {
+        return NextResponse.json({ success: false, error: 'Código de descuento ha alcanzado el límite de usos' }, { status: 400 });
+      }
+      // Nunca se confía en que el navegador diga "soy elegible" — se revisa de nuevo acá,
+      // justo antes de cobrar de verdad, aunque ya se haya revisado al validar el código.
+      if (codeDoc.firstPurchaseOnly && await hasCompletedPurchase(userId)) {
+        return NextResponse.json({ success: false, error: 'Ese código es solo para tu primera compra' }, { status: 400 });
+      }
+
+      amountUSD = amountUSD * (1 - codeDoc.discountPercentage / 100);
+      appliedDiscountCode = normalizedCode;
+      appliedDiscountPercentage = codeDoc.discountPercentage;
+    }
+
     const usdToCop = await getUsdToCopRate();
     const amountInCents = Math.round(amountUSD * usdToCop * 100);
     const reference = generateReference();
 
-    await createOrder({ reference, discordId: userId, items: orderItems, amountUSD, amountInCents });
+    await createOrder({
+      reference,
+      discordId: userId,
+      items: orderItems,
+      amountUSD,
+      amountInCents,
+      discountCode: appliedDiscountCode,
+      discountPercentage: appliedDiscountPercentage,
+      originalAmountUSD: appliedDiscountCode ? originalAmountUSD : undefined,
+    });
 
     const signature = crypto
       .createHash('sha256')

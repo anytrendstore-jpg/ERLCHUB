@@ -29,6 +29,10 @@ export interface ShopOrder {
   currency: 'COP';
   status: 'pending' | 'delivering' | 'completed' | 'failed';
   failReason?: string;
+  /** Cupón aplicado a esta orden (si hubo uno) y el monto original antes de descontarlo, para trazabilidad. */
+  discountCode?: string;
+  discountPercentage?: number;
+  originalAmountUSD?: number;
   /** Payment Source de Wompi usado para este cobro (compra inicial con auto-renovación, o una renovación automática) — ausente en pagos únicos por widget. */
   paymentSourceId?: number;
   /** true si esta orden es una renovación automática disparada por el cron, no una compra iniciada por el usuario. */
@@ -54,6 +58,9 @@ export async function createOrder(input: {
   amountInCents: number;
   paymentSourceId?: number;
   isRenewal?: boolean;
+  discountCode?: string;
+  discountPercentage?: number;
+  originalAmountUSD?: number;
 }): Promise<ShopOrder> {
   const col = await shopOrdersCollection();
   const now = new Date();
@@ -68,6 +75,9 @@ export async function createOrder(input: {
     status: 'pending',
     paymentSourceId: input.paymentSourceId,
     isRenewal: input.isRenewal,
+    discountCode: input.discountCode,
+    discountPercentage: input.discountPercentage,
+    originalAmountUSD: input.originalAmountUSD,
     createdAt: now,
     updatedAt: now,
   };

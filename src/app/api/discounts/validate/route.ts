@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import { hasCompletedPurchase } from '@/lib/firstPurchaseDiscountServer';
 
 export async function POST(request: NextRequest) {
   try {
-    const { code } = await request.json();
+    const { code, userId } = await request.json();
 
     if (!code) {
       return NextResponse.json({ 
@@ -37,10 +38,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (discountCode.maxUses && discountCode.usageCount >= discountCode.maxUses) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Código de descuento ha alcanzado el límite de usos' 
+      return NextResponse.json({
+        success: false,
+        error: 'Código de descuento ha alcanzado el límite de usos'
       }, { status: 400 });
+    }
+
+    if (discountCode.firstPurchaseOnly) {
+      if (!userId) {
+        return NextResponse.json({
+          success: false,
+          error: 'Iniciá sesión para usar este código'
+        }, { status: 401 });
+      }
+      if (await hasCompletedPurchase(userId)) {
+        return NextResponse.json({
+          success: false,
+          error: 'Este código es solo para tu primera compra'
+        }, { status: 400 });
+      }
     }
 
     await db.collection('discount_codes').updateOne(

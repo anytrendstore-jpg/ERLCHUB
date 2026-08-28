@@ -15,7 +15,8 @@ import {
   Check,
   Star,
   Clock,
-  ShoppingCart
+  ShoppingCart,
+  Sparkles
 } from "lucide-react";
 import type { Membership, Kit } from "@/lib/types";
 import { convertPrice, formatNumber } from "@/lib/shopData";
@@ -24,6 +25,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useTiendaStats } from "@/hooks/useTiendaStats";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { usePresence } from "@/hooks/usePresence";
+import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductCard from "@/components/tienda/ProductCard";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
@@ -51,6 +53,19 @@ export default function TiendaPage() {
   const { stats: tiendaStats, loading: statsLoading } = useTiendaStats();
   const { addItem } = useCart();
   const presenceCount = usePresence("tienda");
+  const { isAuthenticated, user } = useDiscordAuth();
+  const [firstPurchaseEligible, setFirstPurchaseEligible] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) {
+      setFirstPurchaseEligible(null);
+      return;
+    }
+    fetch(`/api/discounts/first-purchase?userId=${user.id}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.success) setFirstPurchaseEligible(d.eligible); })
+      .catch(() => {});
+  }, [isAuthenticated, user?.id]);
 
   // El tipo de cambio real llega asincrónico — cuando actualiza, se refresca la tasa de la
   // moneda ya elegida (preservando la elección del usuario) en vez de quedarse con el valor
@@ -130,6 +145,22 @@ export default function TiendaPage() {
 
       <div className="pt-8 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
+
+          {firstPurchaseEligible !== false && (
+            <div className="mb-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 bg-gradient-to-r from-[#8e00f7]/20 via-[#8e00f7]/10 to-emerald-500/10 border border-[#8e00f7]/30 rounded-2xl px-5 py-4 sm:px-6 sm:py-5 text-center sm:text-left">
+              <div className="w-12 h-12 rounded-xl bg-[#8e00f7]/25 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="h-6 w-6 text-[#8e00f7]" />
+              </div>
+              <div>
+                <p className="text-[var(--foreground)] font-bold">15% OFF en tu primera compra</p>
+                <p className="text-[var(--text-muted)] text-sm">
+                  {isAuthenticated
+                    ? "Se aplica automáticamente al pagar — sin códigos que recordar."
+                    : "Iniciá sesión y se aplica solo, sin códigos que recordar."}
+                </p>
+              </div>
+            </div>
+          )}
 
           <section id="hubcoins" className="mb-12 scroll-mt-24">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#8e00f7]/20 via-[#8e00f7]/10 to-[#a64dfa]/20 border border-[#8e00f7]/30">
