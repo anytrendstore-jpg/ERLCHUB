@@ -77,13 +77,15 @@ export default function DocumentCard2D({
 
             {layout.panel && (
               <div
-                className="absolute rounded-lg backdrop-blur-[1px]"
+                className="absolute rounded-xl backdrop-blur-[2px]"
                 style={{
                   left: `${layout.panel.x * 100}%`,
                   top: `${layout.panel.y * 100}%`,
                   width: `${layout.panel.w * 100}%`,
                   height: `${layout.panel.h * 100}%`,
-                  background: "rgba(255,255,255,0.55)",
+                  background: "rgba(255,255,255,0.74)",
+                  border: "1px solid rgba(0,0,0,0.07)",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
                 }}
               />
             )}
@@ -96,17 +98,25 @@ export default function DocumentCard2D({
                   top: `${(layout.photo.y - layout.photo.h / 2) * 100}%`,
                   width: `${layout.photo.w * 100}%`,
                   height: `${layout.photo.h * 100}%`,
-                  borderRadius: layout.photo.shape === "circle" ? "50%" : "3px",
+                  borderRadius: layout.photo.shape === "circle" ? "50%" : "4px",
+                  border: "2px solid rgba(0,0,0,0.22)",
+                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.4)",
                 }}
               >
                 {photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={photoUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-black/15">
-                    <svg viewBox="0 0 24 24" className="w-1/2 h-1/2 text-black/35" fill="currentColor">
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 bg-black/10">
+                    <svg viewBox="0 0 24 24" className="w-[38%] h-[38%] text-black/30" fill="currentColor">
                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                     </svg>
+                    <span
+                      className="text-black/40 font-semibold tracking-wide"
+                      style={{ fontSize: "6.5cqw", fontFamily: "Arial, sans-serif" }}
+                    >
+                      SIN FOTO
+                    </span>
                   </div>
                 )}
               </div>

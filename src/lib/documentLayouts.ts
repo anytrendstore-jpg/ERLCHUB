@@ -66,31 +66,34 @@ function licenseFields(): DocumentField[] {
 }
 
 /**
- * Diseño nuevo de California: es un template en blanco (sin campos impresos),
- * así que aquí sí dibujamos también las etiquetas, con un panel translúcido
- * detrás para que se lean bien sobre la ilustración de fondo.
+ * Diseño nuevo de California: es un template en blanco (sin campos impresos
+ * más allá del encabezado "CALIFORNIA / DRIVER LICENSE"), así que acá se
+ * dibuja también el resto: una sola placa de datos debajo del encabezado con
+ * la foto en su propia columna a la izquierda y la identidad en una columna
+ * fija a la derecha — nunca se cruzan, cada dato tiene un lugar fijo.
  */
 function losSantosFields(): DocumentField[] {
-  const colA = 0.08;
-  const colB = 0.345;
+  const idCol = 0.335; // columna de identidad — arranca justo después de la foto
+  const idColWidth = 300; // ancho disponible en px (sobre un lienzo de 500px) para esa columna
+  const row3 = [idCol, idCol + 0.19, idCol + 0.38]; // sexo / altura / grupo, tres columnas iguales
   return [
-    field('firstName', colA, 0.335, { label: 'NOMBRES', weight: '700', uppercase: true, maxWidth: 130 }),
-    field('height', colB, 0.335, { label: 'ALTURA' }),
-    field('lastName', colA, 0.43, { label: 'APELLIDOS', weight: '700', uppercase: true, maxWidth: 130 }),
-    field('group', colB, 0.43, { label: 'GRUPO', maxWidth: 90 }),
-    field('birthPlace', colA, 0.525, { label: 'LUGAR DE NACIMIENTO', maxWidth: 130 }),
-    field('sex', colB, 0.525, { label: 'SEXO' }),
-    field('birthDate', colA, 0.62, { label: 'FECHA DE NACIMIENTO' }),
-    field('robloxUsername', colB, 0.62, { label: 'USUARIO ROBLOX', color: '#7c3aed', weight: '700', maxWidth: 90 }),
-    field('issuedAt', colA, 0.735, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: 240 }),
+    field('firstName', idCol, 0.365, { label: 'NOMBRE COMPLETO', size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('lastName', idCol, 0.425, { size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('birthDate', idCol, 0.515, { label: 'FECHA DE NACIMIENTO' }),
+    field('sex', row3[0], 0.615, { label: 'SEXO' }),
+    field('height', row3[1], 0.615, { label: 'ALTURA' }),
+    field('group', row3[2], 0.615, { label: 'GRUPO', maxWidth: 110 }),
+    field('issuedAt', idCol, 0.715, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
+    field('robloxUsername', idCol, 0.79, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 9, weight: '600', maxWidth: idColWidth }),
+    field('documentNumber', 0.08, 0.895, { label: 'DOCUMENT No.', size: 11, weight: '700' }),
   ];
 }
 
 export const LICENSE_LAYOUTS: Record<City, DocumentLayout> = {
   los_santos: {
     image: '/documents/license-los_santos.png', artKey: 'los_santos', fields: losSantosFields(),
-    photo: { x: 0.505, y: 0.435, w: 0.15, h: 0.34, shape: 'rect' },
-    panel: { x: 0.04, y: 0.255, w: 0.56, h: 0.55 },
+    photo: { x: 0.17, y: 0.555, w: 0.2, h: 0.47, shape: 'rect' },
+    panel: { x: 0.045, y: 0.275, w: 0.91, h: 0.645 },
   },
   liberty_city: {
     image: '/documents/license-liberty_city.png', artKey: 'liberty_city', fields: licenseFields(),

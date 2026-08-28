@@ -790,37 +790,35 @@ export default function DNIPage() {
                   </button>
                 </div>
 
-                {/* Vista previa en vivo — se actualiza en tiempo real a medida que se llena el formulario */}
-                <div className="lg:w-[560px] lg:sticky lg:top-24 w-full animate-city-panel-in" style={{ animationDelay: "100ms", animationFillMode: "backwards" }}>
-                  <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--background)] p-5 sm:p-7">
-                    <div className="flex items-center gap-2 mb-5">
-                      <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
-                      </span>
-                      <span className="text-sm font-semibold text-[var(--text-faint)] uppercase tracking-wide">Vista previa en tiempo real</span>
-                    </div>
-                    <DocumentViewer3D
-                      documentType={selectedDocument}
-                      city={selectedCity || "los_santos"}
-                      firstName={formData.firstName}
-                      lastName={formData.lastName}
-                      birthDate={formData.birthDate}
-                      birthPlace={formData.birthPlace}
-                      gender={formData.gender}
-                      height={formData.height}
-                      nationality={formData.nationality}
-                      group={formData.group}
-                      robloxUsername={formData.robloxUsername}
-                      documentNumber=""
-                      issueDate=""
-                      expiryDate=""
-                      photoUrl={photoUrl || undefined}
-                    />
-                    <p className="text-xs text-[var(--text-faint)] text-center mt-3">
-                      El número de documento se genera al confirmar
-                    </p>
+                {/* Vista previa en vivo — se actualiza en tiempo real a medida que se llena el formulario. La tarjeta flota directo sobre el fondo, sin caja alrededor. */}
+                <div className="lg:w-[520px] lg:sticky lg:top-24 w-full animate-city-panel-in" style={{ animationDelay: "100ms", animationFillMode: "backwards" }}>
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                    </span>
+                    <span className="text-xs font-semibold text-[var(--text-faint)] uppercase tracking-wide">Vista previa en tiempo real</span>
                   </div>
+                  <DocumentViewer3D
+                    documentType={selectedDocument}
+                    city={selectedCity || "los_santos"}
+                    firstName={formData.firstName}
+                    lastName={formData.lastName}
+                    birthDate={formData.birthDate}
+                    birthPlace={formData.birthPlace}
+                    gender={formData.gender}
+                    height={formData.height}
+                    nationality={formData.nationality}
+                    group={formData.group}
+                    robloxUsername={formData.robloxUsername}
+                    documentNumber=""
+                    issueDate=""
+                    expiryDate=""
+                    photoUrl={photoUrl || undefined}
+                  />
+                  <p className="text-xs text-[var(--text-faint)] text-center mt-3">
+                    El número de documento se genera al confirmar
+                  </p>
                 </div>
                 </div>
               )}
@@ -834,7 +832,7 @@ export default function DNIPage() {
                     </p>
                   </div>
 
-                  <div className="bg-[var(--background)] p-6 rounded-2xl">
+                  <div className="max-w-md mx-auto">
                     <DocumentViewer3D
                       documentType={selectedDocument}
                       city={selectedCity || "los_santos"}
@@ -891,7 +889,7 @@ export default function DNIPage() {
                     </p>
                   </div>
 
-                  <div id="dni-print-area" className="w-full bg-[var(--background)] p-6 rounded-2xl text-left">
+                  <div id="dni-print-area" className="w-full max-w-md mx-auto text-left">
                     <DocumentViewer3D
                       documentType={selectedDocument}
                       city={selectedCity || "los_santos"}
@@ -983,7 +981,7 @@ export default function DNIPage() {
             >
               <X className="h-5 w-5 text-[var(--text-muted)]" />
             </button>
-            <div className="bg-[var(--background)] p-6 rounded-2xl">
+            <div>
               <DocumentViewer3D
                 documentType={selectedDocument}
                 city={selectedCity || "los_santos"}
