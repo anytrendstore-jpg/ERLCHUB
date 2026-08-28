@@ -6,7 +6,8 @@ import { useHubCoins } from "@/hooks/useHubCoins";
 import { useWhitelistStatus } from "@/hooks/useWhitelistStatus";
 import Image from "next/image";
 import Link from "next/link";
-import { User, Mail, Calendar, Shield, Crown, Coins, ShoppingCart, TrendingUp, CheckCircle, XCircle, Clock, MapPin, ArrowLeft, X, ShieldCheck, LayoutDashboard, ArrowRight } from "lucide-react";
+import { User, Mail, Calendar, Shield, Crown, Coins, ShoppingCart, TrendingUp, CheckCircle, XCircle, Clock, MapPin, ArrowLeft, X, ShieldCheck, LayoutDashboard, ArrowRight, RefreshCw, CreditCard } from "lucide-react";
+import CardTokenizeForm from "@/components/tienda/CardTokenizeForm";
 
 export default function PerfilPage() {
   const { user, guilds, isAuthenticated } = useDiscordAuth();
@@ -31,6 +32,69 @@ export default function PerfilPage() {
     membership: null
   });
   const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [togglingAutoRenew, setTogglingAutoRenew] = useState(false);
+  const [showCardForm, setShowCardForm] = useState(false);
+  const [savingCard, setSavingCard] = useState(false);
+
+  const fetchSubscription = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`/api/memberships/manage?userId=${user.id}`);
+      const data = await res.json();
+      if (data.success) setSubscription(data.subscription);
+    } catch (error) {
+      console.error('Error consultando la suscripción:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id) fetchSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user?.id]);
+
+  const handleToggleAutoRenew = async () => {
+    if (!user?.id || !subscription) return;
+    setTogglingAutoRenew(true);
+    try {
+      const res = await fetch('/api/memberships/manage', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, action: 'toggle_auto_renew', data: { autoRenew: !subscription.autoRenew } }),
+      });
+      const result = await res.json();
+      if (result.success) await fetchSubscription();
+      else alert('No se pudo actualizar: ' + result.error);
+    } catch (error) {
+      console.error('Error cambiando auto-renovación:', error);
+    } finally {
+      setTogglingAutoRenew(false);
+    }
+  };
+
+  const handleCardTokenized = async (cardToken: string) => {
+    if (!user?.id || !subscription) return;
+    setSavingCard(true);
+    try {
+      const res = await fetch('/api/shop/checkout/save-payment-method', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, customerEmail: `user_${user.id}@erlchub.pro`, membershipId: subscription.membershipId, cardToken }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setShowCardForm(false);
+        await fetchSubscription();
+      } else {
+        alert('No se pudo guardar la tarjeta: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error guardando método de pago:', error);
+      alert('No se pudo guardar la tarjeta.');
+    } finally {
+      setSavingCard(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
@@ -361,6 +425,55 @@ export default function PerfilPage() {
             ))
           )}
         </div>
+
+        {subscription && subscription.membershipType === 'monthly' && subscription.status === 'active' && (
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 text-[#8e00f7]" />
+              Renovación automática — {subscription.membershipName}
+            </h3>
+
+            {subscription.paymentSourceId ? (
+              <div className="bg-[var(--card-bg-2)] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <p className="text-[var(--foreground)] font-medium flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-[#8e00f7]" />
+                    {subscription.autoRenew ? 'Se renueva sola cada mes' : 'Auto-renovación desactivada'}
+                  </p>
+                  <p className="text-[var(--text-muted)] text-sm mt-1">
+                    {subscription.autoRenew
+                      ? `Próximo cobro: ${subscription.nextPaymentDate ? new Date(subscription.nextPaymentDate).toLocaleDateString('es-CO') : '—'} · $${subscription.renewalPrice} USD`
+                      : 'Tenés una tarjeta guardada pero la renovación automática está apagada — la membresía vencerá sin cobrarse sola.'}
+                  </p>
+                </div>
+                <button
+                  onClick={handleToggleAutoRenew}
+                  disabled={togglingAutoRenew}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all flex-shrink-0 ${subscription.autoRenew ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'}`}
+                >
+                  {togglingAutoRenew ? 'Guardando...' : subscription.autoRenew ? 'Desactivar' : 'Activar'}
+                </button>
+              </div>
+            ) : showCardForm ? (
+              <div className="bg-[var(--card-bg-2)] rounded-xl p-4">
+                <CardTokenizeForm onTokenized={handleCardTokenized} submitLabel={savingCard ? 'Guardando...' : 'Guardar y activar renovación automática'} />
+              </div>
+            ) : (
+              <div className="bg-[var(--card-bg-2)] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <p className="text-[var(--text-muted)] text-sm">
+                  No tenés un método de pago guardado — cuando venza, vas a tener que renovar a mano desde la tienda.
+                </p>
+                <button
+                  onClick={() => setShowCardForm(true)}
+                  className="px-4 py-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-medium rounded-lg transition-all flex items-center gap-2 flex-shrink-0"
+                >
+                  <CreditCard className="h-4 w-4" />
+                  Activar renovación automática
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {profileData.membership && profileData.membership.type === 'permanent' && profileData.membership.status === 'active' && (
           <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6 mb-8">

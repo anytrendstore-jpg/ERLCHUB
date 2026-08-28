@@ -6,13 +6,15 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
-import { Crown, Check, ChevronRight, Shield, Zap, ArrowLeft, Star } from "lucide-react";
+import { Crown, Check, ChevronRight, Shield, Zap, ArrowLeft, Star, RefreshCw } from "lucide-react";
 import { currencies, convertPrice } from "@/lib/shopData";
 import type { CurrencyRate, Membership } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
 import { useCardTilt } from "@/hooks/useCardTilt";
+import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import AddToCartButton from "@/components/AddToCartButton";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
+import CardTokenizeForm from "@/components/tienda/CardTokenizeForm";
 
 export default function MembershipPage() {
   const params = useParams();
@@ -20,7 +22,11 @@ export default function MembershipPage() {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const [paymentType, setPaymentType] = useState<"monthly" | "permanent">("permanent");
+  const [showSubscribeForm, setShowSubscribeForm] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+  const [subscribeError, setSubscribeError] = useState<string | null>(null);
   const { addItem } = useCart();
+  const { user, isAuthenticated } = useDiscordAuth();
   const tilt = useCardTilt<HTMLDivElement>();
 
   useEffect(() => {
@@ -63,6 +69,29 @@ export default function MembershipPage() {
       image: membership.image,
       paymentType: paymentType,
     });
+  };
+
+  const handleSubscribeTokenized = async (cardToken: string) => {
+    if (!user?.id) return;
+    setSubscribing(true);
+    setSubscribeError(null);
+    try {
+      const res = await fetch('/api/shop/checkout/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, customerEmail: `user_${user.id}@erlchub.pro`, catalogId: membership.id, cardToken }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/tienda/checkout/success';
+      } else {
+        setSubscribeError(data.error || 'No se pudo procesar el pago');
+      }
+    } catch (error) {
+      setSubscribeError('No se pudo procesar el pago');
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   return (
@@ -180,12 +209,33 @@ export default function MembershipPage() {
                 )}
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 space-y-3">
                 <AddToCartButton
                   onClick={handleAddToCart}
                   text="Agregar al Carrito"
                   requireAuth={true}
                 />
+
+                {paymentType === "monthly" && isAuthenticated && (
+                  showSubscribeForm ? (
+                    <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4">
+                      <p className="text-xs text-[var(--text-muted)] mb-3">
+                        Guardá tu tarjeta una vez y la membresía se renueva sola cada mes — podés desactivarlo cuando quieras desde tu perfil.
+                      </p>
+                      <CardTokenizeForm onTokenized={handleSubscribeTokenized} submitLabel={subscribing ? "Procesando..." : `Suscribirme por $${membership.priceMonthly}/mes`} />
+                      {subscribeError && <p className="text-red-400 text-xs mt-2">{subscribeError}</p>}
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowSubscribeForm(true)}
+                      className="w-full flex items-center justify-center gap-2 border border-[#8e00f7]/40 hover:bg-[#8e00f7]/10 text-[#8e00f7] font-medium py-2.5 rounded-lg transition-colors"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      O suscribirme con renovación automática
+                    </button>
+                  )
+                )}
               </div>
 
               <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)]">

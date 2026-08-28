@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { connectToDatabase } from '@/lib/mongodb';
 import { claimOrderForDelivery, markOrderCompleted, markOrderFailed, getOrderByReference, type ShopOrder } from '@/lib/shopOrdersServer';
+import { upsertSubscriptionFromPayment, recordFailedRenewal } from '@/lib/membershipSubscriptionsServer';
 
 const WOMPI_INTEGRITY_KEY = process.env.WOMPI_INTEGRITY_KEY;
 
@@ -38,6 +39,8 @@ export async function POST(request: NextRequest) {
 
     if (event === 'payment.approved') {
       await handleApprovedPayment(data);
+    } else if (event === 'payment.declined' || event === 'payment.error' || event === 'payment.voided') {
+      await handleFailedPayment(data);
     }
 
     return NextResponse.json({ received: true }, { status: 200 });
@@ -92,6 +95,40 @@ async function handleApprovedPayment(paymentData: any) {
   }
 }
 
+/**
+ * Cobro rechazado/con error/anulado. Si la orden es una renovación automática (isRenewal), esto
+ * es lo que dispara el reintento con backoff (o la expiración al tercer fallo) — ver
+ * recordFailedRenewal() en membershipSubscriptionsServer.ts. Para una compra normal fallida no
+ * hay nada más que hacer que dejar la orden marcada como failed.
+ */
+async function handleFailedPayment(paymentData: any) {
+  const { reference } = paymentData;
+  if (!reference) return;
+
+  const order = await claimOrderForDelivery(reference);
+  if (!order) return; // no estaba 'pending' — ya se resolvió por otro evento, o no es nuestra.
+
+  await markOrderFailed(reference, `wompi_${paymentData.status || 'declined'}`);
+
+  const membershipItem = order.items.find((i) => i.type === 'membership');
+  if (order.isRenewal && membershipItem) {
+    const result = await recordFailedRenewal(order.discordId, membershipItem.catalogId);
+    if (result.exhausted) {
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_URL || 'https://www.erlchub.pro'}/api/discord-bot/revoke-membership`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: order.discordId, membershipId: membershipItem.catalogId, reason: 'Renovación automática falló 3 veces — tarjeta rechazada' }),
+        });
+      } catch (revokeError) {
+        console.error('Error revocando membresía tras agotar reintentos de renovación:', revokeError);
+      }
+      const db = await connectToDatabase();
+      await db.collection('users').updateOne({ discordId: order.discordId }, { $set: { 'membership.status': 'expired' } });
+    }
+  }
+}
+
 async function deliverMembership(order: ShopOrder, item: ShopOrder['items'][number], paymentData: any) {
   const db = await connectToDatabase();
   const now = new Date();
@@ -121,6 +158,20 @@ async function deliverMembership(order: ShopOrder, item: ShopOrder['items'][numb
     } as any,
     { upsert: true }
   );
+
+  // Única fuente de verdad para el cron de renovación (antes de esto, el webhook nunca tocaba
+  // membership_subscriptions — solo el campo embebido de arriba). Si ya hay una suscripción
+  // activa para este usuario+membresía, esto la EXTIENDE (caso renovación) en vez de duplicarla.
+  await upsertSubscriptionFromPayment({
+    userId: order.discordId,
+    membershipId: item.catalogId,
+    membershipName: item.name,
+    membershipType: item.paymentType || 'permanent',
+    renewalPrice: item.unitPriceUSD,
+    benefits: [],
+    transactionId: paymentData.id,
+    paymentSourceId: order.paymentSourceId,
+  });
 
   try {
     const botResponse = await fetch(`${process.env.NEXT_PUBLIC_URL || 'https://www.erlchub.pro'}/api/discord-bot/deliver-membership`, {

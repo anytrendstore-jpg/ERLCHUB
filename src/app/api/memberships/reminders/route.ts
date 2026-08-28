@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import { chargePaymentSource } from '@/lib/wompiServer';
+import { createOrder } from '@/lib/shopOrdersServer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,25 +65,45 @@ async function checkAndSendReminders(db: any) {
       }
     }
 
+    // Vencen HOY (o ya vencieron) y tienen tarjeta guardada: se cobran solas, antes de bajar a
+    // 'expired' — el resultado real (aprobado/rechazado) llega después por el webhook de Wompi,
+    // que extiende la suscripción o dispara el reintento (ver recordFailedRenewal).
+    const dueForRenewal = await db.collection('membership_subscriptions')
+      .find({
+        status: 'active',
+        membershipType: 'monthly',
+        autoRenew: true,
+        nextPaymentDate: { $lte: now },
+        paymentSourceId: { $exists: true },
+        $or: [{ nextRetryAt: { $exists: false } }, { nextRetryAt: { $lte: now } }],
+      })
+      .toArray();
+
+    let renewalsAttempted = 0;
+    for (const subscription of dueForRenewal) {
+      try {
+        await attemptAutoRenewal(subscription);
+        renewalsAttempted++;
+      } catch (error) {
+        console.error(`Error disparando renovación automática para ${subscription.userId}:`, error);
+      }
+    }
+
+    // Vencidas SIN auto-renovación (o que ya agotaron sus 3 reintentos y el webhook las marcó
+    // 'expired') — se les avisa, pero no se cobra nada más.
     const expired = await db.collection('membership_subscriptions')
       .find({
         status: 'expired',
         membershipType: 'monthly',
-        autoRenew: true
+        autoRenew: false,
       })
       .toArray();
 
     for (const subscription of expired) {
       try {
-        const renewalResult = await attemptAutoRenewal(subscription);
-        
-        if (renewalResult.success) {
-          console.log(`Auto-renewal successful for user ${subscription.userId}`);
-        } else {
-          await sendRenewalNotification(subscription);
-        }
+        await sendRenewalNotification(subscription);
       } catch (error) {
-        console.error(`Error in auto-renewal for ${subscription.userId}:`, error);
+        console.error(`Error notificando expiración a ${subscription.userId}:`, error);
       }
     }
 
@@ -91,7 +113,8 @@ async function checkAndSendReminders(db: any) {
       stats: {
         expiringSoonFound: expiringSoon.length,
         remindersSent: remindersSent.length,
-        expiredProcessed: expired.length
+        renewalsAttempted,
+        expiredNotified: expired.length
       },
       remindersSent
     });
@@ -231,10 +254,47 @@ async function generatePaymentLink(subscription: any): Promise<string> {
   }
 }
 
+/**
+ * Cobra la renovación de una suscripción usando el payment_source_id guardado — sin que el
+ * usuario esté presente. Solo confirma que Wompi aceptó CREAR el intento de cobro; el resultado
+ * real (aprobado o rechazado) llega después por el webhook (src/app/api/wompi/events/route.ts),
+ * que es quien realmente extiende la suscripción o dispara el reintento.
+ */
 async function attemptAutoRenewal(subscription: any) {
   try {
-    return { success: false, reason: 'Auto-renewal not implemented yet' };
-    
+    if (!subscription.paymentSourceId) {
+      return { success: false, reason: 'Sin método de pago guardado' };
+    }
+
+    const amountInCents = Math.round(subscription.renewalPrice * 4000 * 100); // mismo tipo de cambio fijo USD->COP que el resto del checkout (Fase C)
+    const reference = `ERLC_RENEWAL_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    const customerEmail = `user_${subscription.userId}@erlchub.pro`;
+
+    await createOrder({
+      reference,
+      discordId: subscription.userId,
+      items: [{
+        catalogId: subscription.membershipId,
+        type: 'membership',
+        name: subscription.membershipName,
+        quantity: 1,
+        unitPriceUSD: subscription.renewalPrice,
+        paymentType: 'monthly',
+      }],
+      amountUSD: subscription.renewalPrice,
+      amountInCents,
+      paymentSourceId: subscription.paymentSourceId,
+      isRenewal: true,
+    });
+
+    await chargePaymentSource({
+      paymentSourceId: subscription.paymentSourceId,
+      amountInCents,
+      reference,
+      customerEmail,
+    });
+
+    return { success: true, reference };
   } catch (error) {
     console.error('Error en auto-renewal:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Error desconocido' };

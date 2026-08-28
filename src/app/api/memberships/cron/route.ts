@@ -29,8 +29,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get('secret');
-    
-    if (secret !== process.env.CRON_SECRET) {
+    const authHeader = request.headers.get('authorization');
+    // Vercel Cron manda 'Authorization: Bearer <CRON_SECRET>' automáticamente — se acepta
+    // también ?secret= como respaldo si algo externo lo dispara (mismo criterio que /api/cron/payroll).
+    const ok = secret === process.env.CRON_SECRET || authHeader === `Bearer ${process.env.CRON_SECRET}`;
+    if (!ok) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
