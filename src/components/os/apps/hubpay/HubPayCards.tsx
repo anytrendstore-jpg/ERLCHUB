@@ -26,7 +26,7 @@ export default function HubPayCards() {
     {
       id: 'gradient' as const,
       label: 'Gradiente',
-      bg: 'bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800'
+      bg: 'bg-gradient-to-br from-green-600 via-green-700 to-[#0a1a0d]'
     },
     {
       id: 'blue' as const,
@@ -53,10 +53,10 @@ export default function HubPayCards() {
 
   const getCardBg = (color: string) => {
     switch (color) {
-      case 'gradient': return 'bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800';
+      case 'gradient': return 'bg-gradient-to-br from-green-600 via-green-700 to-[#0a1a0d]';
       case 'blue': return 'bg-gradient-to-br from-blue-500 to-blue-700';
       case 'black': return 'bg-gradient-to-br from-gray-800 to-gray-900';
-      default: return 'bg-gradient-to-br from-blue-600 to-purple-800';
+      default: return 'bg-gradient-to-br from-green-600 to-[#0a1a0d]';
     }
   };
 
@@ -70,7 +70,7 @@ export default function HubPayCards() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
         >
           <Plus className="w-5 h-5" />
           Nueva tarjeta
@@ -187,10 +187,10 @@ export default function HubPayCards() {
         {/* Add New Card */}
         <button
           onClick={() => setShowCreateModal(true)}
-          className="aspect-[1.586/1] rounded-2xl border-2 border-dashed border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all flex flex-col items-center justify-center gap-3 group"
+          className="aspect-[1.586/1] rounded-2xl border-2 border-dashed border-white/10 hover:border-green-600/50 hover:bg-green-600/5 transition-all flex flex-col items-center justify-center gap-3 group"
         >
-          <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-            <CreditCard className="w-8 h-8 text-blue-400" />
+          <div className="w-16 h-16 rounded-2xl bg-green-600/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+            <CreditCard className="w-8 h-8 text-green-500" />
           </div>
           <p className="text-white/60 group-hover:text-white transition-colors">Crear nueva tarjeta</p>
         </button>
@@ -204,7 +204,7 @@ export default function HubPayCards() {
           <p className="text-white/40 mb-4">No tienes tarjetas de débito</p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+            className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
           >
             Crear mi primera tarjeta
           </button>
@@ -233,7 +233,7 @@ export default function HubPayCards() {
                   key={color.id}
                   onClick={() => setSelectedColor(color.id)}
                   className={`aspect-[1.586/1] rounded-xl ${color.bg} transition-all relative hover:scale-[1.03]
-                    ${selectedColor === color.id ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-[#12121a] scale-[1.03]' : ''}
+                    ${selectedColor === color.id ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-[#12121a] scale-[1.03]' : ''}
                   `}
                 >
                   {selectedColor === color.id && (
@@ -264,7 +264,7 @@ export default function HubPayCards() {
               </button>
               <button
                 onClick={handleCreate}
-                className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
               >
                 Crear tarjeta
               </button>

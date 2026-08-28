@@ -59,7 +59,7 @@ export const osApps: OSApp[] = [
   },
   {
     id: 'hubpay',
-    name: 'HubPay',
+    name: 'Fleeca Bank',
     icon: 'hubpay',
     component: 'HubPayApp',
     isLocked: false,

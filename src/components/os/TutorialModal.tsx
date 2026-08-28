@@ -17,7 +17,7 @@ const STEPS: TutorialStep[] = [
   {
     icon: Store, color: '#f59e0b',
     title: 'Bienvenido a Hub Store',
-    body: 'Acá encontrás todas las aplicaciones del sistema: HubPay, HubSocial, HubChat, Marketplace y más. Es tu punto de entrada para instalar lo que quieras usar.',
+    body: 'Acá encontrás todas las aplicaciones del sistema: Fleeca Bank, HubSocial, HubChat, Marketplace y más. Es tu punto de entrada para instalar lo que quieras usar.',
   },
   {
     icon: Search, color: '#f59e0b',
