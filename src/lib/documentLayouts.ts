@@ -68,32 +68,35 @@ function licenseFields(): DocumentField[] {
 /**
  * Diseño nuevo de California: es un template en blanco (sin campos impresos
  * más allá del encabezado "CALIFORNIA / DRIVER LICENSE"), así que acá se
- * dibuja también el resto: una sola placa de datos debajo del encabezado con
- * la foto en su propia columna a la izquierda y la identidad en una columna
- * fija a la derecha — nunca se cruzan, cada dato tiene un lugar fijo.
+ * dibuja también el resto: la foto ocupa toda la columna izquierda de arriba
+ * a abajo (como una licencia real) y la identidad vive en una columna fija a
+ * la derecha — nunca se cruzan, cada dato tiene un lugar fijo.
  */
 function losSantosFields(): DocumentField[] {
   const idCol = 0.335; // columna de identidad — arranca justo después de la foto
   const idColWidth = 300; // ancho disponible en px (sobre un lienzo de 500px) para esa columna
   const row3 = [idCol, idCol + 0.19, idCol + 0.38]; // sexo / altura / grupo, tres columnas iguales
   return [
-    field('firstName', idCol, 0.365, { label: 'NOMBRE COMPLETO', size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    field('lastName', idCol, 0.425, { size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    field('birthDate', idCol, 0.515, { label: 'FECHA DE NACIMIENTO' }),
-    field('sex', row3[0], 0.615, { label: 'SEXO' }),
-    field('height', row3[1], 0.615, { label: 'ALTURA' }),
-    field('group', row3[2], 0.615, { label: 'GRUPO', maxWidth: 110 }),
-    field('issuedAt', idCol, 0.715, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
-    field('robloxUsername', idCol, 0.79, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 9, weight: '600', maxWidth: idColWidth }),
-    field('documentNumber', 0.08, 0.895, { label: 'DOCUMENT No.', size: 11, weight: '700' }),
+    field('firstName', idCol, 0.335, { label: 'NOMBRE COMPLETO', size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('lastName', idCol, 0.395, { size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('birthDate', idCol, 0.485, { label: 'FECHA DE NACIMIENTO' }),
+    field('sex', row3[0], 0.585, { label: 'SEXO' }),
+    field('height', row3[1], 0.585, { label: 'ALTURA' }),
+    field('group', row3[2], 0.585, { label: 'GRUPO', maxWidth: 110 }),
+    field('issuedAt', idCol, 0.685, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
+    field('documentNumber', idCol, 0.79, { label: 'DOCUMENT No.', size: 11, weight: '700' }),
+    field('robloxUsername', idCol, 0.875, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 9, weight: '600', maxWidth: idColWidth }),
   ];
 }
 
 export const LICENSE_LAYOUTS: Record<City, DocumentLayout> = {
   los_santos: {
+    // Sin panel: el texto se apoya directo sobre la ilustración real de la plantilla (igual
+    // que el encabezado "CALIFORNIA / DRIVER LICENSE" que ya viene impreso en la imagen), con
+    // un halo claro por CSS para legibilidad — nunca una placa blanca fabricada por encima.
+    // La foto ocupa toda la columna izquierda, de justo debajo del encabezado hasta abajo.
     image: '/documents/license-los_santos.png', artKey: 'los_santos', fields: losSantosFields(),
-    photo: { x: 0.17, y: 0.555, w: 0.2, h: 0.47, shape: 'rect' },
-    panel: { x: 0.045, y: 0.275, w: 0.91, h: 0.645 },
+    photo: { x: 0.155, y: 0.615, w: 0.25, h: 0.66, shape: 'rect' },
   },
   liberty_city: {
     image: '/documents/license-liberty_city.png', artKey: 'liberty_city', fields: licenseFields(),

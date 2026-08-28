@@ -53,7 +53,9 @@ export default function DocumentViewer3D(props: DocumentViewer3DProps) {
     height: props.height,
     group: props.group,
     birthDate: formatDate(props.birthDate),
-    issuedAt: isCombinedIssueRow ? `${props.issueDate} · ${props.birthPlace}` : props.issueDate,
+    issuedAt: isCombinedIssueRow
+      ? (props.issueDate ? `${props.issueDate} · ${props.birthPlace}` : props.birthPlace)
+      : props.issueDate,
     issuePlace: props.birthPlace,
     expiryDate: props.expiryDate,
     robloxUsername: props.robloxUsername ? `@${props.robloxUsername}` : "",

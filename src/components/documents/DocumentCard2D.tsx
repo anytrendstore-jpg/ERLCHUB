@@ -92,28 +92,26 @@ export default function DocumentCard2D({
 
             {layout.photo && (
               <div
-                className="absolute overflow-hidden bg-black/10"
+                className="absolute overflow-hidden"
                 style={{
                   left: `${(layout.photo.x - layout.photo.w / 2) * 100}%`,
                   top: `${(layout.photo.y - layout.photo.h / 2) * 100}%`,
                   width: `${layout.photo.w * 100}%`,
                   height: `${layout.photo.h * 100}%`,
-                  borderRadius: layout.photo.shape === "circle" ? "50%" : "4px",
-                  border: "2px solid rgba(0,0,0,0.22)",
-                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.4)",
+                  borderRadius: layout.photo.shape === "circle" ? "50%" : "6px",
                 }}
               >
                 {photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={photoUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 bg-black/10">
-                    <svg viewBox="0 0 24 24" className="w-[38%] h-[38%] text-black/30" fill="currentColor">
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1">
+                    <svg viewBox="0 0 24 24" className="w-[26%] h-[26%] text-black/25" fill="currentColor">
                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                     </svg>
                     <span
-                      className="text-black/40 font-semibold tracking-wide"
-                      style={{ fontSize: "6.5cqw", fontFamily: "Arial, sans-serif" }}
+                      className="text-black/35 font-semibold tracking-wide"
+                      style={{ fontSize: "5.5cqw", fontFamily: "Arial, sans-serif" }}
                     >
                       SIN FOTO
                     </span>
@@ -138,8 +136,9 @@ export default function DocumentCard2D({
                         lineHeight: 1,
                         fontWeight: 700,
                         color: "#4b5563",
-                        opacity: 0.85,
+                        opacity: 0.9,
                         fontFamily: "Arial, sans-serif",
+                        textShadow: layout.panel ? undefined : "0 0 3px #fff, 0 0 3px #fff, 0 0 6px rgba(255,255,255,0.7)",
                       }}
                     >
                       {f.label}
@@ -155,6 +154,7 @@ export default function DocumentCard2D({
                       lineHeight: 1,
                       fontWeight: f.weight || 600,
                       color: f.color,
+                      textShadow: layout.panel ? undefined : "0 0 3px #fff, 0 0 3px #fff, 0 0 6px rgba(255,255,255,0.7)",
                       maxWidth: f.maxWidth ? `${(f.maxWidth / 500) * 100}%` : undefined,
                       overflow: f.maxWidth ? "hidden" : undefined,
                       textOverflow: f.maxWidth ? "ellipsis" : undefined,
