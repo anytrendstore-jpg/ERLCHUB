@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search, X, Users, Siren, Briefcase, Wrench, Award, Loader2, User, Car } from "lucide-react";
+import { Search, X, Users, Siren, Briefcase, Wrench, Award, Loader2, User, Car, Home } from "lucide-react";
 import { useTerminalWindows } from "@/contexts/TerminalWindowContext";
 import { FD_MODULE_TITLES } from "@/components/terminal/fdModuleContent";
 
@@ -13,9 +13,10 @@ interface SearchResults {
   certifications: { id: string; name: string; firefighterName: string; status: string }[];
   persons: { id: string; firstName: string; lastName: string; address: string; flags: string[] }[];
   vehicles: { id: string; plate: string; make: string; model: string; registeredOwner: string; isStolen: boolean }[];
+  properties: { id: string; name: string; type: string; address: string }[];
 }
 
-const EMPTY: SearchResults = { personnel: [], calls: [], cases: [], equipment: [], certifications: [], persons: [], vehicles: [] };
+const EMPTY: SearchResults = { personnel: [], calls: [], cases: [], equipment: [], certifications: [], persons: [], vehicles: [], properties: [] };
 
 /** Búsqueda global de LSFD — espejo de MDTGlobalSearch, sobre personal/despacho/investigaciones/equipo/academia. */
 export default function FDGlobalSearch({ onClose }: { onClose: () => void }) {
@@ -49,7 +50,7 @@ export default function FDGlobalSearch({ onClose }: { onClose: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const totalResults = results.personnel.length + results.calls.length + results.cases.length + results.equipment.length + results.certifications.length + results.persons.length + results.vehicles.length;
+  const totalResults = results.personnel.length + results.calls.length + results.cases.length + results.equipment.length + results.certifications.length + results.persons.length + results.vehicles.length + results.properties.length;
 
   const goTo = (kind: string) => {
     openWindow(kind, { title: FD_MODULE_TITLES[kind], maximized: true, focusExisting: true });
@@ -152,6 +153,17 @@ export default function FDGlobalSearch({ onClose }: { onClose: () => void }) {
                       <span className="text-[#e5e3de] text-sm font-medium font-mono">{v.plate}</span>
                       <span className="text-[#57534a] text-xs">{v.make} {v.model} · {v.registeredOwner}</span>
                       {v.isStolen && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-semibold">ROBADO</span>}
+                    </div>
+                  ))}
+                </ResultGroup>
+              )}
+              {results.properties.length > 0 && (
+                <ResultGroup label="Propiedades (consulta — solo lectura)" icon={Home}>
+                  {results.properties.map((p) => (
+                    <div key={p.id} className="w-full flex items-center gap-3 px-4 py-2.5 text-left">
+                      <span className="text-[#e5e3de] text-sm font-medium">{p.name}</span>
+                      <span className="text-[#57534a] text-xs">{p.address}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#1c1a17] border border-[var(--dept-window-border,#2a2620)] text-[#867e70]">{p.type}</span>
                     </div>
                   ))}
                 </ResultGroup>

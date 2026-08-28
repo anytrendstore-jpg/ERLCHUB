@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Flame, MapPin, Clock, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Flame, MapPin, Clock, Plus, X, History } from "lucide-react";
 import { useFD } from "@/contexts/FDContext";
 import type { CallStatus } from "@/lib/mdtTypes";
+
+interface TimelineEntry { id: string; event: string; description: string; actorName: string; timestamp: string }
+
+function fmtDateTime(d: Date | string) {
+  return new Date(d).toLocaleString("es-ES", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
 
 const PRIORITY_STYLE: Record<string, { label: string; text: string; dot: string }> = {
   Emergency: { label: "CRÍTICA", text: "text-red-400", dot: "bg-red-500" },
@@ -23,9 +29,19 @@ export default function FDCAD() {
   const { state, updateCall, assignUnitToCall } = useFD();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [unitInput, setUnitInput] = useState("");
+  const [timeline, setTimeline] = useState<TimelineEntry[] | null>(null);
 
   const active = state.calls.filter((c) => c.status !== "Resolved" && c.status !== "Cancelled");
   const selected = state.calls.find((c) => c.id === selectedId) || null;
+
+  useEffect(() => {
+    if (!selectedId) { setTimeline(null); return; }
+    setTimeline(null);
+    fetch(`/api/fd/timeline?callId=${selectedId}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setTimeline(d.success ? d.entries : []))
+      .catch(() => setTimeline([]));
+  }, [selectedId]);
 
   return (
     <div className="h-full flex text-[11px]">
@@ -125,6 +141,29 @@ export default function FDCAD() {
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
+            </div>
+
+            <div>
+              <div className="text-[9px] font-semibold tracking-widest text-[#57534a] uppercase mb-1.5 flex items-center gap-1.5">
+                <History className="w-3 h-3" /> Timeline
+              </div>
+              {timeline === null ? (
+                <p className="text-[#57534a]">Cargando...</p>
+              ) : timeline.length === 0 ? (
+                <p className="text-[#57534a]">Sin eventos registrados todavía.</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {timeline.map((e) => (
+                    <div key={e.id} className="flex items-start gap-2 text-[#867e70]">
+                      <span className="font-mono text-[9.5px] text-[#57534a] w-24 flex-shrink-0">{fmtDateTime(e.timestamp)}</span>
+                      <div className="min-w-0">
+                        <span className="text-[#d4af37] font-semibold">{e.event}:</span> {e.description}
+                        <span className="text-[#57534a]"> — {e.actorName}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button onClick={() => setSelectedId(null)} className="flex items-center gap-1 text-[#57534a] hover:text-[#e5e3de] text-[10px]">

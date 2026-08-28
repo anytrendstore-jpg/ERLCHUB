@@ -213,12 +213,85 @@ export interface FDMutualAidRequest {
   resolvedAt?: Date;
 }
 
+/** Timeline de incidentes — eventos reales agregados server-side desde fd/calls y fd/command (cambios de estado, unidades, comando), no un log inventado. */
+export interface FDIncidentTimelineEntry {
+  id: string;
+  callId: string;
+  event: string;
+  description: string;
+  actorId: string;
+  actorName: string;
+  timestamp: Date;
+}
+
+/** Estaciones de bomberos — directorio de parques, sin análogo en el MDT de policía. */
+export interface FDStation {
+  id: string;
+  name: string;
+  address: string;
+  apparatus: string[];
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/** Turnos — asignación de horario por bombero. Solo mando programa turnos, cualquiera ve los propios y los del resto. */
+export type FDShiftStatus = "Scheduled" | "Active" | "Completed" | "Missed";
+
+export interface FDShift {
+  id: string;
+  firefighterId: string;
+  firefighterName: string;
+  start: Date;
+  end: Date;
+  station?: string;
+  status: FDShiftStatus;
+  createdById: string;
+  createdByName: string;
+  createdAt: Date;
+}
+
+/** Promociones — historial de ascensos. Cualquiera lo consulta, solo mando registra un ascenso real. */
+export type FDPromotionStatus = "Pending" | "Approved" | "Denied";
+
+export interface FDPromotion {
+  id: string;
+  firefighterId: string;
+  firefighterName: string;
+  fromRank: string;
+  toRank: string;
+  reason: string;
+  status: FDPromotionStatus;
+  requestedById: string;
+  requestedByName: string;
+  decidedById?: string;
+  decidedByName?: string;
+  createdAt: Date;
+  decidedAt?: Date;
+}
+
+/** Sanciones — expediente disciplinario, sensible: solo mando lo ve y lo emite (mismo umbral que Auditoría). */
+export type FDSanctionSeverity = "Verbal" | "Escrita" | "Suspensión" | "Baja";
+
+export interface FDSanction {
+  id: string;
+  firefighterId: string;
+  firefighterName: string;
+  reason: string;
+  severity: FDSanctionSeverity;
+  issuedById: string;
+  issuedByName: string;
+  createdAt: Date;
+}
+
 export type FDAuditAction =
   | "login" | "logout" | "create_report" | "edit_report" | "assign_command"
   | "issue_certification" | "revoke_certification" | "update_equipment" | "send_message" | "modify_call"
   | "open_case" | "update_case" | "log_patient" | "update_patient"
   | "record_budget_entry" | "create_service_order" | "update_service_order"
-  | "log_mutual_aid" | "update_mutual_aid" | "other";
+  | "log_mutual_aid" | "update_mutual_aid"
+  | "create_station" | "update_station" | "schedule_shift" | "update_shift"
+  | "record_promotion" | "issue_sanction" | "other";
 
 export interface FDAuditLog {
   id: string;

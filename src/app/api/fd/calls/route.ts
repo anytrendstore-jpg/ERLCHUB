@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentMDTUser, mdtCallsCollection } from '@/lib/mdtServer';
 import { checkFactionAccess } from '@/lib/factionsServer';
-import { logFDAudit } from '@/lib/fdServer';
+import { logFDAudit, logIncidentEvent } from '@/lib/fdServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +50,15 @@ export async function PATCH(request: NextRequest) {
     const fresh = await col.findOne({ id });
     const { _id, ...clean } = fresh as any;
     logFDAudit({ firefighterId: user.id, firefighterName: user.displayName, action: 'modify_call', description: `Incidente actualizado: ${existing.location || id}` });
+
+    if (updates.status && updates.status !== existing.status) {
+      logIncidentEvent({ callId: id, event: 'Estado', description: `${existing.status} → ${updates.status}`, actorId: user.id, actorName: user.displayName });
+    }
+    if (updates.assignedUnits && JSON.stringify(updates.assignedUnits) !== JSON.stringify(existing.assignedUnits)) {
+      const added = (updates.assignedUnits as string[]).filter((u) => !existing.assignedUnits.includes(u));
+      if (added.length > 0) logIncidentEvent({ callId: id, event: 'Unidad asignada', description: added.join(', '), actorId: user.id, actorName: user.displayName });
+    }
+
     return NextResponse.json({ success: true, call: clean });
   } catch (error) {
     console.error('Error actualizando incidente de LSFD:', error);

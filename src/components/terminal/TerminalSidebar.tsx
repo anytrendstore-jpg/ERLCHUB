@@ -3,7 +3,7 @@
 import {
   LayoutDashboard, Radio, Users, Car, FileWarning, AlertTriangle, FileText,
   ShieldAlert, Receipt, Package, MessageSquare, Map, BarChart3, ScrollText, Briefcase, Lock,
-  FolderOpen, Shield, Flame, Siren, Truck, GraduationCap, HeartPulse, DollarSign, Wrench, Handshake,
+  FolderOpen, Shield, Flame, Siren, Truck, GraduationCap, HeartPulse, DollarSign, Wrench, Handshake, Building2, CalendarClock, Award,
 } from "lucide-react";
 import { useMDT } from "@/contexts/MDTContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -15,7 +15,7 @@ import type { SidebarIconKey } from "@/lib/departments";
 const ICONS: Record<SidebarIconKey, React.ElementType> = {
   LayoutDashboard, Radio, Users, Car, FileWarning, AlertTriangle, FileText,
   ShieldAlert, Receipt, Package, MessageSquare, Map, BarChart3, ScrollText, Briefcase,
-  FolderOpen, Shield, Flame, Siren, Truck, GraduationCap, HeartPulse, DollarSign, Wrench, Handshake,
+  FolderOpen, Shield, Flame, Siren, Truck, GraduationCap, HeartPulse, DollarSign, Wrench, Handshake, Building2, CalendarClock, Award,
 };
 
 /** Directorio lateral — módulos bloqueados por clearance se ven, pero no se abren. */

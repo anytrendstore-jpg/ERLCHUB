@@ -19,6 +19,10 @@ import FDStats from "./panels/FDStats";
 import FDBudget from "@/components/os/apps/fd/FDBudget";
 import FDServiceOrders from "@/components/os/apps/fd/FDServiceOrders";
 import FDMutualAid from "@/components/os/apps/fd/FDMutualAid";
+import FDStations from "@/components/os/apps/fd/FDStations";
+import FDShifts from "@/components/os/apps/fd/FDShifts";
+import FDPromotions from "@/components/os/apps/fd/FDPromotions";
+import FDSanctions from "@/components/os/apps/fd/FDSanctions";
 import RadioApp from "@/components/os/apps/RadioApp";
 
 function bareFullBleed(Content: React.ComponentType) {
@@ -36,8 +40,11 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-map": "Mapa Operativo",
   "fd-patients": "Pacientes",
   "fd-equipment": "Equipo",
+  "fd-stations": "Estaciones",
+  "fd-shifts": "Turnos",
   "fd-academy": "Academia",
   "fd-personnel": "Personal",
+  "fd-promotions": "Ascensos",
   "fd-reports": "Reportes",
   "fd-investigations": "Investigaciones",
   "fd-messages": "Mensajes",
@@ -45,6 +52,7 @@ export const FD_MODULE_TITLES: Record<string, string> = {
   "fd-service-orders": "Órdenes de Servicio",
   "fd-mutual-aid": "Mutual Aid",
   "fd-stats": "Estadísticas",
+  "fd-sanctions": "Sanciones",
   "fd-audit": "Auditoría",
   "fd-settings": "Configuración",
   admin: "Administración",
@@ -66,8 +74,11 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-map": bareFullBleed(FDMap),
   "fd-patients": bareFullBleed(FDPatients),
   "fd-equipment": bareFullBleed(FDEquipment),
+  "fd-stations": bareFullBleed(FDStations),
+  "fd-shifts": bareFullBleed(FDShifts),
   "fd-academy": bareFullBleed(FDAcademy),
   "fd-personnel": bareFullBleed(FDPersonnelPanel),
+  "fd-promotions": bareFullBleed(FDPromotions),
   "fd-reports": bareFullBleed(FDReports),
   "fd-investigations": bareFullBleed(FDInvestigations),
   "fd-messages": bareFullBleed(FDMessages),
@@ -75,6 +86,7 @@ export const FD_MODULE_CONTENT: Record<string, React.ComponentType> = {
   "fd-service-orders": bareFullBleed(FDServiceOrders),
   "fd-mutual-aid": bareFullBleed(FDMutualAid),
   "fd-stats": bareFullBleed(FDStats),
+  "fd-sanctions": bareFullBleed(FDSanctions),
   "fd-audit": bareFullBleed(FDAudit),
   "fd-settings": bareFullBleed(FDSettings),
   admin: AdminFactionPanel,

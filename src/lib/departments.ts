@@ -3,7 +3,8 @@ export type SidebarIconKey =
   | "LayoutDashboard" | "Radio" | "Users" | "Car" | "FileWarning" | "AlertTriangle"
   | "FileText" | "ShieldAlert" | "Receipt" | "Package" | "MessageSquare" | "Map"
   | "BarChart3" | "ScrollText" | "Briefcase" | "FolderOpen" | "Shield"
-  | "Flame" | "Siren" | "Truck" | "GraduationCap" | "HeartPulse" | "DollarSign" | "Wrench" | "Handshake";
+  | "Flame" | "Siren" | "Truck" | "GraduationCap" | "HeartPulse" | "DollarSign" | "Wrench" | "Handshake"
+  | "Building2" | "CalendarClock" | "Award";
 
 export interface SidebarModule {
   id: string;
@@ -84,8 +85,11 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "map", label: "Mapa Operativo", icon: "Map", minLevel: 1, contentKind: "fd-map" },
   { id: "patients", label: "Pacientes", icon: "HeartPulse", minLevel: 1, contentKind: "fd-patients" },
   { id: "equipment", label: "Equipo", icon: "Truck", minLevel: 1, contentKind: "fd-equipment" },
+  { id: "stations", label: "Estaciones", icon: "Building2", minLevel: 1, contentKind: "fd-stations" },
+  { id: "shifts", label: "Turnos", icon: "CalendarClock", minLevel: 1, contentKind: "fd-shifts" },
   { id: "academy", label: "Academia", icon: "GraduationCap", minLevel: 1, contentKind: "fd-academy" },
   { id: "personnel", label: "Personal", icon: "Users", minLevel: 1, contentKind: "fd-personnel" },
+  { id: "promotions", label: "Ascensos", icon: "Award", minLevel: 1, contentKind: "fd-promotions" },
   { id: "reports", label: "Reportes", icon: "FileText", minLevel: 1, contentKind: "fd-reports" },
   { id: "investigations", label: "Investigaciones", icon: "Briefcase", minLevel: 1, contentKind: "fd-investigations" },
   { id: "messages", label: "Mensajes", icon: "MessageSquare", minLevel: 1, contentKind: "fd-messages" },
@@ -93,6 +97,7 @@ const LSFD_SIDEBAR: SidebarModule[] = [
   { id: "service-orders", label: "Órdenes de Servicio", icon: "Wrench", minLevel: 1, contentKind: "fd-service-orders" },
   { id: "mutual-aid", label: "Mutual Aid", icon: "Handshake", minLevel: 1, contentKind: "fd-mutual-aid" },
   { id: "stats", label: "Estadísticas", icon: "BarChart3", minLevel: 2, contentKind: "fd-stats" },
+  { id: "sanctions", label: "Sanciones", icon: "ShieldAlert", minLevel: 4, contentKind: "fd-sanctions" },
   { id: "audit", label: "Auditoría", icon: "ScrollText", minLevel: 4, contentKind: "fd-audit" },
   // Sin minLevel: el panel se auto-gatea por rango REAL dentro de la facción (no un rango de terminal).
   { id: "admin", label: "Administración", icon: "Shield", minLevel: 0, contentKind: "admin" },
