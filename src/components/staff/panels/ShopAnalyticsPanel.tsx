@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { DollarSign, ShoppingCart, Users, Coins, Crown, Package } from "lucide-react";
+import {
+  ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid, XAxis, YAxis, Tooltip,
+} from "recharts";
 import { PanelHeader, Card, Kpi, LoadingBlock, ErrorBlock, AccessDenied, useStaffPermissions } from "@/components/staff/ui";
 
 interface SeriesPoint { key: string; label: string; revenue: number; hcSold: number }
@@ -18,30 +21,40 @@ interface Analytics {
 
 function money(n: number) { return `$${n.toLocaleString("es-ES", { maximumFractionDigits: 2 })}`; }
 
-function RevenueChart({ series }: { series: SeriesPoint[] }) {
-  const width = 760;
-  const height = 160;
-  const padY = 14;
-  const maxRevenue = Math.max(1, ...series.map((d) => d.revenue));
-  const maxHc = Math.max(1, ...series.map((d) => d.hcSold));
-  const stepX = width / (series.length - 1);
-
-  const points = (key: "revenue" | "hcSold", max: number) =>
-    series.map((d, i) => `${i * stepX},${padY + (height - padY * 2) * (1 - d[key] / max)}`).join(" ");
-
+function ChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-40" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="shop-revenue-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {[0.25, 0.5, 0.75].map((p) => <line key={p} x1="0" x2={width} y1={height * p} y2={height * p} stroke="rgba(255,255,255,0.06)" />)}
-      <polygon points={`0,${height} ${points("revenue", maxRevenue)} ${width},${height}`} fill="url(#shop-revenue-fill)" />
-      <polyline points={points("revenue", maxRevenue)} fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" />
-      <polyline points={points("hcSold", maxHc)} fill="none" stroke="#fbbf24" strokeWidth="2" strokeLinejoin="round" strokeDasharray="4 3" />
-    </svg>
+    <div className="rounded-lg border border-[#1F2937] bg-[#0B0F17] px-3 py-2 shadow-xl">
+      <p className="text-[11px] text-slate-500 mb-1">{label}</p>
+      {payload.map((p: any) => (
+        <p key={p.dataKey} className="text-xs flex items-center gap-1.5" style={{ color: p.color }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: p.color }} />
+          {p.dataKey === "revenue" ? `${money(p.value)}` : `${p.value.toLocaleString("es-ES")} HC`}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function RevenueChart({ series }: { series: SeriesPoint[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={260}>
+      <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="shop-revenue-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+        <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} interval={Math.ceil(series.length / 8)} />
+        <YAxis yAxisId="revenue" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} width={48} />
+        <YAxis yAxisId="hc" orientation="right" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}`} width={44} />
+        <Tooltip content={<ChartTooltip />} cursor={{ stroke: "#334155", strokeDasharray: "3 3" }} />
+        <Area yAxisId="revenue" type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} fill="url(#shop-revenue-fill)" dot={false} activeDot={{ r: 4, fill: "#3b82f6" }} />
+        <Line yAxisId="hc" type="monotone" dataKey="hcSold" stroke="#fbbf24" strokeWidth={2} strokeDasharray="4 3" dot={false} activeDot={{ r: 4, fill: "#fbbf24" }} />
+      </ComposedChart>
+    </ResponsiveContainer>
   );
 }
 

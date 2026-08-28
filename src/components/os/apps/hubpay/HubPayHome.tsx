@@ -14,6 +14,7 @@ import {
   Plus,
   Wifi,
 } from 'lucide-react';
+import { ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 /** Tailwind no puede resolver clases armadas con template strings (`bg-${color}-500`) —
  * necesita ver el nombre completo de la clase de forma literal en el código fuente. */
@@ -58,49 +59,39 @@ function buildWeekSeries(transactions: { amount: number; timestamp: Date }[]) {
   return days;
 }
 
-function WeekChart({ days }: { days: ReturnType<typeof buildWeekSeries> }) {
-  const width = 560;
-  const height = 140;
-  const padY = 14;
-  const max = Math.max(1, ...days.map((d) => Math.max(d.income, d.expense)));
-  const stepX = width / (days.length - 1);
-
-  const pointsFor = (key: 'income' | 'expense') =>
-    days.map((d, i) => {
-      const x = i * stepX;
-      const y = padY + (height - padY * 2) * (1 - d[key] / max);
-      return `${x},${y}`;
-    }).join(' ');
-
-  const incomePoints = pointsFor('income');
-  const expensePoints = pointsFor('expense');
-
+function WeekChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-32" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="hp-income-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#34d399" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {[0.25, 0.5, 0.75].map((p) => (
-        <line key={p} x1="0" x2={width} y1={height * p} y2={height * p} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+    <div className="rounded-lg border border-white/10 bg-[#12121a] px-3 py-2 shadow-xl">
+      <p className="text-[11px] text-white/40 mb-1 capitalize">{label}</p>
+      {payload.map((p: any) => (
+        <p key={p.dataKey} className="text-xs flex items-center gap-1.5" style={{ color: p.color }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: p.color }} />
+          {p.dataKey === 'income' ? 'Ingresos' : 'Gastos'}: ${p.value.toLocaleString()}
+        </p>
       ))}
-      <polygon points={`0,${height} ${incomePoints} ${width},${height}`} fill="url(#hp-income-fill)" />
-      <polyline points={incomePoints} fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <polyline points={expensePoints} fill="none" stroke="#fb7185" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 0" />
-      {days.map((d, i) => {
-        const x = i * stepX;
-        const yi = padY + (height - padY * 2) * (1 - d.income / max);
-        const ye = padY + (height - padY * 2) * (1 - d.expense / max);
-        return (
-          <g key={d.key}>
-            {d.income > 0 && <circle cx={x} cy={yi} r="3" fill="#34d399" />}
-            {d.expense > 0 && <circle cx={x} cy={ye} r="3" fill="#fb7185" />}
-          </g>
-        );
-      })}
-    </svg>
+    </div>
+  );
+}
+
+function WeekChart({ days }: { days: ReturnType<typeof buildWeekSeries> }) {
+  return (
+    <ResponsiveContainer width="100%" height={180}>
+      <ComposedChart data={days} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="hp-income-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#34d399" stopOpacity={0.3} />
+            <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+        <XAxis dataKey="label" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} className="capitalize" />
+        <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} width={40} />
+        <Tooltip content={<WeekChartTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeDasharray: '3 3' }} />
+        <Area type="monotone" dataKey="income" stroke="#34d399" strokeWidth={2.5} fill="url(#hp-income-fill)" dot={{ r: 3, fill: '#34d399', strokeWidth: 0 }} activeDot={{ r: 4 }} />
+        <Line type="monotone" dataKey="expense" stroke="#fb7185" strokeWidth={2.5} dot={{ r: 3, fill: '#fb7185', strokeWidth: 0 }} activeDot={{ r: 4 }} />
+      </ComposedChart>
+    </ResponsiveContainer>
   );
 }
 
@@ -191,11 +182,6 @@ export default function HubPayHome() {
             <span className="text-white/30 text-[11px] uppercase tracking-wide mt-1">Últimos 7 días</span>
           </div>
           <WeekChart days={weekSeries} />
-          <div className="flex justify-between px-0.5 -mt-1">
-            {weekSeries.map((d) => (
-              <span key={d.key} className="text-white/30 text-[10px] capitalize">{d.label}</span>
-            ))}
-          </div>
         </div>
       </div>
 
