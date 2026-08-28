@@ -1,8 +1,11 @@
 import type { Collection } from 'mongodb';
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, getMongoClient, supportsTransactions } from '@/lib/mongodb';
 import { currentDiscordUser } from '@/lib/whitelistServer';
+import { getEconomyConfig } from '@/lib/economyConfigServer';
+import { adjustCash } from '@/lib/cashServer';
+import { adjustBalance } from '@/lib/hubPayServer';
 
 export interface CharacterDoc {
   id: string;
@@ -81,6 +84,32 @@ export async function grantCharacterSlots(discordId: string, amount: number): Pr
  * preferencias/tema del OS, que hoy están indexados únicamente por discordId, siguen
  * funcionando sin ninguna migración para cualquier cuenta que nunca cree un segundo personaje.
  */
+/**
+ * Otorga el saldo inicial (efectivo + banco) UNA sola vez, en el primer alta real de la cuenta.
+ * El saldo es por cuenta de Discord (hubPayBalance/cashBalance no son por personaje — ver
+ * createCharacter, que a propósito NO otorga nada), así que esto solo puede pasar acá, nunca
+ * en un personaje secundario comprado con slots (si no, comprar slots sería una forma de
+ * farmear plata gratis).
+ */
+async function grantStartingBalance(discordId: string): Promise<void> {
+  const cfg = await getEconomyConfig();
+  if (await supportsTransactions()) {
+    const client = await getMongoClient();
+    const session = client.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await adjustCash({ discordId, delta: cfg.startingCash, type: 'starting_grant', description: 'Saldo inicial de personaje' }, session);
+        await adjustBalance({ discordId, delta: cfg.startingBank, type: 'starting_grant', description: 'Saldo bancario inicial' }, session);
+      });
+    } finally {
+      await session.endSession();
+    }
+    return;
+  }
+  await adjustCash({ discordId, delta: cfg.startingCash, type: 'starting_grant', description: 'Saldo inicial de personaje' });
+  await adjustBalance({ discordId, delta: cfg.startingBank, type: 'starting_grant', description: 'Saldo bancario inicial' });
+}
+
 export async function ensurePrimaryCharacter(discordId: string, name: string, avatar?: string): Promise<CharacterDoc> {
   const col = await charactersCollection();
   const existing = await col.findOne({ id: discordId });
@@ -98,6 +127,9 @@ export async function ensurePrimaryCharacter(discordId: string, name: string, av
     lastSessionAt: now,
   };
   await col.insertOne(doc);
+  await grantStartingBalance(discordId).catch((error) => {
+    console.error('No se pudo otorgar el saldo inicial de personaje:', error);
+  });
   return doc;
 }
 

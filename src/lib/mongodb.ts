@@ -33,3 +33,35 @@ export async function connectToDatabase(): Promise<Db> {
   const connectedClient = await connect();
   return connectedClient.db();
 }
+
+/** Para operaciones que necesitan session.startSession() (transacciones multi-documento) — connectToDatabase() solo da el Db, no el client. */
+export async function getMongoClient(): Promise<MongoClient> {
+  return connect();
+}
+
+let transactionSupport: boolean | null = null;
+
+/**
+ * Detecta una sola vez si el servidor soporta transacciones reales (replica set / mongos —
+ * Atlas siempre; un mongod standalone local, no). Se cachea para el tiempo de vida del proceso:
+ * el tipo de servidor no cambia en caliente. Usado por cashServer.ts/treasuryServer.ts para
+ * envolver en session.withTransaction() cuando es posible, y degradar a escritura secuencial
+ * (mismo patrón que ya usa el resto del código) cuando no — nunca para decidir SI hace falta
+ * atomicidad, solo si el motor de abajo puede dársela de verdad.
+ */
+export async function supportsTransactions(): Promise<boolean> {
+  if (transactionSupport !== null) return transactionSupport;
+  const client = await connect();
+  const session = client.startSession();
+  try {
+    await session.withTransaction(async () => {
+      await client.db().collection('_txn_probe').findOne({}, { session });
+    });
+    transactionSupport = true;
+  } catch {
+    transactionSupport = false;
+  } finally {
+    await session.endSession();
+  }
+  return transactionSupport;
+}

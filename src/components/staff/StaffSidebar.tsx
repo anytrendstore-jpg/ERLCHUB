@@ -7,7 +7,7 @@ import {
   BarChart3, Building2, Fingerprint, Clock, CalendarOff, Store,
   Percent, ShoppingBag, Share2, Trophy, UsersRound, LineChart,
   Eye, ClipboardList, Skull, ArrowLeft, LogOut, Lock,
-  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound,
+  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound, Banknote,
 } from "lucide-react";
 import { Tooltip } from "@/components/staff/ui";
 import type { StaffNavGroup, StaffSection, StaffIdentityView } from "@/lib/staffTypes";
@@ -17,7 +17,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3, Building2, Fingerprint, Clock, CalendarOff, Store,
   Percent, ShoppingBag, Share2, Trophy, UsersRound, LineChart,
   Eye, ClipboardList, Skull,
-  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound,
+  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound, Banknote,
 };
 
 const GROUPS: StaffNavGroup[] = [
@@ -67,6 +67,7 @@ const GROUPS: StaffNavGroup[] = [
     items: [
       { id: "economy_store", label: "Tienda", icon: "Store", directorOnly: true },
       { id: "economy_tax", label: "Impuestos", icon: "Scale", directorOnly: true },
+      { id: "economy_treasury", label: "Tesoro y Presupuestos", icon: "Banknote", directorOnly: true },
       { id: "economy_salaries", label: "Sueldos", icon: "Handshake", directorOnly: true },
       { id: "economy_bank", label: "Maze Bank", icon: "Landmark", directorOnly: true },
       { id: "economy_hubpay", label: "Cuentas HubPay", icon: "Wallet", directorOnly: true },

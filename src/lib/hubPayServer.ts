@@ -1,4 +1,4 @@
-import type { Collection } from 'mongodb';
+import type { Collection, ClientSession } from 'mongodb';
 import crypto from 'crypto';
 import { connectToDatabase } from '@/lib/mongodb';
 import { currentDiscordUser, resolvePlayerIdentity } from '@/lib/whitelistServer';
@@ -12,7 +12,7 @@ export interface HubPayTransactionDoc {
   id: string;
   userId: string;
   amount: number;
-  type: 'salary' | 'transfer_in' | 'transfer_out' | 'withdrawal' | 'deposit' | 'expense';
+  type: 'salary' | 'transfer_in' | 'transfer_out' | 'withdrawal' | 'deposit' | 'expense' | 'starting_grant';
   description: string;
   counterpartyId?: string;
   metadata?: Record<string, unknown>;
@@ -135,12 +135,12 @@ export async function adjustBalance(entry: {
   description: string;
   counterpartyId?: string;
   metadata?: Record<string, unknown>;
-}): Promise<HubPayTransactionDoc> {
+}, session?: ClientSession): Promise<HubPayTransactionDoc> {
   const usersCol = await usersCollection();
   await usersCol.updateOne(
     { discordId: entry.discordId },
     { $inc: { hubPayBalance: entry.delta }, $setOnInsert: { discordId: entry.discordId } },
-    { upsert: true }
+    { upsert: true, session }
   );
 
   const tx: HubPayTransactionDoc = {
@@ -155,6 +155,6 @@ export async function adjustBalance(entry: {
     status: 'completed',
   };
   const txCol = await hubPayTransactionsCollection();
-  await txCol.insertOne(tx);
+  await txCol.insertOne(tx, { session });
   return tx;
 }

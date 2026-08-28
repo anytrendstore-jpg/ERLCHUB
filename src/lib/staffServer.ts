@@ -24,6 +24,11 @@ export type StaffActionType =
   | 'economy_item_updated'
   | 'economy_item_deleted'
   | 'economy_tax_updated'
+  | 'economy_config_updated'
+  | 'treasury_adjusted'
+  | 'treasury_distributed'
+  | 'treasury_distribution_rate_updated'
+  | 'department_budget_entry_recorded'
   | 'os_module_toggled'
   | 'os_module_updated'
   | 'social_post_removed'
@@ -488,7 +493,7 @@ export async function economyItems(): Promise<Collection<EconomyItem>> {
 
 /** Un porcentaje de impuesto por categoría económica. */
 export interface EconomyTaxRate {
-  category: 'tienda' | 'trabajos' | 'ilegal' | 'transferencias' | 'empresas' | 'marketplace';
+  category: 'tienda' | 'trabajos' | 'ilegal' | 'transferencias' | 'empresas' | 'marketplace' | 'property' | 'vehicle';
   percentage: number;
   updatedAt: Date;
   updatedBy: string;
@@ -501,6 +506,8 @@ export const TAX_CATEGORIES: { id: EconomyTaxRate['category']; label: string }[]
   { id: 'transferencias', label: 'Transferencias entre jugadores' },
   { id: 'empresas', label: 'Operaciones empresariales' },
   { id: 'marketplace', label: 'Comisión de MercadoLibre' },
+  { id: 'property', label: 'Property Tax (propiedades)' },
+  { id: 'vehicle', label: 'Vehicle Registration Tax' },
 ];
 
 export async function economyTaxRates(): Promise<Collection<EconomyTaxRate>> {
