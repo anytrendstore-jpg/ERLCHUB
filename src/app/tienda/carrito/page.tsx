@@ -10,7 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWompi } from "@/hooks/useWompi";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
-import WompiWidget from "@/components/WompiWidget";
+import CardTokenizeForm from "@/components/tienda/CardTokenizeForm";
 import { convertPrice } from "@/lib/shopData";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import TrustSection from "@/components/tienda/TrustSection";
@@ -184,7 +184,7 @@ export default function CartPage() {
     signature: string;
     amountInCents: number;
   } | null>(null);
-  const [showWompiWidget, setShowWompiWidget] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
 
   const handleCheckout = async () => {
@@ -227,7 +227,7 @@ export default function CartPage() {
           signature: data.signature,
           amountInCents: data.amountInCents,
         });
-        setShowWompiWidget(true);
+        setShowPaymentModal(true);
       } else {
         throw new Error(data.error || 'Error iniciando el pago');
       }
@@ -299,6 +299,40 @@ export default function CartPage() {
     }
 
     notify('error', 'Error en el pago: ' + error);
+  };
+
+  // Cobra la orden ya creada (handleCheckout) con la tarjeta recién tokenizada en el navegador
+  // — mismo mecanismo que la renovación automática de membresías, sin pasar por el checkout
+  // alojado de Wompi que pide más datos de los necesarios para una compra de la tienda.
+  const handleCardTokenized = async (cardToken: string) => {
+    if (!paymentData || !user?.id) return;
+    setIsProcessing(true);
+    try {
+      const response = await fetch('/api/shop/checkout/charge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference: paymentData.reference,
+          cardToken,
+          customerEmail: `user_${user.id}@erlchub.pro`,
+        }),
+      });
+      const data = await response.json();
+
+      if (!data.success) {
+        handlePaymentError(data.error || 'No se pudo procesar el pago');
+        return;
+      }
+      if (data.status === 'DECLINED' || data.status === 'ERROR') {
+        handlePaymentError('La tarjeta fue rechazada. Probá con otra.');
+        return;
+      }
+
+      setShowPaymentModal(false);
+      await handlePaymentComplete(data.status);
+    } catch (error) {
+      handlePaymentError(error instanceof Error ? error.message : 'Error al procesar el pago');
+    }
   };
 
   const handleHubCoinsPayment = async () => {
@@ -954,20 +988,41 @@ export default function CartPage() {
         </div>
         <Footer />
 
-        {showWompiWidget && paymentData && (
+        {showPaymentModal && paymentData && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[2000] p-4">
-            <div className="w-full max-w-md">
-              <WompiWidget
-                amountInCents={paymentData.amountInCents}
-                reference={paymentData.reference}
-                currency="COP"
-                redirectUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/tienda/checkout/success`}
-                signature={paymentData.signature}
-                mostrarBotonReal
-                onPaymentComplete={handlePaymentComplete}
-                onPaymentError={handlePaymentError}
-                onCancel={() => { setShowWompiWidget(false); setPaymentData(null); }}
-              />
+            <div className="w-full max-w-md bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-lg font-bold text-[var(--foreground)]">Finalizar pago</h3>
+                {!isProcessing && (
+                  <button
+                    onClick={() => { setShowPaymentModal(false); setPaymentData(null); }}
+                    className="text-[var(--text-faint)] hover:text-[var(--foreground)] transition-colors"
+                    aria-label="Cerrar"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+              <p className="text-sm text-[var(--text-muted)] mb-5">
+                Total a pagar: <span className="text-[#8e00f7] font-semibold">{getConvertedPrice(finalUsdTotal)}</span>
+              </p>
+
+              {isProcessing ? (
+                <div className="flex flex-col items-center justify-center py-8 gap-3">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8e00f7]" />
+                  <p className="text-sm text-[var(--text-muted)]">Procesando tu pago...</p>
+                </div>
+              ) : (
+                <>
+                  <CardTokenizeForm onTokenized={handleCardTokenized} submitLabel={`Pagar ${getConvertedPrice(finalUsdTotal)}`} />
+                  <button
+                    onClick={() => { setShowPaymentModal(false); setPaymentData(null); }}
+                    className="w-full text-center text-[var(--text-muted)] text-sm mt-3 hover:text-[var(--foreground)] transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

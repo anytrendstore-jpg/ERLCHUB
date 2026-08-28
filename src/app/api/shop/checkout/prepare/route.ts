@@ -17,9 +17,9 @@ function generateReference(): string {
 /**
  * Crea la orden ANTES de mandar al comprador a pagar. El cliente solo manda QUÉ quiere comprar
  * (catalogId/quantity/paymentType) — el precio se calcula acá contra el catálogo real, nunca
- * confiando en un monto que venga del navegador. El reference+firma que devuelve es lo que
- * WompiWidget usa para abrir el checkout; el webhook (wompi/events) busca la orden por ese mismo
- * reference cuando el pago se aprueba.
+ * confiando en un monto que venga del navegador. El reference que devuelve es lo que
+ * /api/shop/checkout/charge usa para cobrar con la tarjeta tokenizada; el webhook (wompi/events)
+ * busca la orden por ese mismo reference cuando el pago se aprueba.
  */
 export async function POST(request: NextRequest) {
   try {
