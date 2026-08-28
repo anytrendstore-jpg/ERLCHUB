@@ -425,6 +425,8 @@ export interface StaffMember {
   role: string;
   addedAt: Date;
   addedBy: string;
+  /** Número de staff secuencial (#001, #002...), asignado una sola vez al ingresar al directorio. */
+  staffNumber?: number;
 }
 
 export async function staffMembers(): Promise<Collection<StaffMember>> {
@@ -432,6 +434,22 @@ export async function staffMembers(): Promise<Collection<StaffMember>> {
   const col = db.collection<StaffMember>('staff_members');
   await col.createIndex({ discordId: 1 }, { unique: true }).catch(() => {});
   return col;
+}
+
+/**
+ * Asigna el próximo número de staff de forma atómica — mismo patrón y misma
+ * colección de contadores (`whitelist_counters`) que ya usa nextMemberNumber()
+ * para la whitelist, solo con otra clave (`staffNumber`).
+ */
+export async function nextStaffNumber(): Promise<number> {
+  const db = await connectToDatabase();
+  const counters = db.collection<{ _id: string; seq: number }>('whitelist_counters');
+  const result = await counters.findOneAndUpdate(
+    { _id: 'staffNumber' },
+    { $inc: { seq: 1 } },
+    { upsert: true, returnDocument: 'after' }
+  );
+  return result?.seq ?? 1;
 }
 
 /* ------------------------------------------------------------------ *

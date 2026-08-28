@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { staffIdentity, staffMembers } from '@/lib/staffServer';
+import { staffIdentity, staffMembers, nextStaffNumber } from '@/lib/staffServer';
 import { requirePermission } from '@/lib/permissions/engine';
 import { STAFF_DISCORD_IDS } from '@/lib/whitelistServer';
 
@@ -40,13 +40,17 @@ export async function POST(request: NextRequest) {
 
     const identity = staffIdentity();
     const col = await staffMembers();
+    const existing = await col.findOne({ discordId: discordId.trim() });
+    // El número de staff se asigna una sola vez — reeditar nombre/rol de alguien ya existente no le cambia el número.
+    const staffNumber = existing?.staffNumber ?? (await nextStaffNumber());
     const doc = {
-      id: crypto.randomUUID(),
+      id: existing?.id || crypto.randomUUID(),
       discordId: discordId.trim(),
       name: name.trim(),
       role: role?.trim() || 'Staff',
-      addedAt: new Date(),
+      addedAt: existing?.addedAt || new Date(),
       addedBy: identity?.name || 'Staff',
+      staffNumber,
     };
 
     await col.updateOne({ discordId: doc.discordId }, { $set: doc }, { upsert: true });

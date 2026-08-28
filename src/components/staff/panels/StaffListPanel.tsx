@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plus, X, Loader2, UsersRound, Trash2, Info } from "lucide-react";
 import { PanelHeader, Card, TextInput, PrimaryButton, LoadingBlock, EmptyState, formatDate, useToast } from "@/components/staff/ui";
+import { formatMemberNumber } from "@/lib/memberNumber";
 
-interface Member { id: string; discordId: string; name: string; role: string; addedAt: string; addedBy: string; }
+interface Member { id: string; discordId: string; name: string; role: string; addedAt: string; addedBy: string; staffNumber?: number; }
 
 export default function StaffListPanel() {
   const toast = useToast();
@@ -106,7 +107,10 @@ export default function StaffListPanel() {
                   {m.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-white truncate">{m.name}</div>
+                  <div className="text-sm font-medium text-white truncate flex items-center gap-1.5">
+                    {m.name}
+                    {m.staffNumber != null && <span className="text-[10px] font-mono font-normal text-slate-500">{formatMemberNumber(m.staffNumber)}</span>}
+                  </div>
                   <div className="text-xs text-blue-400">{m.role}</div>
                 </div>
               </div>

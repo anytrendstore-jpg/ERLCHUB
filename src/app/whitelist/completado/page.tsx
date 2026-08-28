@@ -14,6 +14,7 @@ import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
 import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
 import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
 import WhitelistCard from "@/components/whitelist/WhitelistCard";
+import { formatMemberNumber } from "@/lib/memberNumber";
 
 export default function CompletedPage() {
   const { application, loading, error: loadError, reload } = useWhitelistApplication(["completed"]);
@@ -100,7 +101,7 @@ export default function CompletedPage() {
                 </div>
                 <div className="text-center p-4 bg-[var(--background)] rounded-xl">
                   <Users className="w-6 h-6 text-[#22c55e] mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-[var(--foreground)]">#{application.memberNumber ?? 1}</div>
+                  <div className="text-2xl font-bold text-[var(--foreground)]">{formatMemberNumber(application.memberNumber ?? 1)}</div>
                   <div className="text-xs text-[var(--text-faint)]">Miembro</div>
                 </div>
               </div>

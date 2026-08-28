@@ -6,6 +6,7 @@ import {
   Server, Skull, Dice5, Ban, Ticket, Flag, ScrollText, Monitor, Share2, FileText, AlertTriangle,
 } from "lucide-react";
 import { Card, CardTitle, Chip, EmptyState, IconButton, Skeleton, formatDate, useStaffPermissions } from "@/components/staff/ui";
+import { formatMemberNumber } from "@/lib/memberNumber";
 
 type Tab =
   | "resumen" | "cuenta" | "whitelist" | "economia" | "crypto" | "inventario" | "propiedades"
@@ -399,7 +400,7 @@ function WhitelistTab({ dossier }: { dossier: any }) {
         <CardTitle className="mb-2">Estado de la solicitud</CardTitle>
         <Field label="Estado" value={<Chip tone={wl.status === "approved" ? "emerald" : "amber"} label={wl.status} />} />
         <Field label="Fase" value={wl.currentPhase} />
-        <Field label="N° de miembro" value={wl.memberNumber} />
+        <Field label="N° de miembro" value={wl.memberNumber != null ? formatMemberNumber(wl.memberNumber) : null} />
         <Field label="Enviada" value={wl.submittedAt ? date(wl.submittedAt) : null} />
         <Field label="Revisada por" value={wl.reviewedBy} />
       </Card>

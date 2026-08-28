@@ -9,6 +9,7 @@ import {
 import dynamic from "next/dynamic";
 import { PanelHeader, TextInput, TextArea, Button, IconButton, LoadingBlock, EmptyState, formatDate, useToast } from "@/components/staff/ui";
 import type { ApplicationStatus, City, DocumentType, WhitelistPhase } from "@/lib/whitelistTypes";
+import { formatMemberNumber } from "@/lib/memberNumber";
 
 const DocumentViewer3D = dynamic(() => import("@/components/documents/DocumentViewer3D"), { ssr: false });
 
@@ -249,7 +250,7 @@ export default function WhitelistPanel({ onChanged }: { onChanged?: () => void }
                   </span>
                 )}
                 {selected.memberNumber != null && (
-                  <span className="px-3 py-1.5 rounded-lg text-sm bg-[#151C2A] text-slate-300 ring-1 ring-[#1F2937]">Miembro #{selected.memberNumber}</span>
+                  <span className="px-3 py-1.5 rounded-lg text-sm bg-[#151C2A] text-slate-300 ring-1 ring-[#1F2937]">Miembro {formatMemberNumber(selected.memberNumber)}</span>
                 )}
                 {selected.interviewRequested && (
                   <span className="px-3 py-1.5 rounded-lg text-sm bg-purple-500/10 text-purple-300 ring-1 ring-purple-500/30">
