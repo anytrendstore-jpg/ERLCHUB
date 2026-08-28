@@ -34,8 +34,12 @@ export interface CityInfo {
   country: string;
   available: boolean;
   flag: string;
-  /** Degradado del botón de selección, a juego con el diseño real de la licencia de esa ciudad. */
+  /** Degradado del botón de selección, a juego con los colores reales del logo de esa ciudad. */
   accent: string;
+  /** Logo real de la ciudad (public/server/*.png), a juego con el degradado de accent. */
+  logo: string;
+  /** Texto de venta: por qué elegir esta ciudad, para que el jugador decida con criterio. */
+  description: string;
 }
 
 export interface DiscordData {
@@ -152,7 +156,9 @@ export const CITIES: CityInfo[] = [
     country: "Estados Unidos",
     available: true,
     flag: "🇺🇸",
-    accent: "from-[#ffb703] via-[#fb8500] to-[#023e7d]"
+    accent: "from-[#00c6fb] via-[#e6007a] to-[#fb8500]",
+    logo: "/server/los-santos.png",
+    description: "Sol, palmeras y la city grande de California. El corazón del roleplay: policía, bandas, negocios y una economía que nunca duerme."
   },
   {
     id: "liberty_city",
@@ -161,7 +167,9 @@ export const CITIES: CityInfo[] = [
     country: "Estados Unidos",
     available: false,
     flag: "🇺🇸",
-    accent: "from-[#8fae8b] via-[#6f8f70] to-[#2f4b3f]"
+    accent: "from-[#c7ced6] via-[#5f8fd6] to-[#0f2e5c]",
+    logo: "/server/liberty-city.png",
+    description: "El pulso de una gran metrópoli. Rascacielos, crimen organizado y una vida nocturna que no se detiene nunca."
   },
   {
     id: "vice_city",
@@ -170,7 +178,9 @@ export const CITIES: CityInfo[] = [
     country: "Estados Unidos",
     available: false,
     flag: "🇺🇸",
-    accent: "from-[#e8d8a0] via-[#d9a441] to-[#2f6b4f]"
+    accent: "from-[#ff2fd4] via-[#a855f7] to-[#22d3ee]",
+    logo: "/server/vice-city.png",
+    description: "Neones, playas de Florida y estética retro de los 80. Para quienes buscan un roleplay más relajado y con estilo."
   },
   {
     id: "las_venturas",
@@ -179,7 +189,9 @@ export const CITIES: CityInfo[] = [
     country: "Estados Unidos",
     available: false,
     flag: "🇺🇸",
-    accent: "from-[#bcd4f0] via-[#5a8fd6] to-[#1c3f66]"
+    accent: "from-[#dc2626] via-[#f59e0b] to-[#7f1d1d]",
+    logo: "/server/las-venturas.png",
+    description: "Casinos y luces de neón en pleno desierto de Nevada. La ciudad del juego, el lujo y las segundas oportunidades."
   }
 ];
 

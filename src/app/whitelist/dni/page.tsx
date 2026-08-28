@@ -317,38 +317,44 @@ export default function DNIPage() {
                         type="button"
                         onClick={() => handleCitySelect(city.id)}
                         disabled={!city.available}
-                        className={`group relative overflow-hidden rounded-xl text-left transition-all ${
+                        className={`group relative overflow-hidden rounded-2xl text-left transition-all flex flex-col ${
                           city.available
-                            ? "ring-2 ring-transparent hover:ring-[#8e00f7] cursor-pointer"
-                            : "opacity-60 cursor-not-allowed"
+                            ? "ring-2 ring-transparent hover:ring-[#8e00f7] cursor-pointer hover:-translate-y-0.5"
+                            : "opacity-75 cursor-not-allowed"
                         }`}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${city.accent} opacity-90`} />
-                        <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors" />
+                        <div className={`absolute inset-0 bg-gradient-to-br ${city.accent}`} />
+                        <div className="absolute inset-0 bg-black/45 group-hover:bg-black/30 transition-colors" />
 
                         {!city.available && (
-                          <div className="absolute top-3 right-3 px-2 py-1 bg-black/50 text-white text-xs font-medium rounded z-10">
+                          <div className="absolute top-3 right-3 px-2 py-1 bg-black/60 text-white text-xs font-medium rounded z-10">
                             Próximamente
                           </div>
                         )}
 
-                        <div className="relative p-6">
+                        <div className="relative p-5 flex flex-col h-full">
                           <div className="flex items-center gap-3 mb-3">
-                            <span className="text-3xl drop-shadow">{city.flag}</span>
-                            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/90 shadow">
-                              <Image src="/logo.png" alt="ERLC HUB" width={22} height={22} className="w-5 h-5" />
+                            <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-black/30 backdrop-blur-sm p-1.5 flex-shrink-0">
+                              <Image src={city.logo} alt={`Logo de ${city.name}`} width={56} height={56} className="w-full h-full object-contain" />
                             </div>
-                            <div>
-                              <div className="text-lg font-bold text-white drop-shadow">{city.name}</div>
-                              <div className="text-sm text-white/80">{city.state}</div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-base drop-shadow">{city.flag}</span>
+                                <div className="text-lg font-bold text-white drop-shadow">{city.name}</div>
+                              </div>
+                              <div className="text-sm text-white/80">{city.state} · {city.country}</div>
                             </div>
                           </div>
-                          <div className="text-sm text-white/70">{city.country}</div>
-                          {city.available && (
+
+                          <p className="text-sm text-white/85 leading-relaxed flex-1">{city.description}</p>
+
+                          {city.available ? (
                             <div className="mt-3 flex items-center gap-1 text-white text-sm font-medium">
                               <Check className="w-4 h-4" />
                               Disponible
                             </div>
+                          ) : (
+                            <div className="mt-3 text-white/60 text-xs">Todavía no se puede elegir</div>
                           )}
                         </div>
                       </button>
