@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ChevronRight, Menu, X, ShoppingCart, LogOut, Coins, ShoppingBag, History, LayoutDashboard, ShieldCheck, ClipboardCheck } from "lucide-react";
+import { ChevronRight, Menu, X, ShoppingCart, LogOut, Coins, ShoppingBag, History, LayoutDashboard, ClipboardCheck, Sun, Moon } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
@@ -10,7 +10,6 @@ import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import { useWhitelistStatus } from "@/hooks/useWhitelistStatus";
 import UserProfile from "@/components/UserProfile";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { label: "Inicio", href: "/" },
@@ -51,6 +50,23 @@ export default function Navbar() {
   const { balance: userHubCoins, fetchBalance } = useHubCoins();
   const [hubCoinsDropdownOpen, setHubCoinsDropdownOpen] = useState(false);
   const whitelist = useWhitelistStatus();
+  const [isLightTheme, setIsLightTheme] = useState(false);
+
+  useEffect(() => {
+    setIsLightTheme(document.documentElement.getAttribute("data-theme") === "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isLightTheme;
+    setIsLightTheme(next);
+    if (next) {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.setItem("erlchub-theme", "light");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("erlchub-theme", "dark");
+    }
+  };
 
   // Acción principal según en qué punto esté el usuario:
   // sin solicitud -> hacerla · a medias -> continuar · terminada -> su dashboard.
@@ -61,9 +77,6 @@ export default function Navbar() {
     : whitelist.hasApplication
       ? { href: whitelist.nextRoute, label: "Continuar whitelist", icon: ClipboardCheck }
       : { href: "/whitelist", label: "Hacer whitelist", icon: ClipboardCheck };
-
-  // En modo beta el acceso a staff está visible para poder revisarlo en local.
-  const showStaffButton = whitelist.isStaff || process.env.NEXT_PUBLIC_WHITELIST_BETA === "1";
 
   // Handle scroll to add background
   useEffect(() => {
@@ -152,18 +165,6 @@ export default function Navbar() {
 
           {/* Auth Buttons + Cart */}
           <div className="hidden md:flex items-center gap-2 sm:gap-3">
-            {/* Panel de staff: solo para cuentas de staff */}
-            {showStaffButton && (
-              <Link
-                href="/staff"
-                className="flex items-center gap-2 px-3 py-2 rounded-full bg-[#2563eb] hover:bg-[#3b82f6] text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/25 hover:scale-[1.02]"
-                title="Panel de Staff"
-              >
-                <ShieldCheck className="h-4 w-4" />
-                <span>Staff</span>
-              </Link>
-            )}
-
             {/* Whitelist / dashboard del usuario */}
             {showWhitelistCta && (
               <Link
@@ -239,8 +240,6 @@ export default function Navbar() {
               </div>
             )}
 
-            <ThemeToggle />
-
             {/* Cart Button */}
             <Link
               href="/tienda/carrito"
@@ -277,9 +276,8 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile - Theme + Cart + Menu Button */}
+          {/* Mobile - Cart + Menu Button */}
           <div className="md:hidden flex items-center gap-1 z-50">
-            <ThemeToggle className="!w-9 !h-9" />
             {/* Mobile Cart Button */}
             <button
               type="button"
@@ -345,18 +343,8 @@ export default function Navbar() {
             );
           })}
           {/* Accesos rápidos: whitelist / dashboards */}
-          {(showWhitelistCta || showStaffButton) && (
+          {showWhitelistCta && (
             <div className="flex flex-col gap-2 pt-2">
-              {showStaffButton && (
-                <Link
-                  href="/staff"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-4 rounded-xl bg-[#2563eb] text-white text-lg font-semibold transition-all active:scale-95"
-                >
-                  <ShieldCheck className="h-5 w-5" />
-                  Panel de Staff
-                </Link>
-              )}
               {showWhitelistCta && (
                 <Link
                   href={primaryAction.href}
@@ -398,6 +386,13 @@ export default function Navbar() {
                     <div className="text-[var(--text-muted)] text-sm">Discord</div>
                   </div>
                 </div>
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center gap-3 text-[var(--text-muted)] text-lg font-medium px-4 py-3 rounded-xl hover:bg-[var(--card-bg-2)] hover:text-[var(--foreground)] transition-all active:scale-95"
+                >
+                  {isLightTheme ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                  {isLightTheme ? "Modo oscuro" : "Modo claro"}
+                </button>
                 <button
                   onClick={() => {
                     handleLogout();

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { User, LogOut, Gift, ChevronDown, ChevronUp, Package, ShoppingCart, Percent, ShieldCheck, LayoutDashboard } from "lucide-react";
+import { User, LogOut, Gift, ChevronDown, ChevronUp, Package, ShoppingCart, ShieldCheck, LayoutDashboard, Sun, Moon } from "lucide-react";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import { useWhitelistStatus } from "@/hooks/useWhitelistStatus";
@@ -13,10 +13,23 @@ export default function UserProfile() {
   const { balance } = useHubCoins();
   const { isStaff } = useWhitelistStatus();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLightTheme, setIsLightTheme] = useState(false);
 
-  // IDs de usuarios que pueden ver el botón de descuentos
-  const ALLOWED_USER_IDS = ["1166814841583960167", "917085596189593631"];
-  const canSeeDiscounts = user?.id && ALLOWED_USER_IDS.includes(user.id);
+  useEffect(() => {
+    setIsLightTheme(document.documentElement.getAttribute("data-theme") === "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isLightTheme;
+    setIsLightTheme(next);
+    if (next) {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.setItem("erlchub-theme", "light");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("erlchub-theme", "dark");
+    }
+  };
 
   // Obtener membresía del usuario desde sus datos
   const userMembership = user?.membership?.name || null; 
@@ -162,16 +175,13 @@ export default function UserProfile() {
               <span className="text-xs sm:text-sm">Comprar Hub Coins</span>
             </Link>
             
-            {canSeeDiscounts && (
-              <Link
-                href="/descuentos"
-                className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-[#fbbf24] hover:text-[#fbbf24]/80 hover:bg-[#fbbf24]/10 rounded-lg transition-all duration-200"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                <Percent className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm font-medium">Gestión de Descuentos</span>
-              </Link>
-            )}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 sm:gap-3 w-full px-2 sm:px-3 py-2 text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg-2)] rounded-lg transition-all duration-200"
+            >
+              {isLightTheme ? <Moon className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+              <span className="text-xs sm:text-sm">{isLightTheme ? "Modo oscuro" : "Modo claro"}</span>
+            </button>
 
             <div className="border-t border-[var(--card-border-soft)] my-2"></div>
 
