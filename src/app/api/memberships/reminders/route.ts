@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { chargePaymentSource } from '@/lib/wompiServer';
 import { createOrder } from '@/lib/shopOrdersServer';
+import { getUsdToCopRate } from '@/lib/exchangeRatesServer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -266,7 +267,8 @@ async function attemptAutoRenewal(subscription: any) {
       return { success: false, reason: 'Sin método de pago guardado' };
     }
 
-    const amountInCents = Math.round(subscription.renewalPrice * 4000 * 100); // mismo tipo de cambio fijo USD->COP que el resto del checkout (Fase C)
+    const usdToCop = await getUsdToCopRate();
+    const amountInCents = Math.round(subscription.renewalPrice * usdToCop * 100);
     const reference = `ERLC_RENEWAL_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const customerEmail = `user_${subscription.userId}@erlchub.pro`;
 

@@ -7,7 +7,8 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Package, Check, ChevronRight, Shield, Zap, Sparkles, ArrowLeft } from "lucide-react";
-import { currencies, convertPrice, formatNumber } from "@/lib/shopData";
+import { convertPrice, formatNumber } from "@/lib/shopData";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { useCart } from "@/contexts/CartContext";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useCardTilt } from "@/hooks/useCardTilt";
@@ -24,6 +25,7 @@ const DESCRIPTION_IMAGE: Record<string, string> = {
 export default function KitPage() {
   const params = useParams();
   const router = useRouter();
+  const { currencies } = useExchangeRates();
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const [kit, setKit] = useState<any | null | undefined>(undefined);
   const [relatedKits, setRelatedKits] = useState<any[]>([]);
@@ -35,6 +37,10 @@ export default function KitPage() {
     fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setKit(d.success ? d.item : null));
     fetch('/api/shop/catalog?type=kit').then((r) => r.json()).then((d) => { if (d.success) setRelatedKits(d.items); });
   }, [params.id]);
+
+  useEffect(() => {
+    setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
+  }, [currencies]);
 
   const { addItem } = useCart();
   const { isAuthenticated, user } = useDiscordAuth();

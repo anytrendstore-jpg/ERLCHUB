@@ -7,7 +7,8 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Crown, Check, ChevronRight, Shield, Zap, ArrowLeft, Star, RefreshCw } from "lucide-react";
-import { currencies, convertPrice } from "@/lib/shopData";
+import { convertPrice } from "@/lib/shopData";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
 import type { CurrencyRate, Membership } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
 import { useCardTilt } from "@/hooks/useCardTilt";
@@ -20,6 +21,7 @@ export default function MembershipPage() {
   const params = useParams();
   const [membership, setMembership] = useState<Membership | null | undefined>(undefined);
   const [memberships, setMemberships] = useState<Membership[]>([]);
+  const { currencies } = useExchangeRates();
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const [paymentType, setPaymentType] = useState<"monthly" | "permanent">("permanent");
   const [showSubscribeForm, setShowSubscribeForm] = useState(false);
@@ -33,6 +35,10 @@ export default function MembershipPage() {
     fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setMembership(d.success ? d.item : null));
     fetch('/api/shop/catalog?type=membership').then((r) => r.json()).then((d) => { if (d.success) setMemberships(d.items); });
   }, [params.id]);
+
+  useEffect(() => {
+    setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
+  }, [currencies]);
 
   if (membership === undefined) {
     return (

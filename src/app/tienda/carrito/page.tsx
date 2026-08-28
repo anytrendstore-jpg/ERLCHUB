@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle, AlertCircle, X } from "lucide-react";
@@ -11,11 +11,14 @@ import { useWompi } from "@/hooks/useWompi";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import WompiWidget from "@/components/WompiWidget";
-import { currencies, convertPrice } from "@/lib/shopData";
+import { convertPrice } from "@/lib/shopData";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
+import TrustSection from "@/components/tienda/TrustSection";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCart();
-  
+  const { currencies } = useExchangeRates();
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isProcessingHubCoins, setIsProcessingHubCoins] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
@@ -31,6 +34,10 @@ export default function CartPage() {
   const { balance: hubCoinsBalance, createTransaction } = useHubCoins();
   const [notice, setNotice] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const notify = (type: 'success' | 'error', text: string) => setNotice({ type, text });
+
+  useEffect(() => {
+    setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
+  }, [currencies]);
 
   const getTotals = () => {
     const usdTotal = items
@@ -711,6 +718,10 @@ export default function CartPage() {
                       )}
                     </button>
                   )}
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-[var(--card-border-soft)]">
+                  <TrustSection page="carrito" />
                 </div>
               </div>
             </div>

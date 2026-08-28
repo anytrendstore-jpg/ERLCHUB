@@ -18,10 +18,12 @@ import {
   ShoppingCart
 } from "lucide-react";
 import type { Membership, Kit } from "@/lib/types";
-import { currencies, convertPrice, formatNumber } from "@/lib/shopData";
+import { convertPrice, formatNumber } from "@/lib/shopData";
 import { useReviews } from "@/hooks/useReviews";
 import { useCart } from "@/contexts/CartContext";
 import { useTiendaStats } from "@/hooks/useTiendaStats";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
+import { usePresence } from "@/hooks/usePresence";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductCard from "@/components/tienda/ProductCard";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
@@ -39,6 +41,7 @@ const KIT_CATEGORY_LABELS: Record<string, string> = {
 };
 
 export default function TiendaPage() {
+  const { currencies } = useExchangeRates();
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const [billing, setBilling] = useState<"monthly" | "permanent">("permanent");
   const [kitCategory, setKitCategory] = useState<string | null>(null);
@@ -47,6 +50,14 @@ export default function TiendaPage() {
   const { stats: reviewStats, reviews } = useReviews('Tienda');
   const { stats: tiendaStats, loading: statsLoading } = useTiendaStats();
   const { addItem } = useCart();
+  const presenceCount = usePresence("tienda");
+
+  // El tipo de cambio real llega asincrónico — cuando actualiza, se refresca la tasa de la
+  // moneda ya elegida (preservando la elección del usuario) en vez de quedarse con el valor
+  // de referencia estático con el que arrancó la página.
+  useEffect(() => {
+    setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
+  }, [currencies]);
 
   useEffect(() => {
     fetch('/api/shop/catalog?type=membership').then((r) => r.json()).then((d) => { if (d.success) setMemberships(d.items); });
@@ -91,21 +102,29 @@ export default function TiendaPage() {
 
       {/* Navegación rápida — la página es larga, así se salta directo a la sección que importa */}
       <nav className="sticky top-16 z-30 backdrop-blur-xl border-b border-[var(--card-border-soft)]" style={{ background: "color-mix(in srgb, var(--background-alt) 90%, transparent)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1 overflow-x-auto scrollbar-hide py-2.5">
-          {[
-            { href: "#hubcoins", label: "Hub Coins" },
-            { href: "#membresias", label: "Membresías" },
-            { href: "#whitelist-fast", label: "Whitelist Fast" },
-            { href: "#kits", label: "Kits" },
-          ].map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm text-[var(--text-muted)] hover:text-white hover:bg-white/5 transition-colors"
-            >
-              {item.label}
-            </a>
-          ))}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-1 overflow-x-auto scrollbar-hide py-2.5">
+          <div className="flex items-center gap-1">
+            {[
+              { href: "#hubcoins", label: "Hub Coins" },
+              { href: "#membresias", label: "Membresías" },
+              { href: "#whitelist-fast", label: "Whitelist Fast" },
+              { href: "#kits", label: "Kits" },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm text-[var(--text-muted)] hover:text-white hover:bg-white/5 transition-colors"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+          {presenceCount !== null && presenceCount > 0 && (
+            <div className="flex-shrink-0 flex items-center gap-1.5 text-xs text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              {presenceCount === 1 ? "1 persona en la tienda" : `${presenceCount} personas en la tienda`}
+            </div>
+          )}
         </div>
       </nav>
 

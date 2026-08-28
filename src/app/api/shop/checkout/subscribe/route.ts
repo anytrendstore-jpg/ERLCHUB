@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { shopCatalogCollection } from '@/lib/shopCatalogServer';
 import { createOrder } from '@/lib/shopOrdersServer';
 import { createPaymentSource, chargePaymentSource } from '@/lib/wompiServer';
+import { getUsdToCopRate } from '@/lib/exchangeRatesServer';
 
 export const dynamic = 'force-dynamic';
-
-const USD_TO_COP = 4000; // mismo tipo de cambio fijo que /api/shop/checkout/prepare (Fase C) — no se toca acá.
 
 function generateReference(): string {
   return `ERLC_SUB_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -32,7 +31,8 @@ export async function POST(request: NextRequest) {
     }
 
     const unitPriceUSD = catalogItem.priceMonthly;
-    const amountInCents = Math.round(unitPriceUSD * USD_TO_COP * 100);
+    const usdToCop = await getUsdToCopRate();
+    const amountInCents = Math.round(unitPriceUSD * usdToCop * 100);
     const reference = generateReference();
 
     const paymentSource = await createPaymentSource({ cardToken, customerEmail });

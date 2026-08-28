@@ -2,13 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { shopCatalogCollection } from '@/lib/shopCatalogServer';
 import { createOrder, type ShopOrderItem } from '@/lib/shopOrdersServer';
+import { getUsdToCopRate } from '@/lib/exchangeRatesServer';
 
 export const dynamic = 'force-dynamic';
 
 const WOMPI_INTEGRITY_KEY = process.env.WOMPI_INTEGRITY_KEY;
-
-/** Mismo tipo de cambio fijo USD->COP que ya usaba useWompi.ts (convertToCents) — se preserva el comportamiento numérico existente, no se toca la tasa acá. */
-const USD_TO_COP = 4000;
 
 function generateReference(): string {
   return `ERLC_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -67,7 +65,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Monto inválido' }, { status: 400 });
     }
 
-    const amountInCents = Math.round(amountUSD * USD_TO_COP * 100);
+    const usdToCop = await getUsdToCopRate();
+    const amountInCents = Math.round(amountUSD * usdToCop * 100);
     const reference = generateReference();
 
     await createOrder({ reference, discordId: userId, items: orderItems, amountUSD, amountInCents });

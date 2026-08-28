@@ -23,15 +23,21 @@ import { useReviews } from "@/hooks/useReviews";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import AddToCartButton from "@/components/AddToCartButton";
-import { currencies, formatNumber, convertPrice } from "@/lib/shopData";
+import { formatNumber, convertPrice } from "@/lib/shopData";
 import { CurrencyRate, HubCoinsPackage } from "@/lib/types";
 import CurrencySelector, { flagSrc } from "@/components/tienda/CurrencySelector";
+import { useExchangeRates } from "@/hooks/useExchangeRates";
 
 export default function HubCoinsPage() {
+  const { currencies } = useExchangeRates();
   const [hubCoinsPackages, setHubCoinsPackages] = useState<HubCoinsPackage[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const { addItem } = useCart();
+
+  useEffect(() => {
+    setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
+  }, [currencies]);
 
   useEffect(() => {
     fetch('/api/shop/catalog?type=hub-coins-package').then((r) => r.json()).then((d) => {
