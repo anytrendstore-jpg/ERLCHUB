@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle, AlertCircle, X } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle, AlertCircle, X, Tag, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -15,8 +15,15 @@ import { convertPrice } from "@/lib/shopData";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import TrustSection from "@/components/tienda/TrustSection";
 
+const TYPE_BADGE: Record<string, { label: string; className: string }> = {
+  membership: { label: "Membresía", className: "bg-purple-500/15 text-purple-300 border-purple-500/30" },
+  kit: { label: "Kit", className: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+  "hub-coins": { label: "Hub Coins", className: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+  item: { label: "Ítem", className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
+};
+
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCart();
+  const { items, addItem, removeItem, updateQuantity, getTotalPrice, clearCart } = useCart();
   const { currencies } = useExchangeRates();
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -29,6 +36,7 @@ export default function CartPage() {
   const [referralCode, setReferralCode] = useState('');
   const [appliedReferral, setAppliedReferral] = useState<any>(null);
   const [referrerName, setReferrerName] = useState<string>('');
+  const [showCodes, setShowCodes] = useState(false);
   const { clearError } = useWompi();
   const { isAuthenticated, user } = useDiscordAuth();
   const { balance: hubCoinsBalance, createTransaction } = useHubCoins();
@@ -39,26 +47,50 @@ export default function CartPage() {
     setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
   }, [currencies]);
 
+  useEffect(() => {
+    if (appliedDiscount || appliedReferral) setShowCodes(true);
+  }, [appliedDiscount, appliedReferral]);
+
+  const [recommended, setRecommended] = useState<any[]>([]);
+  useEffect(() => {
+    fetch('/api/shop/catalog')
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.success) return;
+        const cartIds = new Set(items.map((i) => i.id));
+        const pick = (type: string, kind: string, max: number) =>
+          (d.catalog[type] || []).filter((c: any) => !cartIds.has(c.id)).slice(0, max).map((c: any) => ({ ...c, _kind: kind }));
+        const combined = [
+          ...pick('membership', 'membership', 2),
+          ...pick('kit', 'kit', 3),
+          ...pick('item', 'item', 3),
+          ...pick('hub-coins-package', 'hub-coins', 2),
+        ];
+        setRecommended(combined.slice(0, 10));
+      })
+      .catch(() => {});
+  }, [items.length]);
+
   const getTotals = () => {
     const usdTotal = items
       .filter(item => item.priceUSD || item.price)
       .reduce((acc, item) => acc + (item.priceUSD || item.price || 0) * item.quantity, 0);
-    
+
     const hubCoinsTotal = items
       .filter(item => item.priceHubCoins)
       .reduce((acc, item) => acc + (item.priceHubCoins || 0) * item.quantity, 0);
-    
+
     return { usdTotal, hubCoinsTotal };
   };
 
   const { usdTotal, hubCoinsTotal } = getTotals();
   const getFinalTotals = () => {
     let finalUsdTotal = usdTotal;
-    
+
     if (appliedDiscount && usdTotal > 0) {
       finalUsdTotal = usdTotal * (1 - appliedDiscount.discountPercentage / 100);
     }
-    
+
     return { finalUsdTotal, finalHubCoinsTotal: hubCoinsTotal };
   };
 
@@ -114,7 +146,7 @@ export default function CartPage() {
     try {
       const response = await fetch(`/api/referrals/manage?userId=${user?.id}&lookupCode=${code}`);
       const result = await response.json();
-      
+
       if (result.success && result.referrerName) {
         setReferrerName(result.referrerName);
         return result.referrerName;
@@ -188,7 +220,7 @@ export default function CartPage() {
   const handlePaymentComplete = async (transactionId: string) => {
     setIsProcessing(false);
     setPaymentData(null);
-    
+
     if (appliedReferral && user?.id) {
       try {
         const { finalUsdTotal } = getFinalTotals();
@@ -207,7 +239,7 @@ export default function CartPage() {
         console.error('Error processing referral commission:', error);
       }
     }
-    
+
     clearCart();
     window.location.href = '/tienda/checkout/success';
   };
@@ -215,7 +247,7 @@ export default function CartPage() {
   const handlePaymentError = (error: string) => {
     setIsProcessing(false);
     setPaymentData(null);
-    
+
     if (paymentData && user?.id) {
       const saveCancelledTransaction = async () => {
         try {
@@ -241,10 +273,10 @@ export default function CartPage() {
           console.error('Error saving cancelled transaction:', saveError);
         }
       };
-      
+
       saveCancelledTransaction();
     }
-    
+
     notify('error', 'Error en el pago: ' + error);
   };
 
@@ -298,7 +330,7 @@ export default function CartPage() {
               body: JSON.stringify({
                 referralCode: appliedReferral.code,
                 purchaserId: user.id,
-                purchaseAmount: totalHubCoins 
+                purchaseAmount: totalHubCoins
               })
             });
           } catch (error) {
@@ -307,7 +339,7 @@ export default function CartPage() {
         }
 
         hubCoinsItems.forEach(item => removeItem(item.id));
-        
+
         if (createTransaction) {
           await createTransaction(-totalHubCoins, 'purchase', `Compra de kit: ${hubCoinsItems.map(item => item.name).join(', ')}`);
         }
@@ -333,22 +365,128 @@ export default function CartPage() {
     }
   };
 
+  const handleAddRecommended = (c: any) => {
+    if (c._kind === 'kit' || c._kind === 'item') {
+      addItem({
+        id: c.id,
+        type: c._kind,
+        name: c.name,
+        priceHubCoins: c.priceHubCoins,
+        quantity: 1,
+        category: c.category,
+        details: c.description,
+        image: c.image,
+      });
+    } else if (c._kind === 'hub-coins') {
+      addItem({
+        id: c.id,
+        type: 'hub-coins',
+        name: `${c.coins.toLocaleString()} Hub Coins`,
+        priceUSD: c.priceUSD,
+        quantity: 1,
+        bonus: c.bonus,
+        coins: c.coins,
+        image: '/hub-coins.png',
+      });
+    }
+    notify('success', `${c._kind === 'hub-coins' ? `${c.coins.toLocaleString()} Hub Coins` : c.name} agregado al carrito`);
+  };
+
+  const renderRecommended = () => {
+    if (recommended.length === 0) return null;
+    return (
+      <div className="mt-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="h-5 w-5 text-[#8e00f7]" />
+          <h2 className="text-xl font-bold text-[var(--foreground)]">Otros artículos que te pueden interesar</h2>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
+          {recommended.map((c) => {
+            const badge = TYPE_BADGE[c._kind] || TYPE_BADGE.item;
+            return (
+              <div
+                key={c.id}
+                className="flex-shrink-0 w-48 bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#8e00f7]/40 rounded-xl overflow-hidden transition-colors group"
+              >
+                <div className="h-28 bg-[var(--card-bg-2)] relative overflow-hidden">
+                  {c._kind === 'hub-coins' ? (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Image src="/hub-coins.png" alt="Hub Coins" width={40} height={40} className="w-10 h-10" />
+                    </div>
+                  ) : c.image ? (
+                    <Image
+                      src={c.image}
+                      alt={c.name || ''}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ShoppingCart className="h-8 w-8 text-[#8e00f7]" />
+                    </div>
+                  )}
+                  <span className={`absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full border backdrop-blur-sm ${badge.className}`}>
+                    {badge.label}
+                  </span>
+                </div>
+                <div className="p-3">
+                  <h3 className="text-[var(--foreground)] font-semibold text-sm truncate mb-2">
+                    {c._kind === 'hub-coins' ? `${c.coins.toLocaleString()} Hub Coins` : c.name}
+                  </h3>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-sm font-bold">
+                      {c._kind === 'kit' || c._kind === 'item' ? (
+                        <span className="text-[#fbbf24] flex items-center gap-1">
+                          <Image src="/hub-coins.png" alt="" width={12} height={12} className="w-3 h-3" />
+                          {c.priceHubCoins}
+                        </span>
+                      ) : c._kind === 'membership' ? (
+                        <span className="text-[#8e00f7]">{getConvertedPrice(c.priceMonthly)}/mes</span>
+                      ) : (
+                        <span className="text-[#8e00f7]">{getConvertedPrice(c.priceUSD)}</span>
+                      )}
+                    </div>
+                    {c._kind === 'membership' ? (
+                      <Link
+                        href={`/tienda/membresia/${c.id}`}
+                        className="text-xs bg-[#8e00f7]/15 hover:bg-[#8e00f7]/25 text-[#8e00f7] font-medium px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        Ver
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => handleAddRecommended(c)}
+                        className="text-xs bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-medium px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        Agregar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--background)] pt-20">
         <Navbar />
-        
+
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
             <div className="w-24 h-24 rounded-full bg-[#8e00f7]/20 flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="h-12 w-12 text-[#8e00f7]" />
             </div>
-            
+
             <h1 className="text-3xl font-bold text-[var(--foreground)] mb-4">Tu carrito está vacío</h1>
             <p className="text-[var(--text-muted)] text-lg mb-8">
               Parece que aún no has agregado productos a tu carrito
             </p>
-            
+
             <Link
               href="/tienda"
               className="inline-flex items-center gap-2 bg-[#8e00f7] hover:bg-[#7a00d4] text-white px-6 py-3 rounded-xl font-medium transition-all hover:scale-105"
@@ -357,8 +495,12 @@ export default function CartPage() {
               Ir a la Tienda
             </Link>
           </div>
+
+          <div className="max-w-5xl mx-auto">
+            {renderRecommended()}
+          </div>
         </div>
-        
+
         <Footer />
       </div>
     );
@@ -389,29 +531,30 @@ export default function CartPage() {
                 {items.length} {items.length === 1 ? 'producto' : 'productos'} en tu carrito
               </p>
             </div>
-            
+
             <button
               onClick={clearCart}
-              className="text-red-400 hover:text-red-300 transition-colors flex items-center gap-2"
+              className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-faint)] hover:text-red-400 border border-[var(--card-border-soft)] hover:border-red-400/40 rounded-lg px-3 py-2 transition-colors"
             >
-              <Trash2 className="h-4 w-4" />
-              Vaciar Carrito
+              <Trash2 className="h-3.5 w-3.5" />
+              Vaciar carrito
             </button>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-6">
+              {items.map((item) => {
+                const badge = TYPE_BADGE[item.type] || TYPE_BADGE.item;
+                return (
+                <div key={item.id} className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] hover:border-[#8e00f7]/30 rounded-2xl p-5 transition-colors">
                   <div className="flex gap-4">
-                    <div className="w-20 h-20 rounded-lg bg-[var(--card-bg-2)] overflow-hidden flex-shrink-0">
+                    <div className="w-24 h-24 rounded-xl bg-[var(--card-bg-2)] overflow-hidden flex-shrink-0 relative">
                       {item.image ? (
                         <Image
                           src={item.image}
                           alt={item.name}
-                          width={80}
-                          height={80}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -420,31 +563,35 @@ export default function CartPage() {
                       )}
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="text-[var(--foreground)] font-semibold text-lg">{item.name}</h3>
-                          <p className="text-[var(--text-muted)] text-sm">{item.category}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2 mb-1.5">
+                        <div className="min-w-0">
+                          <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border mb-1.5 ${badge.className}`}>
+                            {badge.label}
+                          </span>
+                          <h3 className="text-[var(--foreground)] font-semibold text-lg truncate">{item.name}</h3>
+                          {item.category && <p className="text-[var(--text-muted)] text-sm">{item.category}</p>}
                         </div>
-                        
+
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="text-red-400 hover:text-red-300 transition-colors"
+                          className="text-[var(--text-faint)] hover:text-red-400 hover:bg-red-400/10 p-1.5 rounded-lg transition-colors flex-shrink-0"
+                          aria-label="Eliminar del carrito"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
 
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center mt-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center bg-[var(--card-bg-2)] rounded-lg">
+                          <div className="flex items-center bg-[var(--card-bg-2)] border border-[var(--card-border-soft)] rounded-lg">
                             <button
                               onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                               className="p-2 hover:bg-[#2a2a3a] transition-colors rounded-l-lg"
                             >
                               <Minus className="h-4 w-4 text-[var(--text-muted)]" />
                             </button>
-                            <span className="px-3 py-1 text-[var(--foreground)] font-medium">
+                            <span className="px-3 py-1 text-[var(--foreground)] font-medium min-w-[2rem] text-center">
                               {item.quantity}
                             </span>
                             <button
@@ -459,7 +606,7 @@ export default function CartPage() {
                         <div className="text-right">
                           {item.priceHubCoins ? (
                             <>
-                              <div className="text-[#fbbf24] font-bold text-lg flex items-center gap-1">
+                              <div className="text-[#fbbf24] font-bold text-lg flex items-center gap-1 justify-end">
                                 <Image
                                   src="/hub-coins.png"
                                   alt="Hub Coins"
@@ -470,7 +617,7 @@ export default function CartPage() {
                                 {item.priceHubCoins * item.quantity}
                               </div>
                               {item.quantity > 1 && (
-                                <div className="text-[var(--text-muted)] text-sm flex items-center gap-1">
+                                <div className="text-[var(--text-muted)] text-sm flex items-center gap-1 justify-end">
                                   <Image
                                     src="/hub-coins.png"
                                     alt="Hub Coins"
@@ -503,14 +650,15 @@ export default function CartPage() {
                       </div>
 
                       {item.details && (
-                        <div className="mt-3 text-sm text-[var(--text-muted)]">
+                        <div className="mt-3 text-sm text-[var(--text-muted)] line-clamp-2">
                           {item.details}
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="lg:sticky lg:top-24 bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-6">
@@ -578,68 +726,79 @@ export default function CartPage() {
                   )}
 
                   {usdTotal > 0 && (
-                    <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 mb-4">
-                      <div className="text-[var(--text-muted)] mb-3">Código de Descuento</div>
-                      <div className="space-y-3">
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            value={discountCode}
-                            onChange={(e) => setDiscountCode(e.target.value)}
-                            placeholder="Ingresa tu código de descuento" 
-                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-[var(--foreground)] text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
-                          />
-                          <button 
-                            onClick={validateDiscountCode}
-                            disabled={validatingDiscount}
-                            className="bg-[#8e00f7] hover:bg-[#7a00d4] disabled:bg-[#666] text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 disabled:cursor-not-allowed"
-                          >
-                            {validatingDiscount ? 'Validando...' : 'Aplicar'}
-                          </button>
-                        </div>
-                        {appliedDiscount && (
-                          <div className="text-green-500 text-sm">
-                            ✓ Cupón aplicado: {appliedDiscount.discountPercentage}% de descuento
+                    <div>
+                      <button
+                        onClick={() => setShowCodes((v) => !v)}
+                        className="w-full flex items-center justify-between text-sm text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors py-1.5"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Tag className="h-4 w-4" />
+                          ¿Tenés un cupón o código de referido?
+                        </span>
+                        {showCodes ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </button>
+
+                      {showCodes && (
+                        <div className="bg-[var(--card-bg-2)] border border-[var(--card-border-soft)] rounded-xl p-4 mt-1 space-y-4">
+                          <div>
+                            <div className="text-xs text-[var(--text-faint)] mb-2 font-semibold uppercase tracking-wide">Código de descuento</div>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={discountCode}
+                                onChange={(e) => setDiscountCode(e.target.value)}
+                                placeholder="Código de descuento"
+                                className="flex-1 min-w-0 px-3 py-2 bg-[var(--card-bg)] border border-[#2a2a3a] rounded-lg text-[var(--foreground)] text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
+                              />
+                              <button
+                                onClick={validateDiscountCode}
+                                disabled={validatingDiscount}
+                                className="bg-[#8e00f7] hover:bg-[#7a00d4] disabled:bg-[#666] text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 disabled:cursor-not-allowed flex-shrink-0"
+                              >
+                                {validatingDiscount ? 'Validando...' : 'Aplicar'}
+                              </button>
+                            </div>
+                            {appliedDiscount && (
+                              <div className="text-green-500 text-xs mt-2">
+                                ✓ Cupón aplicado: {appliedDiscount.discountPercentage}% de descuento
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
+
+                          <div className="border-t border-[var(--card-border-soft)] pt-4">
+                            <div className="text-xs text-[var(--text-faint)] mb-2 font-semibold uppercase tracking-wide">Código de referido</div>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={referralCode}
+                                onChange={(e) => setReferralCode(e.target.value)}
+                                placeholder="Código de referido"
+                                className="flex-1 min-w-0 px-3 py-2 bg-[var(--card-bg)] border border-[#2a2a3a] rounded-lg text-[var(--foreground)] text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
+                              />
+                              <button
+                                onClick={async () => {
+                                  if (referralCode.trim()) {
+                                    const name = await fetchReferrerName(referralCode.trim());
+                                    setAppliedReferral({ code: referralCode.trim(), referrer: name });
+                                  }
+                                }}
+                                disabled={!referralCode.trim() || appliedReferral}
+                                className="bg-[#10b981] hover:bg-[#059669] disabled:bg-[#666] text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 disabled:cursor-not-allowed flex-shrink-0"
+                              >
+                                {appliedReferral ? 'Aplicado' : 'Aplicar'}
+                              </button>
+                            </div>
+                            {appliedReferral && (
+                              <div className="text-green-500 text-xs mt-2">
+                                ✓ Referido aplicado de: {appliedReferral.referrer}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {usdTotal > 0 && (
-                    <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-xl p-4 mb-4">
-                      <div className="text-[var(--text-muted)] mb-3">Código de Referido</div>
-                      <div className="space-y-3">
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            value={referralCode}
-                            onChange={(e) => setReferralCode(e.target.value)}
-                            placeholder="Ingresa tu código de referido" 
-                            className="flex-1 px-3 py-2 bg-[var(--card-bg-2)] border border-[#2a2a3a] rounded-lg text-[var(--foreground)] text-sm focus:outline-none focus:border-[#8e00f7] focus:ring-1 focus:ring-[#8e00f7]/20 transition-all"
-                          />
-                          <button 
-                            onClick={async () => {
-                              if (referralCode.trim()) {
-                                const name = await fetchReferrerName(referralCode.trim());
-                                setAppliedReferral({ code: referralCode.trim(), referrer: name });
-                              }
-                            }}
-                            disabled={!referralCode.trim() || appliedReferral}
-                            className="bg-[#10b981] hover:bg-[#059669] disabled:bg-[#666] text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 disabled:cursor-not-allowed"
-                          >
-                            {appliedReferral ? 'Aplicado' : 'Aplicar'}
-                          </button>
-                        </div>
-                        {appliedReferral && (
-                          <div className="text-green-500 text-sm">
-                            ✓ Referido aplicado de: {appliedReferral.referrer}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                )}
-                  
                   {hubCoinsTotal > 0 && usdTotal === 0 && (
                     <div className="flex justify-between text-[var(--foreground)] font-bold text-lg border-t border-[var(--card-border-soft)] pt-3">
                       <span>Total Hub Coins</span>
@@ -680,43 +839,65 @@ export default function CartPage() {
 
                 <div className="space-y-3">
                   {usdTotal > 0 && (
-                    <button
-                      onClick={handleCheckout}
-                      disabled={isProcessing || items.length === 0}
-                      className="w-full bg-[#8e00f7] hover:bg-[#7a00d4] disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                          Procesando...
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="h-5 w-5" />
-                          {isAuthenticated ? "Proceder al Pago" : "INICIAR SESIÓN PARA PAGAR"}
-                        </>
-                      )}
-                    </button>
+                    <div>
+                      <button
+                        onClick={handleCheckout}
+                        disabled={isProcessing || items.length === 0}
+                        className="w-full bg-gradient-to-r from-[#8e00f7] to-[#a855f7] hover:from-[#7a00d4] hover:to-[#9333ea] disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-[#8e00f7]/20"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                            Procesando...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="h-5 w-5" />
+                            {isAuthenticated ? "Proceder al Pago" : "INICIAR SESIÓN PARA PAGAR"}
+                          </>
+                        )}
+                      </button>
+                      <p className="text-center text-[11px] text-[var(--text-faint)] mt-1.5 flex items-center justify-center gap-1">
+                        <Shield className="h-3 w-3" />
+                        Pago seguro con tarjeta, PSE o Nequi
+                      </p>
+                    </div>
                   )}
 
                   {hubCoinsTotal > 0 && (
-                    <button
-                      onClick={handleHubCoinsPayment}
-                      disabled={isProcessingHubCoins || !isAuthenticated || hubCoinsBalance < hubCoinsTotal}
-                      className="w-full bg-[#fbbf24] hover:bg-[#f59e0b] disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-semibold py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                      {isProcessingHubCoins ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black" />
-                          Procesando...
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="h-5 w-5" />
-                          {isAuthenticated ? "Comprar con Hub Coins" : "INICIAR SESIÓN"}
-                        </>
+                    <>
+                      {usdTotal > 0 && (
+                        <div className="flex items-center gap-3 py-0.5">
+                          <div className="flex-1 h-px bg-[var(--card-border-soft)]" />
+                          <span className="text-[10px] text-[var(--text-faint)] uppercase tracking-wide">o</span>
+                          <div className="flex-1 h-px bg-[var(--card-border-soft)]" />
+                        </div>
                       )}
-                    </button>
+                      <div>
+                        <button
+                          onClick={handleHubCoinsPayment}
+                          disabled={isProcessingHubCoins || !isAuthenticated || hubCoinsBalance < hubCoinsTotal}
+                          className="w-full bg-transparent border-2 border-[#fbbf24]/40 hover:border-[#fbbf24] hover:bg-[#fbbf24]/10 disabled:opacity-40 disabled:cursor-not-allowed text-[#fbbf24] font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          {isProcessingHubCoins ? (
+                            <>
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#fbbf24]" />
+                              Procesando...
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart className="h-5 w-5" />
+                              {isAuthenticated ? "Comprar con Hub Coins" : "INICIAR SESIÓN"}
+                            </>
+                          )}
+                        </button>
+                        {isAuthenticated && (
+                          <p className="text-center text-[11px] text-[var(--text-faint)] mt-1.5">
+                            Saldo disponible: {hubCoinsBalance.toLocaleString()} Hub Coins
+                          </p>
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
 
@@ -726,6 +907,8 @@ export default function CartPage() {
               </div>
             </div>
           </div>
+
+          {renderRecommended()}
         </div>
         <Footer />
 
