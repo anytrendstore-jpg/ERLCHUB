@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       messages = docs.reverse().map(({ _id, ...m }: any) => m);
       usersInChannel = online
         .filter((p) => p.channelId === channelId)
-        .map((p) => ({ discordId: p.discordId, username: p.username }));
+        .map((p) => ({ discordId: p.discordId, username: p.username, voiceEnabled: Boolean(p.voiceEnabled) }));
     }
 
     return NextResponse.json({ success: true, channels, messages, usersInChannel });

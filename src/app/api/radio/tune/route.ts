@@ -16,9 +16,10 @@ export async function POST(request: NextRequest) {
     }
 
     const col = await radioPresenceCollection();
+    // Cambiar (o salir) de canal siempre apaga el micrófono: nunca queda "hablando" en un canal que ya no escuchás.
     await col.updateOne(
       { discordId: user.id },
-      { $set: { discordId: user.id, username: user.username, channelId, lastSeen: new Date() } },
+      { $set: { discordId: user.id, username: user.username, channelId, lastSeen: new Date(), voiceEnabled: false } },
       { upsert: true }
     );
 
