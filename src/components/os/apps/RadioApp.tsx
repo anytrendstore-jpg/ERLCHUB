@@ -1,15 +1,25 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Radio as RadioLucide, Users, Send, LogOut, SignalHigh, Mic, MicOff, AlertTriangle } from 'lucide-react';
+import { Radio as RadioLucide, Send, LogOut, Mic, MicOff, AlertTriangle, Keyboard, ChevronDown, ChevronRight, Shield, Flame, SignalHigh } from 'lucide-react';
 import { RADIO_CHANNELS } from '@/lib/radioChannels';
 import { useDiscordAuth } from '@/hooks/useDiscordAuth';
+
+interface ChannelUser {
+  discordId: string;
+  username: string;
+  voiceEnabled: boolean;
+  badge?: string;
+  unit?: string;
+  faction?: 'LSPD' | 'LSFD';
+}
 
 interface ChannelState {
   id: string;
   name: string;
   frequency: string;
   connected: number;
+  users: ChannelUser[];
 }
 
 interface RadioMsg {
@@ -18,12 +28,6 @@ interface RadioMsg {
   username: string;
   text: string;
   createdAt: string;
-}
-
-interface ChannelUser {
-  discordId: string;
-  username: string;
-  voiceEnabled: boolean;
 }
 
 type PeerStatus = 'connecting' | 'connected' | 'failed';
@@ -35,13 +39,28 @@ const ICE_SERVERS: RTCIceServer[] = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
 ];
+const PTT_KEY_STORAGE = 'radio_ptt_key';
+const DEFAULT_PTT_KEY = 'KeyT';
+
+/** event.code (posición física, no depende del layout) a una etiqueta legible para mostrar en el botón. */
+function formatKeyLabel(code: string): string {
+  if (code.startsWith('Key')) return code.slice(3);
+  if (code.startsWith('Digit')) return code.slice(5);
+  const SPECIAL: Record<string, string> = {
+    Space: 'Espacio', ControlLeft: 'Ctrl Izq', ControlRight: 'Ctrl Der',
+    ShiftLeft: 'Shift Izq', ShiftRight: 'Shift Der', AltLeft: 'Alt Izq', AltRight: 'Alt Der',
+    CapsLock: 'Bloq Mayús', Tab: 'Tab', Backquote: '´',
+  };
+  return SPECIAL[code] || code;
+}
 
 export default function RadioApp() {
   const { session } = useDiscordAuth();
   const myId = session?.user?.id;
 
   const [activeChannel, setActiveChannel] = useState<string | null>(null);
-  const [channels, setChannels] = useState<ChannelState[]>(RADIO_CHANNELS.map((c) => ({ ...c, connected: 0 })));
+  const [channels, setChannels] = useState<ChannelState[]>(RADIO_CHANNELS.map((c) => ({ ...c, connected: 0, users: [] })));
+  const [expandedChannels, setExpandedChannels] = useState<Record<string, boolean>>({});
   const [messages, setMessages] = useState<RadioMsg[]>([]);
   const [usersInChannel, setUsersInChannel] = useState<ChannelUser[]>([]);
   const [draft, setDraft] = useState('');
@@ -54,6 +73,8 @@ export default function RadioApp() {
   const [micError, setMicError] = useState<string | null>(null);
   const [peerStatus, setPeerStatus] = useState<Record<string, PeerStatus>>({});
   const [remoteTalking, setRemoteTalking] = useState<Record<string, boolean>>({});
+  const [pttKey, setPttKey] = useState(DEFAULT_PTT_KEY);
+  const [bindingKey, setBindingKey] = useState(false);
 
   const voiceOnRef = useRef(false);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -296,6 +317,52 @@ export default function RadioApp() {
     setTalking(on);
   };
 
+  // Tecla de "pulsar para hablar" — se guarda en este navegador, cada uno elige la suya.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(PTT_KEY_STORAGE);
+      if (saved) setPttKey(saved);
+    } catch {
+      // Sin localStorage disponible, se queda con la tecla por defecto.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!voiceOn) return;
+
+    const isTypingTarget = (el: EventTarget | null) => {
+      const tag = (el as HTMLElement | null)?.tagName;
+      return tag === 'INPUT' || tag === 'TEXTAREA';
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (bindingKey) {
+        e.preventDefault();
+        setPttKey(e.code);
+        setBindingKey(false);
+        try { localStorage.setItem(PTT_KEY_STORAGE, e.code); } catch { /* localStorage no disponible */ }
+        return;
+      }
+      if (isTypingTarget(e.target) || e.repeat) return;
+      if (e.code === pttKey) { e.preventDefault(); setTransmitting(true); }
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (isTypingTarget(e.target)) return;
+      if (e.code === pttKey) { e.preventDefault(); setTransmitting(false); }
+    };
+    // Si la ventana pierde foco con la tecla apretada, no se puede quedar "hablando" para siempre.
+    const onBlur = () => setTransmitting(false);
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
+    };
+  }, [voiceOn, pttKey, bindingKey]);
+
   const sendMessage = async () => {
     if (!activeChannel || !draft.trim()) return;
     setSending(true);
@@ -316,7 +383,6 @@ export default function RadioApp() {
   };
 
   const activeChannelInfo = channels.find((c) => c.id === activeChannel);
-  const voiceUsers = usersInChannel.filter((u) => u.voiceEnabled);
 
   return (
     <div className="h-full flex bg-[#0a0a0f]">
@@ -332,33 +398,65 @@ export default function RadioApp() {
         />
       ))}
 
-      {/* Lista de canales */}
-      <div className="w-64 bg-[#0d0d14] border-r border-white/5 flex flex-col">
-        <div className="p-4 border-b border-white/5">
+      {/* Árbol de canales estilo Discord/TeamSpeak — cada canal muestra sus conectados sin necesidad de sintonizarlo primero. */}
+      <div className="w-72 bg-[#0d0d14] border-r border-white/5 flex flex-col">
+        <div className="p-4 border-b border-white/5 flex-shrink-0">
           <h2 className="text-white font-bold text-lg flex items-center gap-2">
             <RadioLucide className="w-5 h-5 text-orange-400" /> Radio
           </h2>
-          <p className="text-white/40 text-xs mt-1">Cambio rápido de frecuencia</p>
+          <p className="text-white/40 text-xs mt-1">Canales de frecuencia</p>
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
-          {channels.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => tune(c.id)}
-              className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left
-                ${activeChannel === c.id ? 'bg-orange-600/20 border border-orange-500/40' : 'hover:bg-white/5 border border-transparent'}
-              `}
-            >
-              <div className="min-w-0">
-                <p className="text-white text-sm font-medium truncate">{c.name}</p>
-                <p className="text-white/40 text-[11px]">{c.frequency} MHz</p>
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-0.5">
+          {channels.map((c) => {
+            const isActive = activeChannel === c.id;
+            const expanded = expandedChannels[c.id] ?? true;
+            return (
+              <div key={c.id}>
+                <div
+                  className={`w-full flex items-center gap-1 px-1 py-1.5 rounded-lg transition-colors text-left cursor-pointer group ${
+                    isActive ? 'bg-orange-600/15' : 'hover:bg-white/5'
+                  }`}
+                  onClick={() => tune(c.id)}
+                >
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setExpandedChannels((prev) => ({ ...prev, [c.id]: !expanded })); }}
+                    className="p-0.5 text-white/30 hover:text-white/60 flex-shrink-0"
+                  >
+                    {expanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-sm font-medium truncate ${isActive ? 'text-orange-300' : 'text-white/80 group-hover:text-white'}`}>{c.name}</p>
+                    <p className="text-white/30 text-[10px]">{c.frequency} MHz</p>
+                  </div>
+                  {c.connected > 0 && <span className="text-white/30 text-[10px] flex-shrink-0 mr-1">{c.connected}</span>}
+                </div>
+                {expanded && c.users.length > 0 && (
+                  <div className="ml-6 border-l border-white/5 pl-2 space-y-0.5 mb-1">
+                    {c.users.map((u) => {
+                      const isTalkingNow = isActive && remoteTalking[u.discordId];
+                      return (
+                        <div key={u.discordId} className="flex items-center gap-1.5 px-2 py-1 rounded text-xs">
+                          {u.faction === 'LSPD' && <Shield className="w-3 h-3 text-blue-400 flex-shrink-0" />}
+                          {u.faction === 'LSFD' && <Flame className="w-3 h-3 text-amber-400 flex-shrink-0" />}
+                          <div className="min-w-0 flex-1">
+                            <span className={`truncate ${isTalkingNow ? 'text-red-300 font-medium' : 'text-white/60'}`}>{u.username}</span>
+                            {(u.badge || u.unit) && (
+                              <span className="text-white/25 text-[10px] ml-1">
+                                {u.badge ? `#${u.badge}` : ''}{u.badge && u.unit ? ' · ' : ''}{u.unit || ''}
+                              </span>
+                            )}
+                          </div>
+                          {u.voiceEnabled && (
+                            <Mic className={`w-3 h-3 flex-shrink-0 ${isTalkingNow ? 'text-red-400 animate-pulse' : isActive ? (peerStatus[u.discordId] === 'connected' ? 'text-emerald-400' : 'text-amber-400') : 'text-white/25'}`} />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-1 text-white/50 text-xs flex-shrink-0">
-                {c.connected > 0 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
-                <Users className="w-3 h-3" /> {c.connected}
-              </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -410,74 +508,61 @@ export default function RadioApp() {
             )}
 
             {voiceOn && (
-              <div className="px-4 pt-3 flex-shrink-0">
+              <div className="px-4 pt-3 flex-shrink-0 flex items-center gap-2">
                 <button
                   onMouseDown={() => setTransmitting(true)}
                   onMouseUp={() => setTransmitting(false)}
                   onMouseLeave={() => talking && setTransmitting(false)}
                   onTouchStart={(e) => { e.preventDefault(); setTransmitting(true); }}
                   onTouchEnd={(e) => { e.preventDefault(); setTransmitting(false); }}
-                  className={`w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 select-none transition-colors ${
+                  className={`flex-1 py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 select-none transition-colors ${
                     talking ? 'bg-red-600 text-white' : 'bg-white/5 hover:bg-white/10 text-white/70 border border-white/10'
                   }`}
                 >
-                  <Mic className="w-4 h-4" /> {talking ? 'Transmitiendo...' : 'Mantené presionado para hablar'}
+                  <Mic className="w-4 h-4" /> {talking ? 'Transmitiendo...' : bindingKey ? 'Presioná una tecla...' : `Mantené [${formatKeyLabel(pttKey)}] o click para hablar`}
+                </button>
+                <button
+                  onClick={() => setBindingKey(true)}
+                  title="Cambiar tecla de pulsar-para-hablar"
+                  className={`flex items-center gap-1.5 px-3 py-3 rounded-lg text-xs font-medium transition-colors flex-shrink-0 ${
+                    bindingKey ? 'bg-orange-600/30 border border-orange-500/50 text-orange-300' : 'bg-white/5 hover:bg-white/10 text-white/50 hover:text-white'
+                  }`}
+                >
+                  <Keyboard className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
 
-            <div className="flex-1 flex overflow-hidden">
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2">
-                  {messages.length === 0 && (
-                    <p className="text-white/30 text-sm text-center mt-8">Sin transmisiones todavía en este canal.</p>
-                  )}
-                  {messages.map((m) => (
-                    <div key={m.id} className="flex gap-2 items-baseline">
-                      <span className="text-orange-400 text-xs font-semibold flex-shrink-0">{m.username}:</span>
-                      <span className="text-white/80 text-sm">{m.text}</span>
-                    </div>
-                  ))}
-                  <div ref={messagesEndRef} />
-                </div>
-                <div className="p-3 border-t border-white/5 flex gap-2">
-                  <input
-                    type="text"
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                    placeholder="Transmitir mensaje..."
-                    maxLength={200}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/50"
-                  />
-                  <button
-                    onClick={sendMessage}
-                    disabled={sending || !draft.trim()}
-                    className="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="w-48 border-l border-white/5 p-3 overflow-y-auto custom-scrollbar">
-                <p className="text-white/40 text-[11px] uppercase tracking-wide mb-2">Conectados</p>
-                <div className="space-y-1.5">
-                  {usersInChannel.map((u) => (
-                    <div key={u.discordId} className="flex items-center gap-2 text-white/70 text-xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                      <span className="truncate flex-1">{u.username}</span>
-                      {u.voiceEnabled && (
-                        <Mic
-                          className={`w-3 h-3 flex-shrink-0 ${remoteTalking[u.discordId] ? 'text-red-400 animate-pulse' : peerStatus[u.discordId] === 'connected' ? 'text-emerald-400' : peerStatus[u.discordId] === 'failed' ? 'text-red-400' : 'text-amber-400'}`}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {voiceUsers.length > 0 && (
-                  <p className="text-white/30 text-[10px] mt-3">{voiceUsers.length} con micrófono activo</p>
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2">
+                {messages.length === 0 && (
+                  <p className="text-white/30 text-sm text-center mt-8">Sin transmisiones todavía en este canal.</p>
                 )}
+                {messages.map((m) => (
+                  <div key={m.id} className="flex gap-2 items-baseline">
+                    <span className="text-orange-400 text-xs font-semibold flex-shrink-0">{m.username}:</span>
+                    <span className="text-white/80 text-sm">{m.text}</span>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <div className="p-3 border-t border-white/5 flex gap-2">
+                <input
+                  type="text"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Transmitir mensaje..."
+                  maxLength={200}
+                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/50"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={sending || !draft.trim()}
+                  className="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </>
