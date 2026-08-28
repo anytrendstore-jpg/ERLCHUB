@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ArrowRight, Loader2, CreditCard,
+  ArrowRight, ArrowLeft, Loader2, CreditCard,
   User, Calendar, MapPin, Users, Flag,
   Check, Download, Eye, Lock, X,
   Sparkles, AlertCircle, ChevronDown
@@ -17,14 +17,177 @@ import WhitelistBetaPanel from "@/components/WhitelistBetaPanel";
 import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
 import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState";
 import WhitelistCard from "@/components/whitelist/WhitelistCard";
+import { useCardTilt } from "@/hooks/useCardTilt";
 import {
   CITIES, HEIGHT_OPTIONS, NATIONALITY_OPTIONS, BIRTHPLACE_OPTIONS, GROUP_OPTIONS,
-  type City, type DocumentType
+  type City, type CityInfo, type DocumentType
 } from "@/lib/whitelistTypes";
+
+/** Tarjeta de ciudad con inclinación 3D que sigue el mouse — se aleja/desatura cuando otra ciudad está siendo elegida. */
+function CityCard({ city, traveling, receded, onClick }: { city: CityInfo; traveling: boolean; receded: boolean; onClick: () => void }) {
+  const tilt = useCardTilt<HTMLButtonElement>();
+
+  return (
+    <button
+      ref={tilt.ref}
+      type="button"
+      onClick={onClick}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+      disabled={!city.available}
+      style={{
+        transform: traveling
+          ? undefined
+          : "perspective(1200px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))",
+        boxShadow: traveling ? `0 24px 60px -12px ${city.glow}80, 0 0 44px -6px #8e00f766` : undefined,
+      }}
+      className={`group relative overflow-hidden rounded-2xl text-left transition-all duration-700 [transform-style:preserve-3d] ${
+        city.available ? "ring-2 ring-transparent hover:ring-white/25 cursor-pointer" : "opacity-75 cursor-not-allowed"
+      } ${traveling ? "city-card-traveling z-10" : ""} ${receded ? "city-card-recede" : ""}`}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${city.accent}`} />
+      <div className="absolute inset-0 bg-black/45 group-hover:bg-black/30 transition-colors" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: "radial-gradient(320px circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,255,255,0.15), transparent 60%)" }}
+      />
+
+      {!city.available && (
+        <div className="absolute top-3 right-3 px-2 py-1 bg-black/60 text-white text-xs font-medium rounded z-10">
+          Próximamente
+        </div>
+      )}
+
+      <div className="relative p-5 flex flex-col h-full" style={{ transform: "translateZ(24px)" }}>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-black/30 backdrop-blur-sm p-1.5 flex-shrink-0">
+            <Image src={city.logo} alt={`Logo de ${city.name}`} width={56} height={56} className="w-full h-full object-contain" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base drop-shadow">{city.flag}</span>
+              <div className="text-lg font-bold text-white drop-shadow">{city.name}</div>
+            </div>
+            <div className="text-sm text-white/80">{city.state} · {city.country}</div>
+          </div>
+        </div>
+
+        <p className="text-sm text-white/85 leading-relaxed flex-1">{city.description}</p>
+
+        {city.available ? (
+          <div className="mt-3 flex items-center gap-1 text-white text-sm font-medium">
+            <Check className="w-4 h-4" />
+            Disponible
+          </div>
+        ) : (
+          <div className="mt-3 text-white/60 text-xs">Todavía no se puede elegir</div>
+        )}
+      </div>
+    </button>
+  );
+}
+
+/** Panel cinemático que aparece al elegir una ciudad: ambientación propia + ventajas, antes de pasar al formulario. */
+function CityConfirmPanel({ city, onConfirm, onBack }: { city: CityInfo; onConfirm: () => void; onBack: () => void }) {
+  const ambientRef = useRef<HTMLDivElement>(null);
+
+  const handleAmbientMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ambientRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.setProperty("--parallax-x", `${px * -14}px`);
+    el.style.setProperty("--parallax-y", `${py * -14}px`);
+  };
+
+  const handleAmbientLeave = () => {
+    ambientRef.current?.style.setProperty("--parallax-x", "0px");
+    ambientRef.current?.style.setProperty("--parallax-y", "0px");
+  };
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-5" style={{ perspective: "1200px" }}>
+      {/* Ambiente — logo y look de la ciudad elegida, con el glow púrpura de ERLCHUB de fondo constante */}
+      <div
+        ref={ambientRef}
+        onMouseMove={handleAmbientMove}
+        onMouseLeave={handleAmbientLeave}
+        className="relative lg:w-[62%] rounded-2xl overflow-hidden animate-city-ambient-in min-h-[280px]"
+        style={{
+          background: `radial-gradient(ellipse 500px 350px at 30% 20%, ${city.glow}33, transparent 60%), radial-gradient(ellipse 500px 400px at 80% 100%, #8e00f74d, transparent 65%), linear-gradient(160deg, #0b0b14, #15121f)`,
+        }}
+      >
+        <div
+          className={`absolute inset-0 city-ambient-${city.ambient}`}
+          style={{
+            transform: "translate(var(--parallax-x, 0px), var(--parallax-y, 0px))",
+            background:
+              city.ambient !== "rain"
+                ? `radial-gradient(220px circle at 25% 30%, ${city.glow}55, transparent 70%), radial-gradient(260px circle at 75% 70%, #8e00f755, transparent 70%)`
+                : undefined,
+          }}
+        />
+        <div
+          className="relative h-full flex flex-col items-center justify-center text-center p-8 sm:p-10"
+          style={{ transform: "translate(calc(var(--parallax-x, 0px) * 0.4), calc(var(--parallax-y, 0px) * 0.4))" }}
+        >
+          <div className="w-24 h-24 sm:w-28 sm:h-28 mb-5 drop-shadow-2xl">
+            <Image src={city.logo} alt={`Logo de ${city.name}`} width={112} height={112} className="w-full h-full object-contain" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-white drop-shadow-lg">{city.name}</div>
+          <div className="text-white/70 text-sm mt-1">{city.state}, {city.country}</div>
+        </div>
+      </div>
+
+      {/* Panel de información — entra desde la derecha una vez que el ambiente ya empezó a cambiar */}
+      <div className="lg:w-[38%] animate-city-panel-in" style={{ animationDelay: "150ms", animationFillMode: "backwards" }}>
+        <div className="h-full rounded-2xl border border-[var(--card-border)] bg-[var(--background)] p-5 sm:p-6 flex flex-col">
+          <p className="text-white/80 text-sm italic leading-relaxed mb-4">"{city.tagline}"</p>
+
+          <div className="text-xs font-semibold text-[var(--text-faint)] uppercase tracking-wide mb-2">
+            Ventajas de esta ciudad
+          </div>
+          <div className="space-y-2 mb-5">
+            {city.advantages.map((adv, i) => (
+              <div
+                key={adv}
+                className="flex items-center gap-2 text-sm text-[var(--foreground)] animate-city-advantage-in"
+                style={{ animationDelay: `${300 + i * 70}ms`, animationFillMode: "backwards" }}
+              >
+                <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: city.glow }} />
+                {adv}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-auto space-y-2">
+            <button
+              type="button"
+              onClick={onConfirm}
+              className="w-full h-12 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
+              style={{ boxShadow: `0 8px 28px -8px ${city.glow}88` }}
+            >
+              Continuar con {city.name}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={onBack}
+              className="w-full h-10 text-[var(--text-muted)] hover:text-[var(--foreground)] text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-1.5"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Cambiar ciudad
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const CURRENT_YEAR = new Date().getFullYear();
 const MIN_AGE = 18;
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const BIRTH_MONTHS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -65,10 +228,11 @@ export default function DNIPage() {
   const router = useRouter();
   const { application, loading, error: loadError, reload, run } = useWhitelistApplication(["dni", "completed"]);
 
-  const [step, setStep] = useState<"city" | "form" | "document" | "preview" | "complete">("city");
+  const [step, setStep] = useState<"city" | "cityConfirm" | "form" | "document" | "preview" | "complete">("city");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [travelingCity, setTravelingCity] = useState<City | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<DocumentType>("license");
   const [showDocumentSelect, setShowDocumentSelect] = useState(false);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
@@ -94,8 +258,9 @@ export default function DNIPage() {
   const [birthMonth, setBirthMonth] = useState("");
   const [birthYear, setBirthYear] = useState("");
 
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [photoError, setPhotoError] = useState<string | null>(null);
+  // El documento usa el personaje de Roblox del jugador (ya conectado en una fase anterior)
+  // como foto — no tiene sentido pedirle que suba otra imagen aparte.
+  const photoUrl = application?.roblox?.avatar || null;
   const documentData = application?.document ?? null;
 
   useEffect(() => {
@@ -150,9 +315,6 @@ export default function DNIPage() {
       setSelectedCity(draft.city as City);
       if (!application.document) setStep("form");
     }
-    if (draft?.photoUrl) {
-      setPhotoUrl(draft.photoUrl);
-    }
     if (application.document) {
       setSelectedDocument(application.document.type as DocumentType);
       setStep("complete");
@@ -178,12 +340,27 @@ export default function DNIPage() {
     if (saveTimer.current) clearTimeout(saveTimer.current);
   }, []);
 
-  const handleCitySelect = (city: City) => {
-    if (CITIES.find(c => c.id === city)?.available) {
+  // Click en una tarjeta: no se pasa directo al formulario — primero "viaja" la cámara hacia
+  // esa ciudad (~900ms) y recién ahí aparece el panel de confirmación con su ambientación.
+  const handleCityClick = (city: City) => {
+    if (!CITIES.find(c => c.id === city)?.available || travelingCity) return;
+    setTravelingCity(city);
+    window.setTimeout(() => {
       setSelectedCity(city);
-      setStep("form");
-      scheduleSave(formData, city, photoUrl);
-    }
+      setStep("cityConfirm");
+      setTravelingCity(null);
+    }, 900);
+  };
+
+  const handleCityConfirm = () => {
+    if (!selectedCity) return;
+    setStep("form");
+    scheduleSave(formData, selectedCity, photoUrl);
+  };
+
+  const handleCityBack = () => {
+    setStep("city");
+    setSelectedCity(null);
   };
 
   const handleFormChange = (field: string, value: string) => {
@@ -192,25 +369,6 @@ export default function DNIPage() {
       scheduleSave(next, selectedCity, photoUrl);
       return next;
     });
-  };
-
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    setPhotoError(null);
-    if (file) {
-      if (file.size > MAX_PHOTO_BYTES) {
-        setPhotoError("La foto supera los 5MB permitidos. Elige una imagen más liviana.");
-        e.target.value = "";
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPhotoUrl(result);
-        scheduleSave(formData, selectedCity, result);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const age = calculateAge(formData.birthDate);
@@ -272,11 +430,21 @@ export default function DNIPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <ParticlesBackground />
+      {/* Tinte ambiental de fondo, a juego con la ciudad elegida — el glow púrpura de ERLCHUB (ParticlesBackground) nunca se tapa, solo se le suma. */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-[1400ms]"
+        style={{
+          opacity: step === "cityConfirm" || travelingCity ? 1 : 0,
+          background: selectedCity || travelingCity
+            ? `radial-gradient(ellipse 900px 600px at 15% 20%, ${(CITIES.find(c => c.id === (selectedCity || travelingCity))?.glow) || "#8e00f7"}22, transparent 65%)`
+            : undefined,
+        }}
+      />
       <WhitelistBetaPanel currentPhase="dni" />
       <WhitelistHeader applicationId={application?.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="max-w-4xl mx-auto">
+        <div className={`mx-auto transition-[max-width] duration-500 ${step === "form" ? "max-w-6xl" : step === "cityConfirm" ? "max-w-5xl" : "max-w-4xl"}`}>
           <div className="mb-8">
             <WhitelistStepper currentPhase="dni" />
           </div>
@@ -302,7 +470,7 @@ export default function DNIPage() {
 
             <div className="p-6">
               {step === "city" && (
-                <div className="space-y-6">
+                <div className={`space-y-6 transition-all duration-700 ${travelingCity ? "city-grid-traveling" : ""}`}>
                   <div className="text-center py-4">
                     <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Selecciona tu Ciudad</h2>
                     <p className="text-[var(--text-muted)]">
@@ -310,61 +478,31 @@ export default function DNIPage() {
                     </p>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-4" style={{ perspective: "1200px" }}>
                     {CITIES.map((city) => (
-                      <button
+                      <CityCard
                         key={city.id}
-                        type="button"
-                        onClick={() => handleCitySelect(city.id)}
-                        disabled={!city.available}
-                        className={`group relative overflow-hidden rounded-2xl text-left transition-all flex flex-col ${
-                          city.available
-                            ? "ring-2 ring-transparent hover:ring-[#8e00f7] cursor-pointer hover:-translate-y-0.5"
-                            : "opacity-75 cursor-not-allowed"
-                        }`}
-                      >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${city.accent}`} />
-                        <div className="absolute inset-0 bg-black/45 group-hover:bg-black/30 transition-colors" />
-
-                        {!city.available && (
-                          <div className="absolute top-3 right-3 px-2 py-1 bg-black/60 text-white text-xs font-medium rounded z-10">
-                            Próximamente
-                          </div>
-                        )}
-
-                        <div className="relative p-5 flex flex-col h-full">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-black/30 backdrop-blur-sm p-1.5 flex-shrink-0">
-                              <Image src={city.logo} alt={`Logo de ${city.name}`} width={56} height={56} className="w-full h-full object-contain" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-base drop-shadow">{city.flag}</span>
-                                <div className="text-lg font-bold text-white drop-shadow">{city.name}</div>
-                              </div>
-                              <div className="text-sm text-white/80">{city.state} · {city.country}</div>
-                            </div>
-                          </div>
-
-                          <p className="text-sm text-white/85 leading-relaxed flex-1">{city.description}</p>
-
-                          {city.available ? (
-                            <div className="mt-3 flex items-center gap-1 text-white text-sm font-medium">
-                              <Check className="w-4 h-4" />
-                              Disponible
-                            </div>
-                          ) : (
-                            <div className="mt-3 text-white/60 text-xs">Todavía no se puede elegir</div>
-                          )}
-                        </div>
-                      </button>
+                        city={city}
+                        traveling={travelingCity === city.id}
+                        receded={travelingCity !== null && travelingCity !== city.id}
+                        onClick={() => handleCityClick(city.id)}
+                      />
                     ))}
                   </div>
                 </div>
               )}
 
+              {step === "cityConfirm" && selectedCity && (
+                <CityConfirmPanel
+                  city={CITIES.find(c => c.id === selectedCity)!}
+                  onConfirm={handleCityConfirm}
+                  onBack={handleCityBack}
+                />
+              )}
+
               {step === "form" && (
-                <div className="space-y-6">
+                <div className="flex flex-col lg:flex-row gap-6 items-start">
+                <div className="flex-1 min-w-0 space-y-6">
                   <div className="flex items-center justify-between p-4 bg-[var(--background)] rounded-xl">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">
@@ -606,74 +744,22 @@ export default function DNIPage() {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)]">
-                    <label className="block text-sm text-[var(--text-muted)] mb-3">
-                      Foto de Perfil <span className="text-[var(--text-faint)]">(opcional)</span>
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-24 rounded-lg bg-[var(--card-bg-2)] border-2 border-dashed border-[#2a2a3a] overflow-hidden flex items-center justify-center">
-                        {photoUrl ? (
-                          <img
-                            src={photoUrl}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="text-center text-[var(--text-faint)]">
-                            <svg className="w-8 h-8 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePhotoUpload}
-                          className="hidden"
-                          id="photo-upload"
-                        />
-                        <label
-                          htmlFor="photo-upload"
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--card-bg-2)] hover:bg-[#2a2a3a] text-[var(--foreground)] rounded-lg cursor-pointer transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                          </svg>
-                          {photoUrl ? "Cambiar foto" : "Subir foto"}
-                        </label>
-                        <p className="text-xs text-[var(--text-faint)] mt-2">
-                          JPG, PNG o GIF. Máx 5MB.
-                        </p>
-                        {photoError && (
-                          <p className="flex items-center gap-1.5 text-xs text-red-400 mt-1">
-                            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                            {photoError}
-                          </p>
-                        )}
-                        {photoUrl && (
-                          <button
-                            type="button"
-                            onClick={() => { setPhotoUrl(null); scheduleSave(formData, selectedCity, null); }}
-                            className="text-xs text-red-400 hover:text-red-300 mt-1"
-                          >
-                            Eliminar foto
-                          </button>
-                        )}
-                      </div>
+                  <div className="p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)] flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-[var(--card-bg-2)] border border-[var(--card-border)] overflow-hidden flex-shrink-0">
+                      {photoUrl ? (
+                        <img src={photoUrl} alt={formData.robloxUsername} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-6 h-6 text-[var(--text-faint)]" />
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)]">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm text-[var(--text-muted)]">Usuario de Roblox</div>
-                        <div className="text-[var(--foreground)] font-medium">{formData.robloxUsername}</div>
-                      </div>
-                      <Lock className="w-5 h-5 text-[var(--text-faint)]" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-[var(--text-muted)]">Foto y usuario de Roblox</div>
+                      <div className="text-[var(--foreground)] font-medium truncate">{formData.robloxUsername}</div>
+                      <p className="text-xs text-[var(--text-faint)] mt-0.5">Se toman automáticamente de tu cuenta conectada.</p>
                     </div>
+                    <Lock className="w-5 h-5 text-[var(--text-faint)] flex-shrink-0" />
                   </div>
 
                   {error && (
@@ -687,7 +773,8 @@ export default function DNIPage() {
                     type="button"
                     onClick={handleGenerateDocument}
                     disabled={isLoading || !isFormValid()}
-                    className="w-full h-14 bg-[#8e00f7] hover:bg-[#7a00d4] disabled:opacity-50 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3"
+                    className="w-full h-14 bg-[#8e00f7] hover:bg-[#7a00d4] disabled:opacity-50 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3 hover:-translate-y-0.5"
+                    style={{ boxShadow: isFormValid() ? "0 10px 30px -10px rgba(142,0,247,0.55)" : undefined }}
                   >
                     {isLoading ? (
                       <>
@@ -701,6 +788,40 @@ export default function DNIPage() {
                       </>
                     )}
                   </button>
+                </div>
+
+                {/* Vista previa en vivo — se actualiza en tiempo real a medida que se llena el formulario */}
+                <div className="lg:w-[560px] lg:sticky lg:top-24 w-full animate-city-panel-in" style={{ animationDelay: "100ms", animationFillMode: "backwards" }}>
+                  <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--background)] p-5 sm:p-7">
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
+                      </span>
+                      <span className="text-sm font-semibold text-[var(--text-faint)] uppercase tracking-wide">Vista previa en tiempo real</span>
+                    </div>
+                    <DocumentViewer3D
+                      documentType={selectedDocument}
+                      city={selectedCity || "los_santos"}
+                      firstName={formData.firstName}
+                      lastName={formData.lastName}
+                      birthDate={formData.birthDate}
+                      birthPlace={formData.birthPlace}
+                      gender={formData.gender}
+                      height={formData.height}
+                      nationality={formData.nationality}
+                      group={formData.group}
+                      robloxUsername={formData.robloxUsername}
+                      documentNumber=""
+                      issueDate=""
+                      expiryDate=""
+                      photoUrl={photoUrl || undefined}
+                    />
+                    <p className="text-xs text-[var(--text-faint)] text-center mt-3">
+                      El número de documento se genera al confirmar
+                    </p>
+                  </div>
+                </div>
                 </div>
               )}
 
@@ -729,7 +850,7 @@ export default function DNIPage() {
                       documentNumber={documentData.number}
                       issueDate={documentData.issueDate}
                       expiryDate={documentData.expiryDate}
-                      photoUrl={photoUrl || application?.roblox?.avatar || undefined}
+                      photoUrl={photoUrl || undefined}
                     />
                   </div>
                   <p className="text-center text-xs text-[var(--text-faint)] -mt-3">
@@ -786,7 +907,7 @@ export default function DNIPage() {
                       documentNumber={documentData.number}
                       issueDate={documentData.issueDate}
                       expiryDate={documentData.expiryDate}
-                      photoUrl={photoUrl || application?.roblox?.avatar || undefined}
+                      photoUrl={photoUrl || undefined}
                     />
                   </div>
 
@@ -878,7 +999,7 @@ export default function DNIPage() {
                 documentNumber={documentData.number}
                 issueDate={documentData.issueDate}
                 expiryDate={documentData.expiryDate}
-                photoUrl={photoUrl || application?.roblox?.avatar || undefined}
+                photoUrl={photoUrl || undefined}
               />
             </div>
           </div>

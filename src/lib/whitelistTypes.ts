@@ -40,6 +40,14 @@ export interface CityInfo {
   logo: string;
   /** Texto de venta: por qué elegir esta ciudad, para que el jugador decida con criterio. */
   description: string;
+  /** Frase corta para el panel de confirmación cinemático. */
+  tagline: string;
+  /** Ventajas de la ciudad, listadas una por una en el panel de confirmación. */
+  advantages: string[];
+  /** Color de acento (hex) para el glow/sombra de esta ciudad, sumado (nunca reemplazando) al púrpura de ERLCHUB. */
+  glow: string;
+  /** Qué efecto ambiental sutil usar de fondo en el panel de confirmación. */
+  ambient: "warm" | "rain" | "neon" | "desert";
 }
 
 export interface DiscordData {
@@ -158,7 +166,18 @@ export const CITIES: CityInfo[] = [
     flag: "🇺🇸",
     accent: "from-[#00c6fb] via-[#e6007a] to-[#fb8500]",
     logo: "/server/los-santos.png",
-    description: "Sol, palmeras y la city grande de California. El corazón del roleplay: policía, bandas, negocios y una economía que nunca duerme."
+    description: "Sol, palmeras y la city grande de California. El corazón del roleplay: policía, bandas, negocios y una economía que nunca duerme.",
+    tagline: "Una ciudad de oportunidades, crimen y grandes negocios.",
+    advantages: [
+      "Sistema económico activo",
+      "Propiedades disponibles para comprar",
+      "Empresas y negocios legales",
+      "Facciones y actividades ilegales",
+      "La mayor cantidad de jugadores activos",
+      "Más oportunidades de rol disponibles",
+    ],
+    glow: "#fb8500",
+    ambient: "warm"
   },
   {
     id: "liberty_city",
@@ -169,7 +188,16 @@ export const CITIES: CityInfo[] = [
     flag: "🇺🇸",
     accent: "from-[#c7ced6] via-[#5f8fd6] to-[#0f2e5c]",
     logo: "/server/liberty-city.png",
-    description: "El pulso de una gran metrópoli. Rascacielos, crimen organizado y una vida nocturna que no se detiene nunca."
+    description: "El pulso de una gran metrópoli. Rascacielos, crimen organizado y una vida nocturna que no se detiene nunca.",
+    tagline: "El pulso de una gran metrópolis que nunca duerme.",
+    advantages: [
+      "Rascacielos y distritos densos",
+      "Crimen organizado a gran escala",
+      "Vida nocturna intensa",
+      "Ambiente urbano de gran ciudad",
+    ],
+    glow: "#5f8fd6",
+    ambient: "rain"
   },
   {
     id: "vice_city",
@@ -180,7 +208,16 @@ export const CITIES: CityInfo[] = [
     flag: "🇺🇸",
     accent: "from-[#ff2fd4] via-[#a855f7] to-[#22d3ee]",
     logo: "/server/vice-city.png",
-    description: "Neones, playas de Florida y estética retro de los 80. Para quienes buscan un roleplay más relajado y con estilo."
+    description: "Neones, playas de Florida y estética retro de los 80. Para quienes buscan un roleplay más relajado y con estilo.",
+    tagline: "Neón, playas y vida nocturna sin límites.",
+    advantages: [
+      "Ambiente costero relajado",
+      "Estética retro de los 80",
+      "Vida nocturna vibrante",
+      "Distrito de lujo junto al mar",
+    ],
+    glow: "#ff2fd4",
+    ambient: "neon"
   },
   {
     id: "las_venturas",
@@ -191,7 +228,16 @@ export const CITIES: CityInfo[] = [
     flag: "🇺🇸",
     accent: "from-[#dc2626] via-[#f59e0b] to-[#7f1d1d]",
     logo: "/server/las-venturas.png",
-    description: "Casinos y luces de neón en pleno desierto de Nevada. La ciudad del juego, el lujo y las segundas oportunidades."
+    description: "Casinos y luces de neón en pleno desierto de Nevada. La ciudad del juego, el lujo y las segundas oportunidades.",
+    tagline: "Casinos, luces doradas y el brillo del desierto.",
+    advantages: [
+      "Casinos y juegos de azar",
+      "Distrito de lujo y hoteles",
+      "Ambiente nocturno en el desierto",
+      "Oportunidades de alto riesgo",
+    ],
+    glow: "#f59e0b",
+    ambient: "desert"
   }
 ];
 
