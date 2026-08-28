@@ -1,13 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   LayoutDashboard, Users, Ban, Flag, ScrollText, Ticket, ShieldCheck,
   BarChart3, Building2, Fingerprint, Clock, CalendarOff, Store,
   Percent, ShoppingBag, Share2, Trophy, UsersRound, LineChart,
-  Eye, ClipboardList, Skull, ArrowLeft, LogOut, Lock,
-  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound, Banknote,
+  Eye, ClipboardList, Skull, ArrowLeft, LogOut, Lock, ChevronDown,
+  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound, Banknote, Receipt,
 } from "lucide-react";
 import { Tooltip } from "@/components/staff/ui";
 import type { StaffNavGroup, StaffSection, StaffIdentityView } from "@/lib/staffTypes";
@@ -17,41 +18,37 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3, Building2, Fingerprint, Clock, CalendarOff, Store,
   Percent, ShoppingBag, Share2, Trophy, UsersRound, LineChart,
   Eye, ClipboardList, Skull,
-  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound, Banknote,
+  Landmark, Dices, Car, Crosshair, Handshake, Scale, Siren, Bell, Monitor, Heart, Wallet, Package, Server, Coins, Briefcase, KeyRound, Banknote, Receipt,
 };
 
 const GROUPS: StaffNavGroup[] = [
   {
     title: "Menú principal",
     items: [
-      { id: "overview", label: "Dashboard", icon: "LayoutDashboard" },
-      { id: "players", label: "Jugadores", icon: "Users" },
-      { id: "sanctions", label: "Sanciones", icon: "Ban" },
-      { id: "reports", label: "Reportes", icon: "Flag", badgeKey: "reportsPending" },
-      { id: "logs", label: "Logs", icon: "ScrollText" },
-      { id: "tickets", label: "Tickets", icon: "Ticket", badgeKey: "ticketsOpen" },
-      { id: "whitelist", label: "Whitelist", icon: "ShieldCheck", badgeKey: "whitelistPending" },
-      { id: "stats", label: "Estadísticas", icon: "BarChart3" },
-      { id: "corporate", label: "Corporativo", icon: "Building2" },
-      { id: "internal_affairs", label: "Asuntos Internos", icon: "Fingerprint" },
-      { id: "shift", label: "Mi Turno", icon: "Clock" },
-      { id: "absences", label: "Mis Ausencias", icon: "CalendarOff" },
-      { id: "os_modules", label: "Módulos del Sistema", icon: "Monitor" },
-      { id: "social", label: "HubSocial", icon: "Heart" },
-      { id: "hubcareer", label: "HubCareer", icon: "Briefcase" },
-      { id: "permissions", label: "Gestor de Permisos", icon: "KeyRound" },
+      { id: "overview", label: "Dashboard", icon: "LayoutDashboard", subgroup: "Operación diaria" },
+      { id: "players", label: "Jugadores", icon: "Users", subgroup: "Operación diaria" },
+      { id: "sanctions", label: "Sanciones", icon: "Ban", subgroup: "Operación diaria" },
+      { id: "reports", label: "Reportes", icon: "Flag", badgeKey: "reportsPending", subgroup: "Operación diaria" },
+      { id: "tickets", label: "Tickets", icon: "Ticket", badgeKey: "ticketsOpen", subgroup: "Operación diaria" },
+      { id: "whitelist", label: "Whitelist", icon: "ShieldCheck", badgeKey: "whitelistPending", subgroup: "Operación diaria" },
+      { id: "logs", label: "Logs", icon: "ScrollText", subgroup: "Registros" },
+      { id: "stats", label: "Estadísticas", icon: "BarChart3", subgroup: "Registros" },
+      { id: "corporate", label: "Corporativo", icon: "Building2", subgroup: "Organización interna" },
+      { id: "internal_affairs", label: "Asuntos Internos", icon: "Fingerprint", subgroup: "Organización interna" },
+      { id: "permissions", label: "Gestor de Permisos", icon: "KeyRound", subgroup: "Organización interna" },
+      { id: "shift", label: "Mi Turno", icon: "Clock", subgroup: "Mi cuenta" },
+      { id: "absences", label: "Mis Ausencias", icon: "CalendarOff", subgroup: "Mi cuenta" },
+      { id: "os_modules", label: "Módulos del Sistema", icon: "Monitor", subgroup: "Plataforma" },
+      { id: "social", label: "HubSocial", icon: "Heart", subgroup: "Plataforma" },
+      { id: "hubcareer", label: "HubCareer", icon: "Briefcase", subgroup: "Plataforma" },
     ],
   },
   {
     title: "Directivos",
     items: [
-      { id: "directive_store", label: "Tienda", icon: "Store" },
-      { id: "directive_coupons", label: "Cupones", icon: "Percent" },
-      { id: "directive_purchases", label: "Compras", icon: "ShoppingBag" },
       { id: "directive_referrals", label: "Referidos", icon: "Share2" },
       { id: "directive_rankings", label: "Rankings", icon: "Trophy" },
       { id: "staff_list", label: "Staff List", icon: "UsersRound" },
-      { id: "directive_store_stats", label: "Stats Tienda", icon: "LineChart" },
     ],
   },
   {
@@ -63,26 +60,39 @@ const GROUPS: StaffNavGroup[] = [
     ],
   },
   {
-    title: "Economía",
+    // Todo lo que mueve plata REAL (dinero fuera de personaje): tienda de ERLCHUB, membresías,
+    // KITS y Hub Coins. Separado a propósito de "Economía IC" (dinero de roleplay).
+    title: "Economía OCC",
     items: [
-      { id: "economy_store", label: "Tienda", icon: "Store", directorOnly: true },
-      { id: "economy_tax", label: "Impuestos", icon: "Scale", directorOnly: true },
-      { id: "economy_treasury", label: "Tesoro y Presupuestos", icon: "Banknote", directorOnly: true },
-      { id: "economy_salaries", label: "Sueldos", icon: "Handshake", directorOnly: true },
-      { id: "economy_bank", label: "Maze Bank", icon: "Landmark", directorOnly: true },
-      { id: "economy_hubpay", label: "Cuentas HubPay", icon: "Wallet", directorOnly: true },
-      { id: "economy_inventory", label: "Inventarios", icon: "Package", directorOnly: true },
-      { id: "economy_vps", label: "VPS Deep Web", icon: "Server", directorOnly: true },
-      { id: "economy_crypto", label: "Crypto Economy", icon: "Coins", directorOnly: true },
-      { id: "economy_casino", label: "Casino", icon: "Dices", directorOnly: true },
-      { id: "economy_companies", label: "Empresas", icon: "Building2", directorOnly: true },
-      { id: "economy_dealership", label: "Concesionario", icon: "Car", directorOnly: true },
-      { id: "economy_weapons", label: "Tienda de Armas", icon: "Crosshair", directorOnly: true },
-      { id: "economy_market", label: "Mercado (P2P)", icon: "Share2", directorOnly: true },
-      { id: "economy_balance", label: "Balance e Inflación", icon: "LineChart", directorOnly: true },
-      { id: "economy_illegal", label: "Subsistemas Ilegales", icon: "Siren", directorOnly: true },
-      { id: "economy_logs", label: "Logs Económicos", icon: "ScrollText", directorOnly: true },
-      { id: "economy_alerts", label: "Alertas Inteligentes", icon: "Bell", directorOnly: true },
+      { id: "economy_store", label: "Catálogo de Tienda", icon: "Store", directorOnly: true, subgroup: "Catálogo" },
+      { id: "directive_store", label: "Tienda", icon: "ShoppingBag", subgroup: "Ventas" },
+      { id: "directive_store_stats", label: "Stats Tienda", icon: "LineChart", subgroup: "Ventas" },
+      { id: "directive_purchases", label: "Compras", icon: "Receipt", subgroup: "Ventas" },
+      { id: "directive_coupons", label: "Cupones", icon: "Percent", subgroup: "Ventas" },
+    ],
+  },
+  {
+    // Dinero de roleplay: sueldos, impuestos, tesoro, bancos, negocios in-character.
+    title: "Economía IC",
+    items: [
+      { id: "economy_tax", label: "Impuestos", icon: "Scale", directorOnly: true, subgroup: "Núcleo" },
+      { id: "economy_treasury", label: "Tesoro y Presupuestos", icon: "Banknote", directorOnly: true, subgroup: "Núcleo" },
+      { id: "economy_payroll", label: "Nómina", icon: "Handshake", directorOnly: true, subgroup: "Núcleo" },
+      { id: "economy_salaries", label: "Sueldos", icon: "Briefcase", directorOnly: true, subgroup: "Núcleo" },
+      { id: "economy_balance", label: "Balance e Inflación", icon: "LineChart", directorOnly: true, subgroup: "Núcleo" },
+      { id: "economy_bank", label: "Maze Bank", icon: "Landmark", directorOnly: true, subgroup: "Banca" },
+      { id: "economy_hubpay", label: "Cuentas HubPay", icon: "Wallet", directorOnly: true, subgroup: "Banca" },
+      { id: "economy_companies", label: "Empresas", icon: "Building2", directorOnly: true, subgroup: "Comercio" },
+      { id: "economy_dealership", label: "Concesionario", icon: "Car", directorOnly: true, subgroup: "Comercio" },
+      { id: "economy_weapons", label: "Tienda de Armas", icon: "Crosshair", directorOnly: true, subgroup: "Comercio" },
+      { id: "economy_market", label: "Mercado (P2P)", icon: "Share2", directorOnly: true, subgroup: "Comercio" },
+      { id: "economy_casino", label: "Casino", icon: "Dices", directorOnly: true, subgroup: "Comercio" },
+      { id: "economy_vps", label: "VPS Deep Web", icon: "Server", directorOnly: true, subgroup: "Tecnología" },
+      { id: "economy_crypto", label: "Crypto Economy", icon: "Coins", directorOnly: true, subgroup: "Tecnología" },
+      { id: "economy_inventory", label: "Inventarios", icon: "Package", directorOnly: true, subgroup: "Tecnología" },
+      { id: "economy_illegal", label: "Subsistemas Ilegales", icon: "Siren", directorOnly: true, subgroup: "Supervisión" },
+      { id: "economy_logs", label: "Logs Económicos", icon: "ScrollText", directorOnly: true, subgroup: "Supervisión" },
+      { id: "economy_alerts", label: "Alertas Inteligentes", icon: "Bell", directorOnly: true, subgroup: "Supervisión" },
     ],
   },
 ];
@@ -98,7 +108,53 @@ interface Props {
   onCloseMobile: () => void;
 }
 
+const SIDEBAR_EXPANDED_KEY = "staff_sidebar_expanded";
+
+function groupOf(section: StaffSection): string | null {
+  return GROUPS.find((g) => g.items.some((i) => i.id === section))?.title ?? null;
+}
+
 function SidebarContent({ active, onSelect, badges, identity, isDirector, onLogout }: Omit<Props, "mobileOpen" | "onCloseMobile">) {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    let saved: Record<string, boolean> = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(SIDEBAR_EXPANDED_KEY) || "{}");
+    } catch {
+      // localStorage corrupto o inaccesible: se arranca con todo cerrado salvo el grupo activo.
+    }
+    const activeGroup = groupOf(active);
+    const next: Record<string, boolean> = {};
+    for (const group of GROUPS) {
+      next[group.title] = group.title in saved ? saved[group.title] : group.title === activeGroup;
+    }
+    setExpanded(next);
+    // Solo al montar: navegar después no debe reabrir/cerrar grupos que el usuario ya ajustó a mano.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Si el usuario navega a un ítem de un grupo colapsado (ej. desde OverviewPanel), ese grupo se reabre solo.
+  useEffect(() => {
+    const activeGroup = groupOf(active);
+    if (activeGroup && expanded[activeGroup] === false) {
+      setExpanded((prev) => ({ ...prev, [activeGroup]: true }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
+
+  const toggleGroup = (title: string) => {
+    setExpanded((prev) => {
+      const next = { ...prev, [title]: !prev[title] };
+      try {
+        localStorage.setItem(SIDEBAR_EXPANDED_KEY, JSON.stringify(next));
+      } catch {
+        // Sin persistencia disponible: el collapse igual funciona para esta sesión.
+      }
+      return next;
+    });
+  };
+
   return (
     <>
       <div className="h-16 px-5 flex items-center gap-3 border-b border-[#1F2937] flex-shrink-0">
@@ -111,56 +167,76 @@ function SidebarContent({ active, onSelect, badges, identity, isDirector, onLogo
         </div>
       </div>
 
-      <nav className="custom-scrollbar flex-1 overflow-y-auto py-3 px-3 space-y-5">
-        {GROUPS.map((group, groupIndex) => (
-          <div key={group.title} className={groupIndex > 0 ? "pt-4 border-t border-[#1F2937]/60" : ""}>
-            <div className="px-3 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              {group.title}
+      <nav className="custom-scrollbar flex-1 overflow-y-auto py-3 px-3 space-y-1">
+        {GROUPS.map((group, groupIndex) => {
+          const isOpen = expanded[group.title] !== false;
+          let lastSubgroup: string | undefined;
+          return (
+            <div key={group.title} className={groupIndex > 0 ? "pt-3 border-t border-[#1F2937]/60" : ""}>
+              <button
+                type="button"
+                onClick={() => toggleGroup(group.title)}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors"
+              >
+                <span>{group.title}</span>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-150 ${isOpen ? "" : "-rotate-90"}`} />
+              </button>
+              {isOpen && (
+                <div className="space-y-0.5 pb-1">
+                  {group.items.map((item) => {
+                    const Icon = ICONS[item.icon];
+                    const count = item.badgeKey ? badges[item.badgeKey] : 0;
+                    const isActive = active === item.id;
+                    const locked = item.directorOnly && !isDirector;
+                    const showSubgroupLabel = item.subgroup && item.subgroup !== lastSubgroup;
+                    lastSubgroup = item.subgroup;
+                    const navButton = (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => onSelect(item.id)}
+                        disabled={locked}
+                        className={`relative w-full flex items-center justify-between gap-2 pl-3 pr-2.5 py-2 rounded-lg text-sm transition-all duration-150 ${
+                          isActive
+                            ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-600/25"
+                            : locked
+                              ? "text-slate-600 cursor-not-allowed"
+                              : "text-slate-400 hover:bg-[#151C2A] hover:text-white hover:translate-x-0.5"
+                        }`}
+                      >
+                        {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] rounded-full bg-white/90" />}
+                        <span className="flex items-center gap-2.5 min-w-0">
+                          <Icon className={`h-4 w-4 flex-shrink-0 transition-transform duration-150 ${isActive ? "scale-110" : ""}`} />
+                          <span className="truncate">{item.label}</span>
+                        </span>
+                        {locked ? (
+                          <Lock className="h-3.5 w-3.5 flex-shrink-0 opacity-60" />
+                        ) : count > 0 ? (
+                          <span className={`relative text-[11px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                            isActive ? "bg-white/25 text-white" : "bg-blue-600/20 text-blue-400 shadow-[0_0_8px_-1px_rgba(37,99,235,0.5)]"
+                          }`}>
+                            {!isActive && <span className="absolute inset-0 rounded-full bg-blue-500/40 animate-ping" />}
+                            <span className="relative">{count}</span>
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                    return (
+                      <div key={item.id}>
+                        {showSubgroupLabel && (
+                          <div className="px-3 pt-2 pb-1 text-[9px] font-semibold text-slate-600 uppercase tracking-wider">
+                            {item.subgroup}
+                          </div>
+                        )}
+                        {locked ? <Tooltip label="Requiere el rol de Director">{navButton}</Tooltip> : navButton}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-            <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const Icon = ICONS[item.icon];
-                const count = item.badgeKey ? badges[item.badgeKey] : 0;
-                const isActive = active === item.id;
-                const locked = item.directorOnly && !isDirector;
-                const navButton = (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => onSelect(item.id)}
-                    disabled={locked}
-                    className={`relative w-full flex items-center justify-between gap-2 pl-3 pr-2.5 py-2 rounded-lg text-sm transition-all duration-150 ${
-                      isActive
-                        ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-600/25"
-                        : locked
-                          ? "text-slate-600 cursor-not-allowed"
-                          : "text-slate-400 hover:bg-[#151C2A] hover:text-white hover:translate-x-0.5"
-                    }`}
-                  >
-                    {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] rounded-full bg-white/90" />}
-                    <span className="flex items-center gap-2.5 min-w-0">
-                      <Icon className={`h-4 w-4 flex-shrink-0 transition-transform duration-150 ${isActive ? "scale-110" : ""}`} />
-                      <span className="truncate">{item.label}</span>
-                    </span>
-                    {locked ? (
-                      <Lock className="h-3.5 w-3.5 flex-shrink-0 opacity-60" />
-                    ) : count > 0 ? (
-                      <span className={`relative text-[11px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-                        isActive ? "bg-white/25 text-white" : "bg-blue-600/20 text-blue-400 shadow-[0_0_8px_-1px_rgba(37,99,235,0.5)]"
-                      }`}>
-                        {!isActive && <span className="absolute inset-0 rounded-full bg-blue-500/40 animate-ping" />}
-                        <span className="relative">{count}</span>
-                      </span>
-                    ) : null}
-                  </button>
-                );
-                return locked ? (
-                  <Tooltip key={item.id} label="Requiere el rol de Director">{navButton}</Tooltip>
-                ) : navButton;
-              })}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       <div className="p-3 border-t border-[#1F2937] space-y-1 flex-shrink-0">

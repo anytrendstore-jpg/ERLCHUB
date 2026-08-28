@@ -29,6 +29,7 @@ export type StaffActionType =
   | 'treasury_distributed'
   | 'treasury_distribution_rate_updated'
   | 'department_budget_entry_recorded'
+  | 'payroll_run_triggered'
   | 'os_module_toggled'
   | 'os_module_updated'
   | 'social_post_removed'

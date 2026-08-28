@@ -26,6 +26,7 @@ export type StaffSection =
   | "economy_store"
   | "economy_tax"
   | "economy_treasury"
+  | "economy_payroll"
   | "economy_salaries"
   | "economy_bank"
   | "economy_hubpay"
@@ -53,6 +54,8 @@ export interface StaffNavItem {
   badgeKey?: "whitelistPending" | "ticketsOpen" | "reportsPending";
   /** Solo visible/usable para Directores (permisos jerárquicos). */
   directorOnly?: boolean;
+  /** Micro-etiqueta de subgrupo dentro del grupo (puramente visual, no afecta navegación). */
+  subgroup?: string;
 }
 
 export interface StaffNavGroup {

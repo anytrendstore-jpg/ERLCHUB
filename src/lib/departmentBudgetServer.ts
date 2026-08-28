@@ -15,7 +15,7 @@ export interface DepartmentBudgetLedgerEntry {
   amount: number;
   description: string;
   category?: string;
-  source?: 'treasury_distribution' | 'manual';
+  source?: 'treasury_distribution' | 'manual' | 'payroll';
   recordedById: string;
   recordedByName: string;
   date: Date;

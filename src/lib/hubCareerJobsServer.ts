@@ -168,7 +168,7 @@ export async function updateApplicationStatus(actorId: string, applicationId: st
     const profilesCol = await careerProfilesCollection();
     await profilesCol.updateOne(
       { discordId: app.applicantId },
-      { $set: { currentJob: { title: app.jobTitle, companyId: app.companyId, companyName: app.companyName, since: new Date() }, updatedAt: new Date() } }
+      { $set: { currentJob: { jobId: app.jobId, title: app.jobTitle, companyId: app.companyId, companyName: app.companyName, since: new Date() }, updatedAt: new Date() } }
     );
   }
 

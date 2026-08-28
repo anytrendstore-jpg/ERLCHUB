@@ -35,6 +35,8 @@ export interface Skill {
 }
 
 export interface CurrentJob {
+  /** Ausente en vínculos creados antes de Fase B (Economy Core) — la nómina los salta en vez de adivinar. */
+  jobId?: string;
   title: string;
   companyId: string;
   companyName: string;
