@@ -23,14 +23,24 @@ import { useReviews } from "@/hooks/useReviews";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import AddToCartButton from "@/components/AddToCartButton";
-import { hubCoinsPackages, currencies, formatNumber, convertPrice } from "@/lib/shopData";
-import { CurrencyRate } from "@/lib/types";
+import { currencies, formatNumber, convertPrice } from "@/lib/shopData";
+import { CurrencyRate, HubCoinsPackage } from "@/lib/types";
 import CurrencySelector, { flagSrc } from "@/components/tienda/CurrencySelector";
 
 export default function HubCoinsPage() {
-  const [selectedPackage, setSelectedPackage] = useState(hubCoinsPackages[2].id);
+  const [hubCoinsPackages, setHubCoinsPackages] = useState<HubCoinsPackage[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const { addItem } = useCart();
+
+  useEffect(() => {
+    fetch('/api/shop/catalog?type=hub-coins-package').then((r) => r.json()).then((d) => {
+      if (d.success && d.items.length > 0) {
+        setHubCoinsPackages(d.items);
+        setSelectedPackage((prev) => prev || d.items[Math.min(2, d.items.length - 1)].id);
+      }
+    });
+  }, []);
   const { reviews: hubCoinsReviews, renderStars, stats, refetch: fetchReviews } = useReviews('Hub Coins');
   const { isAuthenticated } = useDiscordAuth();
   const { balance, transactions, totalOrders, loading: hubCoinsLoading } = useHubCoins();
@@ -56,17 +66,17 @@ export default function HubCoinsPage() {
     return () => clearInterval(interval);
   }, [fetchReviews]);
 
-  const currentPackage = hubCoinsPackages.find(p => p.id === selectedPackage) || hubCoinsPackages[2];
-  const totalCoins = currentPackage.coins + currentPackage.bonus;
+  const currentPackage = hubCoinsPackages.find(p => p.id === selectedPackage) || hubCoinsPackages[0];
+  const totalCoins = currentPackage ? currentPackage.coins + currentPackage.bonus : 0;
 
-  const discountedPrice = currentPackage.priceUSD;
+  const discountedPrice = currentPackage?.priceUSD || 0;
 
   // Mejor valor real = menor costo por HC (coins + bonus incluido), no una etiqueta puesta a mano.
-  const bestValuePackageId = hubCoinsPackages.reduce((best, pkg) => {
+  const bestValuePackageId = hubCoinsPackages.length > 0 ? hubCoinsPackages.reduce((best, pkg) => {
     const ratio = pkg.priceUSD / (pkg.coins + pkg.bonus);
     const bestRatio = best.priceUSD / (best.coins + best.bonus);
     return ratio < bestRatio ? pkg : best;
-  }, hubCoinsPackages[0]).id;
+  }, hubCoinsPackages[0]).id : null;
 
   const renderStarsManual = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -79,6 +89,7 @@ export default function HubCoinsPage() {
       window.location.href = 'https://www.erlchub.pro/ingresar';
       return;
     }
+    if (!currentPackage) return;
 
     addItem({
       id: currentPackage.id,
@@ -90,6 +101,16 @@ export default function HubCoinsPage() {
       bonus: currentPackage.bonus,
     });
   };
+
+  if (!currentPackage) {
+    return (
+      <main className="min-h-screen bg-[var(--background-alt)]">
+        <Navbar />
+        <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-center text-[var(--text-muted)]">Cargando paquetes de Hub Coins...</div>
+        <Footer />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[var(--background-alt)]">

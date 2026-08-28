@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Crown, Check, ChevronRight, Shield, Zap, ArrowLeft, Star } from "lucide-react";
-import { memberships, currencies, convertPrice } from "@/lib/shopData";
-import type { CurrencyRate } from "@/lib/types";
+import { currencies, convertPrice } from "@/lib/shopData";
+import type { CurrencyRate, Membership } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
 import { useCardTilt } from "@/hooks/useCardTilt";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -16,11 +16,25 @@ import CurrencySelector from "@/components/tienda/CurrencySelector";
 
 export default function MembershipPage() {
   const params = useParams();
-  const membership = memberships.find(m => m.id === params.id);
+  const [membership, setMembership] = useState<Membership | null | undefined>(undefined);
+  const [memberships, setMemberships] = useState<Membership[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const [paymentType, setPaymentType] = useState<"monthly" | "permanent">("permanent");
   const { addItem } = useCart();
   const tilt = useCardTilt<HTMLDivElement>();
+
+  useEffect(() => {
+    fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setMembership(d.success ? d.item : null));
+    fetch('/api/shop/catalog?type=membership').then((r) => r.json()).then((d) => { if (d.success) setMemberships(d.items); });
+  }, [params.id]);
+
+  if (membership === undefined) {
+    return (
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
+        <p className="text-[var(--text-muted)]">Cargando...</p>
+      </main>
+    );
+  }
 
   if (!membership) {
     return (

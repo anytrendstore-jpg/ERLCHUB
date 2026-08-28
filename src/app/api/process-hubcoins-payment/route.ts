@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
-import { kits } from '@/lib/shopData';
+import { listActiveCatalogByType } from '@/lib/shopCatalogServer';
 import { grantCharacterSlots } from '@/lib/characterServer';
 
 export async function POST(request: NextRequest) {
@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
 
     // El precio y el nombre reales salen siempre del catálogo del servidor por item.id — nunca
     // de lo que mande el cliente, porque esta ruta ahora también otorga cupos de personaje reales.
+    const kits = await listActiveCatalogByType('kit');
     const matchedKits = items
       .map((item: any) => kits.find((k) => k.id === item?.id))
       .filter((k): k is NonNullable<typeof k> => Boolean(k));

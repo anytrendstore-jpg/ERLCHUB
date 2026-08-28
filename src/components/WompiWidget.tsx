@@ -11,17 +11,19 @@ interface WompiWidgetProps {
   signature: string;
   onPaymentComplete?: (transactionId: string) => void;
   onPaymentError?: (error: string) => void;
+  onCancel?: () => void;
   mostrarBotonReal?: boolean;
 }
 
-export default function WompiWidget({ 
-  amountInCents, 
-  reference, 
-  currency, 
-  redirectUrl, 
+export default function WompiWidget({
+  amountInCents,
+  reference,
+  currency,
+  redirectUrl,
   signature,
-  onPaymentComplete, 
+  onPaymentComplete,
   onPaymentError,
+  onCancel,
   mostrarBotonReal = false
 }: WompiWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,12 +117,14 @@ export default function WompiWidget({
           <p className="text-[var(--foreground)] mb-4">Finaliza tu pago seguro aquí:</p>
           <div ref={containerRef}>
           </div>
-          <button 
-            onClick={() => setMostrarBotonReal(false)}
-            className="text-[var(--text-muted)] text-sm mt-4 underline"
-          >
-            Volver
-          </button>
+          {onCancel && (
+            <button
+              onClick={onCancel}
+              className="text-[var(--text-muted)] text-sm mt-4 underline"
+            >
+              Volver
+            </button>
+          )}
         </div>
       )}
     </div>

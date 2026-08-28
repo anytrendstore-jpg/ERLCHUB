@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
-import { memberships } from '@/lib/shopData';
+import { getCatalogItem } from '@/lib/shopCatalogServer';
 
 interface MembershipSubscription {
   userId: string;
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
 
     const db = await connectToDatabase();
     
-    const membership = memberships.find(m => m.id === membershipId);
-    if (!membership) {
+    const membership = await getCatalogItem(membershipId);
+    if (!membership || membership.type !== 'membership') {
       return NextResponse.json({ 
         success: false, 
         error: 'Membresía no encontrada' 

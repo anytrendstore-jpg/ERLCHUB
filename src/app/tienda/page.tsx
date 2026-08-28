@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
@@ -17,7 +17,8 @@ import {
   Clock,
   ShoppingCart
 } from "lucide-react";
-import { memberships, kits, currencies, convertPrice, formatNumber, kitFullBundleSavings } from "@/lib/shopData";
+import type { Membership, Kit } from "@/lib/types";
+import { currencies, convertPrice, formatNumber } from "@/lib/shopData";
 import { useReviews } from "@/hooks/useReviews";
 import { useCart } from "@/contexts/CartContext";
 import { useTiendaStats } from "@/hooks/useTiendaStats";
@@ -41,13 +42,24 @@ export default function TiendaPage() {
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const [billing, setBilling] = useState<"monthly" | "permanent">("permanent");
   const [kitCategory, setKitCategory] = useState<string | null>(null);
+  const [memberships, setMemberships] = useState<Membership[]>([]);
+  const [kits, setKits] = useState<Kit[]>([]);
   const { stats: reviewStats, reviews } = useReviews('Tienda');
   const { stats: tiendaStats, loading: statsLoading } = useTiendaStats();
   const { addItem } = useCart();
 
+  useEffect(() => {
+    fetch('/api/shop/catalog?type=membership').then((r) => r.json()).then((d) => { if (d.success) setMemberships(d.items); });
+    fetch('/api/shop/catalog?type=kit').then((r) => r.json()).then((d) => { if (d.success) setKits(d.items); });
+  }, []);
+
   const kitCategories = Array.from(new Set(kits.map((k) => k.category)));
   const visibleKits = kitCategory ? kits.filter((k) => k.category === kitCategory) : kits;
-  const bundleSavings = kitFullBundleSavings();
+  const kitFull = kits.find((k) => k.id === "kit-full");
+  const bundleParts = ["kit-dinero", "kit-autos", "kit-personajes"].map((id) => kits.find((k) => k.id === id)?.priceHubCoins || 0).reduce((a, b) => a + b, 0);
+  const bundleSavings = kitFull && bundleParts > 0
+    ? { amount: bundleParts - kitFull.priceHubCoins, pct: Math.round(((bundleParts - kitFull.priceHubCoins) / bundleParts) * 100) }
+    : null;
   const tiendaRating = reviewStats.tienda.avgRating > 0 ? reviewStats.tienda.avgRating.toFixed(1) : "0";
   const handleAddWhitelistFastToCart = () => {
     addItem({

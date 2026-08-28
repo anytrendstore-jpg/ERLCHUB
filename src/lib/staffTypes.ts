@@ -24,6 +24,7 @@ export type StaffSection =
   | "factions_audit"
   | "factions_sanctions"
   | "economy_store"
+  | "economy_shop_analytics"
   | "economy_tax"
   | "economy_treasury"
   | "economy_payroll"

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Package, Check, ChevronRight, Shield, Zap, Sparkles, ArrowLeft } from "lucide-react";
-import { kits, currencies, convertPrice, formatNumber, whitelistFastKit, kitFullBundleSavings } from "@/lib/shopData";
+import { currencies, convertPrice, formatNumber } from "@/lib/shopData";
 import { useCart } from "@/contexts/CartContext";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useCardTilt } from "@/hooks/useCardTilt";
@@ -23,42 +23,47 @@ const DESCRIPTION_IMAGE: Record<string, string> = {
 
 export default function KitPage() {
   const params = useParams();
+  const router = useRouter();
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
-  const [buyingWhitelistFast, setBuyingWhitelistFast] = useState(false);
-  const [whitelistFastError, setWhitelistFastError] = useState("");
+  const [kit, setKit] = useState<any | null | undefined>(undefined);
+  const [relatedKits, setRelatedKits] = useState<any[]>([]);
   const tilt = useCardTilt<HTMLDivElement>();
 
   const isWhitelistFast = params.id === "whitelist-fast";
-  const kit = isWhitelistFast ? whitelistFastKit : kits.find(k => k.id === params.id);
+
+  useEffect(() => {
+    fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setKit(d.success ? d.item : null));
+    fetch('/api/shop/catalog?type=kit').then((r) => r.json()).then((d) => { if (d.success) setRelatedKits(d.items); });
+  }, [params.id]);
 
   const { addItem } = useCart();
   const { isAuthenticated, user } = useDiscordAuth();
 
-  const handleBuyWhitelistFast = async () => {
+  const handleBuyWhitelistFast = () => {
     if (!isAuthenticated || !user?.id) {
       window.location.href = "https://www.erlchub.pro/ingresar";
       return;
     }
-    setBuyingWhitelistFast(true);
-    setWhitelistFastError("");
-    try {
-      const res = await fetch("/api/whitelist-fast/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id }),
-      });
-      const data = await res.json();
-      if (data.success && data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        setWhitelistFastError(data.error || "No se pudo iniciar el pago. Intentá de nuevo.");
-        setBuyingWhitelistFast(false);
-      }
-    } catch {
-      setWhitelistFastError("No se pudo iniciar el pago. Intentá de nuevo.");
-      setBuyingWhitelistFast(false);
-    }
+    addItem({
+      id: "whitelist-fast",
+      type: "kit",
+      name: "Whitelist Fast",
+      priceUSD: kit?.priceDollars || 7,
+      quantity: 1,
+      category: "Whitelist",
+      details: "Acceso instantáneo sin entrevistas",
+      image: kit?.image,
+    });
+    router.push("/tienda/carrito");
   };
+
+  if (kit === undefined) {
+    return (
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
+        <p className="text-[var(--text-muted)]">Cargando...</p>
+      </main>
+    );
+  }
 
   if (!kit) {
     return (
@@ -75,7 +80,10 @@ export default function KitPage() {
 
   const color = isWhitelistFast ? "#8b5cf6" : kit.color;
   const slotsGranted = !isWhitelistFast && "characterSlotsGranted" in kit ? kit.characterSlotsGranted : undefined;
-  const bundleSavings = kit.id === "kit-full" ? kitFullBundleSavings() : null;
+  const bundleParts = ["kit-dinero", "kit-autos", "kit-personajes"].map((id) => relatedKits.find((k) => k.id === id)?.priceHubCoins || 0).reduce((a, b) => a + b, 0);
+  const bundleSavings = kit.id === "kit-full" && bundleParts > 0
+    ? { amount: bundleParts - kit.priceHubCoins, pct: Math.round(((bundleParts - kit.priceHubCoins) / bundleParts) * 100) }
+    : null;
   const image = DESCRIPTION_IMAGE[kit.id] || kit.image;
 
   const handleAddToCart = () => {
@@ -167,9 +175,9 @@ export default function KitPage() {
                 {isWhitelistFast ? (
                   <div>
                     <div className="flex items-center gap-2 text-4xl font-bold mb-4">
-                      <span className="text-[var(--foreground)]">{convertPrice(whitelistFastKit.priceDollars, selectedCurrency)}</span>
+                      <span className="text-[var(--foreground)]">{convertPrice(kit.priceDollars, selectedCurrency)}</span>
                     </div>
-                    <div className="text-[var(--text-faint)] text-sm">≈ ${whitelistFastKit.priceDollars}.00</div>
+                    <div className="text-[var(--text-faint)] text-sm">≈ ${kit.priceDollars}.00</div>
                     <CurrencySelector value={selectedCurrency} onChange={setSelectedCurrency} className="mt-4" />
                   </div>
                 ) : (
@@ -185,13 +193,11 @@ export default function KitPage() {
                   <button
                     type="button"
                     onClick={handleBuyWhitelistFast}
-                    disabled={buyingWhitelistFast}
-                    className="relative w-full bg-[#8b5cf6] hover:bg-[#7c3aed] disabled:bg-[#5b3a8f] disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8b5cf6]/30 overflow-hidden group"
+                    className="relative w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8b5cf6]/30 overflow-hidden group"
                   >
                     <Zap className="h-5 w-5" />
-                    {buyingWhitelistFast ? "Redirigiendo al pago..." : isAuthenticated ? "OBTENER AHORA" : "INICIAR SESIÓN PARA COMPRAR"}
+                    {isAuthenticated ? "AGREGAR AL CARRITO" : "INICIAR SESIÓN PARA COMPRAR"}
                   </button>
-                  {whitelistFastError && <p className="text-red-400 text-sm mt-2 text-center">{whitelistFastError}</p>}
                 </div>
               ) : (
                 <div className="mb-4">
@@ -237,7 +243,7 @@ export default function KitPage() {
             <div className="bg-[var(--card-bg)] border border-[var(--card-border-soft)] rounded-2xl p-5">
               <h3 className="text-[var(--foreground)] font-semibold mb-2 text-sm">Otros kits que te podrían interesar</h3>
               <div className="space-y-2">
-                {kits.filter((k) => k.id !== kit.id && k.category === (kit as any).category).slice(0, 3).map((k) => (
+                {relatedKits.filter((k) => k.id !== kit.id && k.category === (kit as any).category).slice(0, 3).map((k) => (
                   <Link key={k.id} href={`/tienda/kit/${k.id}`} className="flex items-center justify-between gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors group">
                     <span className="truncate">{k.name}</span>
                     <span className="flex items-center gap-1 text-xs flex-shrink-0" style={{ color: k.color }}>
@@ -246,7 +252,7 @@ export default function KitPage() {
                     </span>
                   </Link>
                 ))}
-                {kits.filter((k) => k.id !== kit.id && k.category === (kit as any).category).length === 0 && (
+                {relatedKits.filter((k) => k.id !== kit.id && k.category === (kit as any).category).length === 0 && (
                   <p className="text-xs text-gray-600">Ningún otro kit en esta categoría por ahora.</p>
                 )}
               </div>

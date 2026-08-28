@@ -26,7 +26,7 @@ export default function CartPage() {
   const [referralCode, setReferralCode] = useState('');
   const [appliedReferral, setAppliedReferral] = useState<any>(null);
   const [referrerName, setReferrerName] = useState<string>('');
-  const { generatePaymentReference, convertToCents, checkTransactionStatus, isLoading: wompiLoading, error: wompiError, clearError } = useWompi();
+  const { clearError } = useWompi();
   const { isAuthenticated, user } = useDiscordAuth();
   const { balance: hubCoinsBalance, createTransaction } = useHubCoins();
   const [notice, setNotice] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -129,53 +129,50 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (items.length === 0) return;
-    
-    if (!isAuthenticated) {
+
+    if (!isAuthenticated || !user?.id) {
       window.location.href = 'https://www.erlchub.pro/ingresar';
       return;
     }
-    
+
     setIsProcessing(true);
     clearError();
 
     try {
-      const { finalUsdTotal } = getFinalTotals();
-      const reference = generatePaymentReference({
-        name: `Compra ERLC HUB - ${items.map(item => item.name).join(', ')}`,
-        description: `Compra de ${items.length} producto(s) en ERLC HUB`,
-        amount: finalUsdTotal,
-        currency: 'USD'
+      // El servidor recalcula el precio real contra el catálogo — acá solo mandamos QUÉ se
+      // quiere comprar, nunca un monto (ver /api/shop/checkout/prepare).
+      const payableItems = items.filter((item) => item.priceUSD || item.price);
+      const checkoutItems = payableItems.map((item) => {
+        if (item.type === 'membership') {
+          return {
+            catalogId: item.id.replace(/-monthly$|-permanent$/, ''),
+            quantity: item.quantity,
+            paymentType: item.paymentType,
+          };
+        }
+        return { catalogId: item.id, quantity: item.quantity };
       });
 
-      const amountInCents = convertToCents(finalUsdTotal, 'USD');
-
-      const signatureResponse = await fetch('/api/wompi/generate-signature', {
+      const response = await fetch('/api/shop/checkout/prepare', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          reference,
-          amountInCents,
-          currency: 'COP'
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, items: checkoutItems }),
       });
 
-      const signatureData = await signatureResponse.json();
-      
-      if (signatureData.success) {
+      const data = await response.json();
+
+      if (data.success) {
         setPaymentData({
-          reference,
-          signature: signatureData.signature,
-          amountInCents
+          reference: data.reference,
+          signature: data.signature,
+          amountInCents: data.amountInCents,
         });
         setShowWompiWidget(true);
       } else {
-        throw new Error(signatureData.error || 'Error generando firma');
+        throw new Error(data.error || 'Error iniciando el pago');
       }
-      
     } catch (error) {
-      notify('error', 'Error al procesar el pago. Por favor intenta nuevamente.');
+      notify('error', error instanceof Error ? error.message : 'Error al procesar el pago. Por favor intenta nuevamente.');
     } finally {
       setIsProcessing(false);
     }
@@ -720,6 +717,24 @@ export default function CartPage() {
           </div>
         </div>
         <Footer />
+
+        {showWompiWidget && paymentData && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[2000] p-4">
+            <div className="w-full max-w-md">
+              <WompiWidget
+                amountInCents={paymentData.amountInCents}
+                reference={paymentData.reference}
+                currency="COP"
+                redirectUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/tienda/checkout/success`}
+                signature={paymentData.signature}
+                mostrarBotonReal
+                onPaymentComplete={handlePaymentComplete}
+                onPaymentError={handlePaymentError}
+                onCancel={() => { setShowWompiWidget(false); setPaymentData(null); }}
+              />
+            </div>
+          </div>
+        )}
       </div>
   );
 }

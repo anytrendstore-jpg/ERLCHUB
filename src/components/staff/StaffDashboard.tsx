@@ -19,6 +19,8 @@ import PurchasesPanel from "@/components/staff/panels/PurchasesPanel";
 import ReferralsPanel from "@/components/staff/panels/ReferralsPanel";
 import RankingsPanel from "@/components/staff/panels/RankingsPanel";
 import EconomyRegistryPanel from "@/components/staff/panels/EconomyRegistryPanel";
+import ShopCatalogPanel from "@/components/staff/panels/ShopCatalogPanel";
+import ShopAnalyticsPanel from "@/components/staff/panels/ShopAnalyticsPanel";
 import TaxPanel from "@/components/staff/panels/TaxPanel";
 import EconomyControlCenterPanel from "@/components/staff/panels/EconomyControlCenterPanel";
 import PayrollPanel from "@/components/staff/panels/PayrollPanel";
@@ -108,7 +110,8 @@ export default function StaffDashboard({ onLogout }: Props) {
       case "factions_sanctions": return <FactionsSanctionsPanel isDirector={isDirector} />;
 
       /* -------- Menú de Economía (solo Directores) -------- */
-      case "economy_store": return <EconomyRegistryPanel moduleId="catalog" isDirector={isDirector} />;
+      case "economy_store": return <ShopCatalogPanel isDirector={isDirector} />;
+      case "economy_shop_analytics": return <ShopAnalyticsPanel isDirector={isDirector} />;
       case "economy_tax": return <TaxPanel isDirector={isDirector} />;
       case "economy_treasury": return <EconomyControlCenterPanel isDirector={isDirector} />;
       case "economy_payroll": return <PayrollPanel isDirector={isDirector} />;

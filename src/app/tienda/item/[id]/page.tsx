@@ -1,12 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingBag, ChevronRight, Coins, Shield, Zap, Car, Shirt, Crosshair, ShoppingCart } from "lucide-react";
-import { shopItems } from "@/lib/shopData";
 import { useCart } from "@/contexts/CartContext";
 import AddToCartButton from "@/components/AddToCartButton";
 import BuyWithHubCoinsButton from "@/components/BuyWithHubCoinsButton";
@@ -21,8 +21,20 @@ const typeIcons = {
 
 export default function ItemPage() {
   const params = useParams();
-  const item = shopItems.find(i => i.id === params.id);
+  const [item, setItem] = useState<any | null | undefined>(undefined);
   const { addItem } = useCart();
+
+  useEffect(() => {
+    fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setItem(d.success ? d.item : null));
+  }, [params.id]);
+
+  if (item === undefined) {
+    return (
+      <main className="min-h-screen bg-[var(--background-alt)] flex items-center justify-center">
+        <p className="text-[var(--text-muted)]">Cargando...</p>
+      </main>
+    );
+  }
 
   if (!item) {
     return (
@@ -37,7 +49,7 @@ export default function ItemPage() {
     );
   }
 
-  const TypeIcon = typeIcons[item.type];
+  const TypeIcon = typeIcons[item.itemType as keyof typeof typeIcons] || ShoppingBag;
 
   const handleAddToCart = () => {
     addItem({
@@ -103,10 +115,10 @@ export default function ItemPage() {
                 text="Agregar al Carrito"
               />
 
-              <BuyWithHubCoinsButton 
+              <BuyWithHubCoinsButton
                 priceInHubCoins={item.priceHubCoins}
                 itemName={item.name}
-                itemType={item.type}
+                itemType={item.itemType}
                 itemId={item.id}
               />
 

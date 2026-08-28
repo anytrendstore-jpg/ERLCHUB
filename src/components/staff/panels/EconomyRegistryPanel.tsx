@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Plus, X, Loader2, Trash2, Power, Store, Handshake, Dices, Building2, Car, Crosshair, Share2, Siren, Sparkles, type LucideIcon } from "lucide-react";
+import { Plus, X, Loader2, Trash2, Power, Handshake, Dices, Building2, Car, Crosshair, Share2, Siren, Sparkles, type LucideIcon } from "lucide-react";
 import { PanelHeader, Card, Chip, AccessDenied, TextInput, TextArea, Select, PrimaryButton, LoadingBlock, EmptyState, formatDate, useStaffPermissions, useToast } from "@/components/staff/ui";
 
 /** Estilo llamativo por categoría del catálogo — para que "Membresía" y "Kit" salten a la
@@ -28,18 +28,6 @@ interface EconomyModuleConfig {
 }
 
 const MODULES: Record<string, EconomyModuleConfig> = {
-  catalog: {
-    module: "catalog", title: "Tienda", subtitle: "Núcleo del sistema comercial: membresías, kits y artículos",
-    icon: Store, itemLabel: "artículo",
-    fields: [
-      { key: "category", label: "Categoría", type: "select", options: ["Membresía", "Kit", "Artículo", "Hub Coins"] },
-      { key: "priceUSD", label: "Precio (USD)", type: "number", suffix: "$" },
-      { key: "priceHC", label: "Precio (Hub Coins)", type: "number", suffix: "HC" },
-      { key: "stock", label: "Stock (vacío = infinito)", type: "number" },
-      { key: "featured", label: "Destacado", type: "boolean" },
-    ],
-    summary: (f) => `${f.category || "—"} · $${f.priceUSD || 0} / ${f.priceHC || 0} HC · stock ${f.stock ?? "∞"}`,
-  },
   jobs: {
     module: "jobs", title: "Sueldos", subtitle: "Trabajos legales, escalas salariales y bonificaciones",
     icon: Handshake, itemLabel: "trabajo",

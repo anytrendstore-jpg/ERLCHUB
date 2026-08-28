@@ -65,6 +65,7 @@ const GROUPS: StaffNavGroup[] = [
     title: "Economía OCC",
     items: [
       { id: "economy_store", label: "Catálogo de Tienda", icon: "Store", directorOnly: true, subgroup: "Catálogo" },
+      { id: "economy_shop_analytics", label: "Ventas", icon: "LineChart", directorOnly: true, subgroup: "Ventas" },
       { id: "directive_store", label: "Tienda", icon: "ShoppingBag", subgroup: "Ventas" },
       { id: "directive_store_stats", label: "Stats Tienda", icon: "LineChart", subgroup: "Ventas" },
       { id: "directive_purchases", label: "Compras", icon: "Receipt", subgroup: "Ventas" },
