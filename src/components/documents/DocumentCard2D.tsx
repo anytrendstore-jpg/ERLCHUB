@@ -117,20 +117,16 @@ export default function DocumentCard2D({
             {/* La plantilla de Los Santos trae un margen blanco de fábrica alrededor de la
                 tarjeta (medido en píxeles reales: ~9% arriba, ~6-7% en los otros lados) — se
                 recorta agrandando la imagen para que la tarjeta llene el marco entero, sin
-                ningún borde blanco visible. El agrandado se hace con width/height (no con
-                transform:scale) porque un transform sobre una imagen rasterizada dentro de
-                esta tarjeta 3D se veía borrosa en reposo y solo nítida mientras algo forzaba
-                un repintado. Las otras plantillas ya vienen a sangre y tienen texto propio
-                impreso en coordenadas fijas, así que no se tocan. */}
+                ningún borde blanco visible. Nota: agrandarla con width/height en vez de
+                transform choca con el preflight de Tailwind (img{max-width:100%}), que recorta
+                el ancho pero no el alto y deja la plantilla estirada de forma asimétrica — por
+                eso se usa transform:scale, que no lo sufre. Las otras plantillas ya vienen a
+                sangre y tienen texto propio impreso en coordenadas fijas, así que no se tocan. */}
             <img
               src={layout.image}
               alt="Documento"
-              className="absolute object-cover select-none"
-              style={
-                layout.artKey === "los_santos"
-                  ? { top: "-11%", left: "-11%", width: "122%", height: "122%" }
-                  : { inset: 0, width: "100%", height: "100%" }
-              }
+              className="absolute inset-0 w-full h-full object-cover select-none"
+              style={layout.artKey === "los_santos" ? { transform: "scale(1.22)", transformOrigin: "center" } : undefined}
               draggable={false}
             />
 
