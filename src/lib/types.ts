@@ -15,6 +15,9 @@ export interface Membership {
   priceMonthly: number;
   pricePermanent: number;
   color: string;
+  /** Cupos de personaje totales que otorga (no acumulable con otra membresía — se
+   * aplica como un piso vía $max, así que nunca baja el total que ya tenía el jugador). */
+  characterSlots: number;
 }
 
 

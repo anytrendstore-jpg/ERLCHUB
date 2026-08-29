@@ -28,7 +28,8 @@ export const memberships: Membership[] = [
     ],
     priceMonthly: 14.99,
     pricePermanent: 75,
-    color: "#3b82f6"
+    color: "#3b82f6",
+    characterSlots: 2
   },
   {
     id: "mem-elite",
@@ -49,7 +50,8 @@ export const memberships: Membership[] = [
     ],
     priceMonthly: 24.99,
     pricePermanent: 125,
-    color: "#a855f7"
+    color: "#a855f7",
+    characterSlots: 3
   },
   {
     id: "mem-legend",
@@ -73,7 +75,8 @@ export const memberships: Membership[] = [
     ],
     priceMonthly: 49.99,
     pricePermanent: 200,
-    color: "#fbbf24"
+    color: "#fbbf24",
+    characterSlots: 4
   }
 ];
 

@@ -203,10 +203,9 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
             )}
 
             {showLockedSlot && (
-              <Link
-                href="/tienda/kit/kit-full"
+              <div
                 style={{ animationDelay: `${(rows.length + (canCreate ? 1 : 0)) * 80}ms` }}
-                className={`${CARD_SHELL} card-enter block opacity-70 hover:opacity-100 hover:-translate-y-1`}
+                className={`${CARD_SHELL} card-enter opacity-80 hover:opacity-100`}
               >
                 <div className="relative aspect-[4/5] bg-white/[0.03] flex items-center justify-center grayscale">
                   <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay" style={{ backgroundImage: NOISE_BG }} />
@@ -217,12 +216,25 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
                   <span className="text-[10px] text-white/35 uppercase tracking-wide font-mono">Slot premium</span>
                 </div>
                 <div className="px-3.5 py-2.5">
-                  <p className="text-white/45 text-[11px] leading-relaxed">Desbloqueá un 2do personaje con el Kit Completo.</p>
+                  <p className="text-white/45 text-[11px] leading-relaxed">
+                    Desbloqueá otro personaje con el <span className="text-white/70">Kit Personajes</span>, o subiendo a una <span className="text-white/70">membresía</span> VIP, Elite o Leyenda.
+                  </p>
                 </div>
-                <div className="w-full py-2.5 text-[11px] text-center font-bold tracking-wide uppercase bg-white/10 text-white/70 group-hover:bg-white/15 transition-colors">
-                  Desbloquear
+                <div className="flex flex-col">
+                  <Link
+                    href="/tienda/kit/kit-personajes"
+                    className="w-full py-2 text-[11px] text-center font-bold tracking-wide uppercase bg-white/10 hover:bg-white/15 text-white/80 transition-colors border-b border-white/5"
+                  >
+                    Ver Kit Personajes
+                  </Link>
+                  <Link
+                    href="/tienda#membresias"
+                    className="w-full py-2 text-[11px] text-center font-bold tracking-wide uppercase bg-gradient-to-r from-blue-600 to-[#8e00f7] hover:brightness-110 text-white transition-all"
+                  >
+                    Ver Membresías
+                  </Link>
                 </div>
-              </Link>
+              </div>
             )}
           </div>
         )}

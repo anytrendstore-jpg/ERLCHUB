@@ -24,11 +24,11 @@ export interface CharacterDoc {
 export interface AccountMetaDoc {
   discordId: string;
   /**
-   * Slots de personaje disponibles. Arranca en 1 para todos. El KIT PERSONAJES de la tienda
-   * (2000 HubCoins, acumulable) debería sumar +1 por compra, pero hoy esa entrega pasa por un
-   * webhook a un bot de Discord que no escribe nada de vuelta a esta base de datos — así que,
-   * por ahora, este número lo ajusta un Director manualmente desde el Staff Panel al confirmar
-   * una compra, en vez de inferirlo de un historial de transacciones inconsistente.
+   * Slots de personaje disponibles. Arranca en 1 para todos. Dos fuentes lo suben:
+   * KIT PERSONAJES/KIT FULL (comprado con Hub Coins vía process-hubcoins-payment) suma
+   * +1 por compra, acumulable — ver grantCharacterSlots(). Una membresía activa (VIP/Elite/
+   * Leyenda) asegura un piso de 2/3/4 en cada pago (incluida cada renovación mensual) sin
+   * acumular — ver grantMembershipCharacterSlots().
    */
   characterSlots: number;
   updatedAt: Date;
@@ -77,6 +77,29 @@ export async function grantCharacterSlots(discordId: string, amount: number): Pr
     { returnDocument: 'after' }
   );
   return result?.characterSlots ?? existing.characterSlots + amount;
+}
+
+/**
+ * Asegura el piso de cupos que promete el rango de la membresía activa (VIP=2, Elite=3,
+ * Leyenda=4). A diferencia de `grantCharacterSlots`, esto NO suma — usa `$max`, así que
+ * es seguro llamarlo en cada pago (incluida cada renovación mensual) sin ir acumulando
+ * cupos de más. Si el jugador ya tenía más cupos (por kits, o por un rango superior antes),
+ * nunca se los baja.
+ */
+export async function grantMembershipCharacterSlots(discordId: string, tierSlots: number): Promise<number> {
+  const col = await accountMetaCollection();
+  const existing = await col.findOne({ discordId });
+  const now = new Date();
+  if (!existing) {
+    await col.insertOne({ discordId, characterSlots: tierSlots, updatedAt: now });
+    return tierSlots;
+  }
+  const result = await col.findOneAndUpdate(
+    { discordId },
+    { $max: { characterSlots: tierSlots }, $set: { updatedAt: now } },
+    { returnDocument: 'after' }
+  );
+  return result?.characterSlots ?? Math.max(existing.characterSlots, tierSlots);
 }
 
 /**

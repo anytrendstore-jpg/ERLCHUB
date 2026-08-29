@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { connectToDatabase } from '@/lib/mongodb';
 import { claimOrderForDelivery, markOrderCompleted, markOrderFailed, getOrderByReference, type ShopOrder } from '@/lib/shopOrdersServer';
 import { upsertSubscriptionFromPayment, recordFailedRenewal } from '@/lib/membershipSubscriptionsServer';
+import { grantMembershipCharacterSlots } from '@/lib/characterServer';
+import { memberships } from '@/lib/shopData';
 
 const WOMPI_INTEGRITY_KEY = process.env.WOMPI_INTEGRITY_KEY;
 
@@ -158,6 +160,12 @@ async function deliverMembership(order: ShopOrder, item: ShopOrder['items'][numb
     } as any,
     { upsert: true }
   );
+
+  // El beneficio de "N personajes" que ya anunciaba cada rango nunca estaba conectado — esto lo
+  // hace real. $max adentro de grantMembershipCharacterSlots hace que sea seguro llamarlo también
+  // en cada renovación mensual, sin ir sumando cupos de más.
+  const tier = memberships.find((m) => m.id === item.catalogId);
+  if (tier) await grantMembershipCharacterSlots(order.discordId, tier.characterSlots);
 
   // Única fuente de verdad para el cron de renovación (antes de esto, el webhook nunca tocaba
   // membership_subscriptions — solo el campo embebido de arriba). Si ya hay una suscripción
