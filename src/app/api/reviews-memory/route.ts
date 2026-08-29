@@ -16,6 +16,14 @@ export const dynamic = 'force-dynamic';
 const TAGS = ['Comunidad', 'Tienda', 'Hub Coins'] as const;
 type ReviewTag = (typeof TAGS)[number];
 
+/** Bono por dejar una reseña "buena" (4-5 estrellas) en Comunidad o Tienda — se
+ * excluye la etiqueta "Hub Coins" para no pagar coins por reseñar el propio
+ * sistema de coins. Una sola vez por cuenta (marcado en `users.reviewBonusClaimedAt`),
+ * para que no se pueda farmear dejando varias reseñas. */
+const REVIEW_BONUS_HC = 250;
+const REVIEW_BONUS_TAGS: ReviewTag[] = ['Comunidad', 'Tienda'];
+const REVIEW_BONUS_MIN_RATING = 4;
+
 interface ReviewDoc {
   _id: string;
   name?: string;
@@ -62,7 +70,28 @@ export async function POST(request: NextRequest) {
     const col = await reviewsCollection();
     await col.insertOne(doc);
 
-    return NextResponse.json({ success: true, data: doc });
+    let bonusAwarded = false;
+    if (REVIEW_BONUS_TAGS.includes(tag) && doc.rating >= REVIEW_BONUS_MIN_RATING) {
+      const db = await connectToDatabase();
+      const claim = await db.collection('users').updateOne(
+        { discordId: userId, reviewBonusClaimedAt: { $exists: false } },
+        { $inc: { hubCoins: REVIEW_BONUS_HC }, $set: { reviewBonusClaimedAt: now } }
+      );
+      if (claim.modifiedCount > 0) {
+        bonusAwarded = true;
+        await db.collection('hubcoins_transactions').insertOne({
+          userId,
+          amount: REVIEW_BONUS_HC,
+          type: 'review_bonus',
+          description: `Bono por reseña — ${tag}`,
+          status: 'completed',
+          metadata: { reviewId: doc._id, tag, rating: doc.rating },
+          timestamp: now,
+        });
+      }
+    }
+
+    return NextResponse.json({ success: true, data: doc, bonusAwarded, bonusAmount: bonusAwarded ? REVIEW_BONUS_HC : 0 });
   } catch (error: any) {
     console.error('Error creando reseña:', error);
     return NextResponse.json({ success: false, error: 'No se pudo guardar la reseña' }, { status: 500 });

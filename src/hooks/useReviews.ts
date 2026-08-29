@@ -167,7 +167,7 @@ export function useReviews(tag?: 'Comunidad' | 'Tienda' | 'Hub Coins' | 'Todas')
         });
         
         
-        return newReview;
+        return { ...newReview, bonusAwarded: !!data.bonusAwarded, bonusAmount: data.bonusAmount || 0 };
       } else {
         throw new Error(data.error);
       }

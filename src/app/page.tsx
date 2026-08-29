@@ -5,6 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ParticlesBackground from "@/components/ParticlesBackground";
+import CountUpStat from "@/components/CountUpStat";
 import {
   ChevronRight, Shield, Headphones, Eye, Star, MessageSquare,
   Gamepad2, UserCheck, FileCheck, Users,
@@ -211,6 +212,7 @@ export default function Home() {
   const totalMaxPlayers = servers.reduce((sum, s) => sum + s.maxPlayers, 0);
 
   const dynamicStats = [
+    { icon: DiscordIcon, value: <CountUpStat target={13000} />, label: "MIEMBROS DISCORD" },
     { icon: Eye, value: `${serverStatus.online}/${serverStatus.max}`, label: "EN LÍNEA" },
     { icon: Star, value: communityRating, label: "RATING" },
     { icon: MessageSquare, value: communityReviews, label: "RESEÑAS" },

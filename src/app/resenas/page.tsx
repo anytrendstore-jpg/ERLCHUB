@@ -27,6 +27,7 @@ export default function ReviewsPage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [bonusMessage, setBonusMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     rating: 5,
     comment: '',
@@ -50,9 +51,13 @@ export default function ReviewsPage() {
     setSubmitError("");
 
     try {
-      await createReview({ ...formData, tag: formData.tag });
+      const result = await createReview({ ...formData, tag: formData.tag });
       setFormData({ rating: 5, comment: '', tag: 'Comunidad' });
       setShowReviewForm(false);
+      if (result?.bonusAwarded) {
+        setBonusMessage(`¡Ganaste ${result.bonusAmount} Hub Coins por tu reseña!`);
+        setTimeout(() => setBonusMessage(null), 6000);
+      }
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Error al crear la reseña');
     } finally {
@@ -102,6 +107,13 @@ export default function ReviewsPage() {
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             <p className="text-sm flex-1">No se pudieron cargar las reseñas. {error}</p>
             <button onClick={() => refetch()} className="text-sm font-semibold underline hover:no-underline flex-shrink-0">Reintentar</button>
+          </div>
+        )}
+
+        {bonusMessage && (
+          <div className="max-w-5xl mx-auto mb-6 flex items-center gap-3 rounded-xl px-4 py-3 border border-amber-400/40 bg-amber-400/10 text-amber-300 animate-pulse-glow">
+            <Coins className="h-5 w-5 flex-shrink-0" />
+            <p className="text-sm font-semibold flex-1">{bonusMessage}</p>
           </div>
         )}
 
@@ -162,6 +174,11 @@ export default function ReviewsPage() {
             {isAuthenticated ? 'Escribir Reseña' : 'Iniciar Sesión para Reseñar'}
           </button>
         </div>
+
+        <p className="text-center text-[var(--text-faint)] text-xs mb-8 flex items-center justify-center gap-1.5">
+          <Coins className="w-3.5 h-3.5 text-amber-400" />
+          Dejá 4★ o más en Comunidad o Tienda y ganá 250 Hub Coins — una vez por cuenta.
+        </p>
 
         {reviews && reviews.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
