@@ -167,16 +167,24 @@ export default function WhitelistPage() {
 
               <Link
                 href="/tienda#whitelist-fast"
-                className="flex items-center gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#8e00f7]/15 to-[#a64dfa]/10 border border-[#8e00f7]/30 hover:border-[#8e00f7]/50 transition-colors group"
+                className="wl-fast-glow relative flex items-center gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#8e00f7]/25 to-[#a64dfa]/15 border border-[#8e00f7]/50 hover:border-[#8e00f7]/80 transition-colors group overflow-hidden"
               >
-                <div className="w-11 h-11 rounded-xl bg-[#8e00f7]/25 flex items-center justify-center flex-shrink-0">
-                  <Zap className="h-5 w-5 text-[#8e00f7]" />
+                {/* Barrido de brillo sobre toda la tarjeta — mismo patrón que el ticket de lotería. */}
+                <div className="pointer-events-none absolute inset-0 animate-lottery-shimmer" />
+
+                <div className="relative w-11 h-11 rounded-xl bg-[#8e00f7]/30 flex items-center justify-center flex-shrink-0 shadow-[0_0_18px_rgba(142,0,247,0.65)]">
+                  <Zap className="h-5 w-5 text-[#8e00f7]" fill="currentColor" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-[var(--foreground)] font-semibold text-sm">¿No querés esperar la revisión?</h3>
+                <div className="relative flex-1 min-w-0">
+                  <h3
+                    className="shine-text font-bold text-sm"
+                    style={{ '--shine-base': '#ffffff', '--shine-highlight': '#d8b4fe' } as React.CSSProperties}
+                  >
+                    ¿No querés esperar la revisión?
+                  </h3>
                   <p className="text-[var(--text-muted)] text-xs mt-0.5">Con Whitelist Fast activás tu acceso al instante, sin entrevista.</p>
                 </div>
-                <span className="flex-shrink-0 text-xs font-semibold bg-[#8e00f7] group-hover:bg-[#7a00d4] text-white px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap">
+                <span className="relative flex-shrink-0 text-xs font-semibold bg-[#8e00f7] group-hover:bg-[#7a00d4] text-white px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap shadow-[0_0_16px_rgba(142,0,247,0.7)]">
                   Ver oferta
                 </span>
               </Link>

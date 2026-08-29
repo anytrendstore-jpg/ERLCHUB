@@ -50,7 +50,7 @@ export default function MembershipTierCard({ membership, billing, recommended }:
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <h3 className="text-xl font-bold mb-1" style={{ color: membership.color }}>{membership.name}</h3>
+        <h3 className="shine-text text-xl font-bold mb-1" style={{ '--shine-color': membership.color } as React.CSSProperties}>{membership.name}</h3>
 
         <div className="flex items-baseline gap-1 mb-1">
           <span className="text-3xl font-black text-[var(--foreground)]">${price}</span>

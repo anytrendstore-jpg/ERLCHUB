@@ -151,7 +151,7 @@ export default function MembershipPage() {
                 MEMBRESÍA
               </div>
 
-              <h1 className="text-4xl font-bold mb-4" style={{ color: membership.color }}>
+              <h1 className="shine-text text-4xl font-bold mb-4" style={{ '--shine-color': membership.color } as React.CSSProperties}>
                 {membership.name}
               </h1>
 

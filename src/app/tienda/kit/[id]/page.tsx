@@ -161,7 +161,7 @@ export default function KitPage() {
                 {isWhitelistFast ? "WHITELIST" : kit.category.toUpperCase()}
               </div>
 
-              <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">{kit.name}</h1>
+              <h1 className="shine-text text-4xl font-bold mb-4" style={{ '--shine-color': color } as React.CSSProperties}>{kit.name}</h1>
               <p className="text-[var(--text-muted)] text-lg mb-4">{kit.description}</p>
 
               {slotsGranted ? (

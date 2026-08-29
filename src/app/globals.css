@@ -498,6 +498,65 @@
 }
 
 /* ============================================
+   BRILLO EN DEGRADADO — nombres de productos (kits/membresías)
+   ============================================ */
+
+@keyframes shine-sweep {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Texto con degradado animado que "barre" un brillo sobre el color propio del
+   producto — se le pasa el color vía --shine-color, con fallback al morado de
+   marca. --shine-base/--shine-highlight se pueden pisar aparte para textos
+   sobre fondos ya morados (si no, el propio --shine-color no contrasta lo
+   suficiente contra un fondo del mismo tono). Deshabilitado si el usuario
+   prefiere menos movimiento. */
+.shine-text {
+  background-image: linear-gradient(
+    100deg,
+    var(--shine-base, var(--shine-color, #8e00f7)) 0%,
+    var(--shine-base, var(--shine-color, #8e00f7)) 40%,
+    var(--shine-highlight, #ffffff) 50%,
+    var(--shine-base, var(--shine-color, #8e00f7)) 60%,
+    var(--shine-base, var(--shine-color, #8e00f7)) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shine-sweep 3.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shine-text {
+    animation: none;
+    background-position: 0% center;
+  }
+}
+
+/* ============================================
+   BRILLO — promo de Whitelist Fast
+   ============================================ */
+
+@keyframes wl-fast-pulse {
+  0%, 100% { box-shadow: 0 0 20px 1px rgba(142, 0, 247, 0.35), 0 0 50px 8px rgba(142, 0, 247, 0.15); }
+  50% { box-shadow: 0 0 34px 4px rgba(142, 0, 247, 0.6), 0 0 80px 16px rgba(142, 0, 247, 0.3); }
+}
+
+.wl-fast-glow {
+  animation: wl-fast-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-fast-glow {
+    animation: none;
+    box-shadow: 0 0 20px 1px rgba(142, 0, 247, 0.35), 0 0 50px 8px rgba(142, 0, 247, 0.15);
+  }
+}
+
+/* ============================================
    WHITELIST SYSTEM STYLES
    ============================================ */
 

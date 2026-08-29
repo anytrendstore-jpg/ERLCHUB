@@ -43,7 +43,7 @@ export default function ProductCard({ href, image, name, description, color, pri
       </div>
 
       <div className="p-5">
-        <h3 className="text-lg font-bold mb-2 transition-colors" style={{ color }}>{name}</h3>
+        <h3 className="shine-text text-lg font-bold mb-2" style={{ '--shine-color': color } as React.CSSProperties}>{name}</h3>
         <p className="text-[var(--text-muted)] text-sm mb-4 line-clamp-2">{description}</p>
 
         <div className="flex items-center justify-between">
