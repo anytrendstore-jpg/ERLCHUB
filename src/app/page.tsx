@@ -77,7 +77,7 @@ const teamMembers = [
   },
   {
     name: "Isaac Marin",
-    role: " Socio & Communications Officer",
+    role: "Socio & Communications Officer",
     description: "Encargado de fortalecer la presencia y la imagen del servidor, definiendo estrategias que impulsan su crecimiento. Gestiona la interacción con la comunidad y coordina la comunicación del proyecto. Actúa como puente entre el equipo y los usuarios, asegurando que los valores, objetivos y mensajes se transmitan de forma clara y coherente.",
     avatar: "/team/mode.jpg", 
     avatarFallback: "SCO", 
@@ -895,13 +895,17 @@ export default function Home() {
             </div>
           </AnimatedSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {teamMembers.map((member, index) => (
               <AnimatedSection key={member.name} delay={index * 100}>
-                <div className="group relative bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-6 hover:border-[#8e00f7]/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-24 opacity-10 group-hover:opacity-20 transition-opacity" style={{ background: `linear-gradient(180deg, ${member.color} 0%, transparent 100%)` }} />
-                  <div className="relative mb-6">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden mx-auto relative" style={{ backgroundColor: member.color }}>
+                <div
+                  className="group relative flex h-full flex-col bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-5 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_45px_-28px_var(--member-color)]"
+                  style={{ '--member-color': member.color } as React.CSSProperties}
+                >
+                  <div className="absolute inset-x-0 top-0 h-16 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(180deg, ${member.color}14 0%, transparent 100%)` }} />
+
+                  <div className="relative mb-4">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden mx-auto relative ring-1 ring-[var(--card-border-soft)] group-hover:ring-[color:var(--member-color)] transition-all" style={{ backgroundColor: member.color }}>
                       <Image
                         src={member.avatar}
                         alt={`${member.name} - ${member.role}`}
@@ -913,37 +917,41 @@ export default function Home() {
                           const parent = target.parentElement;
                           if (parent) {
                             const fallback = document.createElement('div');
-                            fallback.className = 'absolute inset-0 flex items-center justify-center text-2xl font-black text-white';
+                            fallback.className = 'absolute inset-0 flex items-center justify-center text-lg font-black text-white';
                             fallback.textContent = member.avatarFallback;
                             parent.appendChild(fallback);
                           }
                         }}
                       />
-                      <div className="absolute inset-0 flex items-center justify-center text-2xl font-black text-white opacity-0 hover:opacity-100 transition-opacity bg-black/50">
-                        {member.avatarFallback}
-                      </div>
                     </div>
-                    <div className="absolute bottom-0 right-1/2 translate-x-10 w-5 h-5 bg-[#22c55e] rounded-full border-4 border-[var(--card-bg)]" />
+                    <div className="absolute -bottom-0.5 right-1/2 translate-x-7 w-3.5 h-3.5 bg-[#22c55e] rounded-full border-[3px] border-[var(--card-bg)]" title="Activo" />
                   </div>
-                  <div className="text-center space-y-2">
-                    <h3 className="text-lg font-bold text-[var(--foreground)]">{member.name}</h3>
-                    <p className="text-sm font-medium" style={{ color: member.color }}>{member.role}</p>
-                    <p className="text-[var(--text-muted)] text-sm leading-relaxed">{member.description}</p>
+
+                  <div className="relative text-center">
+                    <h3 className="text-sm font-bold text-[var(--foreground)]">{member.name}</h3>
+                    <span
+                      className="inline-block mt-1.5 mb-3 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide"
+                      style={{ backgroundColor: `${member.color}18`, color: member.color }}
+                    >
+                      {member.role}
+                    </span>
+                    <p className="text-[var(--text-faint)] text-xs leading-relaxed line-clamp-4">{member.description}</p>
                   </div>
-                  <div className="flex items-center justify-center gap-3 mt-6">
+
+                  <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-[var(--card-border-soft)]">
                     {member.socials.discord && (
-                      <a href={member.socials.discord} className="w-9 h-9 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#5865F2] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
-                        <DiscordIcon className="w-4 h-4" />
+                      <a href={member.socials.discord} className="w-8 h-8 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#5865F2] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
+                        <DiscordIcon className="w-3.5 h-3.5" />
                       </a>
                     )}
                     {member.socials.instagram && (
-                      <a href={member.socials.instagram} className="w-9 h-9 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#E4405F] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
-                        <Instagram className="w-4 h-4" />
+                      <a href={member.socials.instagram} className="w-8 h-8 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#E4405F] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
+                        <Instagram className="w-3.5 h-3.5" />
                       </a>
                     )}
                     {member.socials.youtube && member.socials.youtube !== "" && (
-                      <a href={member.socials.youtube} className="w-9 h-9 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#FF0000] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
-                        <Youtube className="w-4 h-4" />
+                      <a href={member.socials.youtube} className="w-8 h-8 rounded-lg bg-[var(--card-bg-2)] hover:bg-[#FF0000] flex items-center justify-center text-[var(--text-muted)] hover:text-white transition-colors">
+                        <Youtube className="w-3.5 h-3.5" />
                       </a>
                     )}
                   </div>
