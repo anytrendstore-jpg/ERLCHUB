@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { applications, isStaffSession, toPublicApplication } from '@/lib/whitelistServer';
+import { applications, isStaffSession, nextMemberNumber, toPublicApplication } from '@/lib/whitelistServer';
 import { logStaffAction, staffIdentity, type StaffActionType } from '@/lib/staffServer';
 import type { ApplicationStatus } from '@/lib/whitelistTypes';
 
@@ -98,10 +98,16 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Datos de revisión no válidos' }, { status: 400 });
     }
 
-    // La fase acompaña a la decisión: aprobada pasa al DNI, las correcciones
-    // devuelven al formulario, el resto se queda en revisión.
-    const currentPhase =
-      status === 'approved'
+    // La fase acompaña a la decisión — y depende de CUÁL revisión es esta: la del
+    // cuestionario (fase 'review') o la del documento/personaje (fase 'dni_review').
+    const isDniReview = application.currentPhase === 'dni_review';
+    const currentPhase = isDniReview
+      ? status === 'approved'
+        ? 'completed'
+        : status === 'needs_revision' || status === 'rejected'
+          ? 'dni'
+          : 'dni_review'
+      : status === 'approved'
         ? 'dni'
         : status === 'needs_revision'
           ? 'questionnaire'
@@ -109,17 +115,35 @@ export async function PATCH(request: NextRequest) {
             ? 'completed'
             : 'review';
 
+    const setFields: Record<string, unknown> = {
+      status,
+      currentPhase,
+      staffNotes: staffNotes ?? application.staffNotes,
+      reviewedBy: reviewedBy || 'Staff',
+      reviewedAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const unsetFields: Record<string, ''> = {};
+
+    if (isDniReview && status === 'approved') {
+      // Recién acá se asigna el número de miembro — no tiene sentido gastar uno en un
+      // personaje que todavía podía terminar rechazado.
+      setFields.memberNumber = application.memberNumber ?? (await nextMemberNumber());
+      setFields.completedAt = application.completedAt || new Date();
+    }
+    if (isDniReview && (status === 'needs_revision' || status === 'rejected')) {
+      // El documento generado queda inválido — el personaje (nombre, fecha de nacimiento,
+      // etc.) se conserva para que el jugador no tenga que volver a tipear todo, pero el
+      // documento en sí (con su ID de ciudadano ya asignado) se descarta y se genera uno
+      // nuevo recién cuando reenvíe.
+      unsetFields.document = '';
+    }
+
     await col.updateOne(
       { applicationId },
       {
-        $set: {
-          status,
-          currentPhase,
-          staffNotes: staffNotes ?? application.staffNotes,
-          reviewedBy: reviewedBy || 'Staff',
-          reviewedAt: new Date(),
-          updatedAt: new Date(),
-        },
+        $set: setFields,
+        ...(Object.keys(unsetFields).length ? { $unset: unsetFields } : {}),
       }
     );
 
@@ -144,7 +168,7 @@ export async function PATCH(request: NextRequest) {
       actorId: identity?.id,
       target: application.fullName,
       targetId: application.applicationId,
-      description: `${identity?.name || reviewedBy || 'Staff'} ${labelByStatus[status as ApplicationStatus]} la solicitud de ${application.fullName}`,
+      description: `${identity?.name || reviewedBy || 'Staff'} ${labelByStatus[status as ApplicationStatus]} ${isDniReview ? 'el documento de identidad de' : 'la solicitud de'} ${application.fullName}`,
     });
 
     return NextResponse.json({ success: true, application: toPublicApplication(fresh!) });

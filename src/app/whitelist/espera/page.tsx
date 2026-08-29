@@ -73,7 +73,7 @@ const statusConfigs: Record<ApplicationStatus, StatusConfig> = {
 
 export default function ReviewWaitingPage() {
   const router = useRouter();
-  const { application, queue, loading, error: loadError, reload } = useWhitelistApplication(["review", "dni"]);
+  const { application, queue, loading, error: loadError, reload } = useWhitelistApplication(["review", "dni", "dni_review"]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
@@ -108,6 +108,12 @@ export default function ReviewWaitingPage() {
   const status = application.status;
   const statusConfig = statusConfigs[status];
   const StatusIcon = statusConfig.icon;
+  // Esta misma pantalla sirve para dos revisiones distintas: la del cuestionario (fase
+  // 'review'/'questionnaire') y la del documento/personaje (fase 'dni_review'/'dni'). El
+  // currentPhase en el momento de renderizar ya deja ver cuál es, sin heurísticas frágiles.
+  const isDniReviewWait = application.currentPhase === "dni_review";
+  const isDniApproved = status === "approved" && application.currentPhase === "completed";
+  const isDniRevision = status === "needs_revision" && application.currentPhase === "dni";
 
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
@@ -125,13 +131,13 @@ export default function ReviewWaitingPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <ParticlesBackground />
-      <WhitelistBetaPanel currentPhase="review" />
+      <WhitelistBetaPanel currentPhase={isDniReviewWait || isDniApproved || isDniRevision ? "dni" : "review"} />
       <WhitelistHeader applicationId={application.applicationId} />
 
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <WhitelistStepper currentPhase="review" />
+            <WhitelistStepper currentPhase={isDniReviewWait || isDniApproved || isDniRevision ? "dni" : "review"} />
           </div>
 
           <WhitelistCard>
@@ -168,12 +174,30 @@ export default function ReviewWaitingPage() {
                       <div className="text-sm text-[var(--text-faint)]">En revisión</div>
                     </div>
                     <div className="bg-[var(--background)] rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-[#8e00f7] mb-1">
-                        {application.questionnaireScore ?? 0}%
-                      </div>
-                      <div className="text-sm text-[var(--text-faint)]">Puntuación</div>
+                      {isDniReviewWait ? (
+                        <>
+                          <div className="text-2xl font-bold text-[#8e00f7] mb-1 font-mono">
+                            {application.document?.number ?? "—"}
+                          </div>
+                          <div className="text-sm text-[var(--text-faint)]">ID de ciudadano</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-[#8e00f7] mb-1">
+                            {application.questionnaireScore ?? 0}%
+                          </div>
+                          <div className="text-sm text-[var(--text-faint)]">Puntuación</div>
+                        </>
+                      )}
                     </div>
                   </div>
+
+                  {isDniReviewWait && (
+                    <p className="text-center text-sm text-[var(--text-muted)] -mt-2">
+                      Un miembro del staff está revisando que el nombre, la edad y el personaje
+                      de tu documento sean coherentes.
+                    </p>
+                  )}
 
                   <div className="bg-[var(--background)] rounded-xl p-4">
                     <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-4">
@@ -238,7 +262,54 @@ export default function ReviewWaitingPage() {
                 </div>
               )}
 
-              {status === "approved" && (
+              {status === "approved" && isDniApproved && (
+                <div className="text-center py-8 space-y-6">
+                  <div className="w-24 h-24 rounded-full bg-[#22c55e]/20 flex items-center justify-center mx-auto animate-prize-reveal">
+                    <CheckCircle className="h-12 w-12 text-[#22c55e]" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">¡Documento aprobado!</h2>
+                    <p className="text-[var(--text-muted)] max-w-md mx-auto">
+                      El staff confirmó tu documento de identidad. Ya sos oficialmente parte de ERLC HUB —
+                      podés entrar al servidor.
+                    </p>
+                  </div>
+
+                  {application.staffNotes && (
+                    <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-xl p-4 text-left max-w-md mx-auto">
+                      <h3 className="text-sm font-semibold text-[#22c55e] mb-2">Notas del staff:</h3>
+                      <p className="text-[var(--text-muted)] text-sm">{application.staffNotes}</p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-8 py-4">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[#22c55e] font-mono">
+                        {application.document?.number ?? "—"}
+                      </div>
+                      <div className="text-sm text-[var(--text-faint)]">ID de ciudadano</div>
+                    </div>
+                    <div className="h-12 w-px bg-[#1e1e2e]" />
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[#8e00f7]">
+                        {formatDate(application.reviewedAt)}
+                      </div>
+                      <div className="text-sm text-[var(--text-faint)]">Revisada</div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => router.push("/whitelist/completado")}
+                    className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
+                  >
+                    Continuar
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+
+              {status === "approved" && !isDniApproved && (
                 <div className="text-center py-8 space-y-6">
                   <div className="w-24 h-24 rounded-full bg-[#22c55e]/20 flex items-center justify-center mx-auto animate-prize-reveal">
                     <CheckCircle className="h-12 w-12 text-[#22c55e]" />
@@ -330,27 +401,42 @@ export default function ReviewWaitingPage() {
                     <AlertCircle className="h-12 w-12 text-orange-400" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Correcciones Necesarias</h2>
+                    <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
+                      {isDniRevision ? "Tu documento necesita correcciones" : "Correcciones Necesarias"}
+                    </h2>
                     <p className="text-[var(--text-muted)] max-w-md mx-auto">
-                      Tu solicitud está casi lista, pero necesita algunas correcciones antes de ser aprobada.
+                      {isDniRevision
+                        ? "El staff encontró algo incoherente en tu documento (nombre, edad o personaje) — corregilo y volvé a generarlo."
+                        : "Tu solicitud está casi lista, pero necesita algunas correcciones antes de ser aprobada."}
                     </p>
                   </div>
 
                   <div className="bg-orange-400/10 border border-orange-400/30 rounded-xl p-4 text-left max-w-md mx-auto">
                     <h3 className="text-sm font-semibold text-orange-400 mb-2">Correcciones solicitadas:</h3>
                     <p className="text-[var(--text-muted)] text-sm">
-                      {application.staffNotes || "Amplía y mejora tus respuestas del formulario."}
+                      {application.staffNotes || (isDniRevision ? "El staff no dejó notas adicionales." : "Amplía y mejora tus respuestas del formulario.")}
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => router.push("/whitelist/formulario")}
-                    className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
-                  >
-                    Corregir Formulario
-                    <ArrowRight className="h-5 w-5" />
-                  </button>
+                  {isDniRevision ? (
+                    <button
+                      type="button"
+                      onClick={() => router.push("/whitelist/dni")}
+                      className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
+                    >
+                      Corregir mi Documento
+                      <ArrowRight className="h-5 w-5" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => router.push("/whitelist/formulario")}
+                      className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#8e00f7] hover:bg-[#7a00d4] text-white font-bold rounded-xl transition-all mx-auto"
+                    >
+                      Corregir Formulario
+                      <ArrowRight className="h-5 w-5" />
+                    </button>
+                  )}
                 </div>
               )}
             </div>

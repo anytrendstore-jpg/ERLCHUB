@@ -1,11 +1,13 @@
 export type WhitelistPhase =
-  | "registration"   
-  | "discord"       
-  | "roblox"         
-  | "questionnaire"  
-  | "review"         
-  | "dni"            
-  | "completed";     
+  | "registration"
+  | "discord"
+  | "roblox"
+  | "questionnaire"
+  | "review"
+  | "dni"
+  /** El jugador ya generó su documento — un staff tiene que revisar que el nombre, la edad y el personaje sean coherentes antes de dejarlo pasar. */
+  | "dni_review"
+  | "completed";
 
 export type ApplicationStatus =
   | "pending" 
@@ -124,6 +126,7 @@ export const PHASE_ROUTES: Record<WhitelistPhase, string> = {
   questionnaire: "/whitelist/formulario",
   review: "/whitelist/espera",
   dni: "/whitelist/dni",
+  dni_review: "/whitelist/espera",
   completed: "/whitelist/completado",
 };
 

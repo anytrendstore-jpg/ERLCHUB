@@ -272,7 +272,9 @@ export async function PATCH(request: NextRequest) {
         return save({ characterDraft: (data.answers || {}) as Record<string, string> });
 
       case 'character_submit': {
-        if (application.status !== 'approved' || application.currentPhase !== 'dni') {
+        // Solo importa la FASE, no el status: tras un "corregir" el status queda en
+        // needs_revision aunque la fase siga siendo 'dni' — el jugador debe poder reenviar.
+        if (application.currentPhase !== 'dni') {
           return NextResponse.json(
             { success: false, error: 'Tu solicitud todavía no está aprobada' },
             { status: 403 }
@@ -313,8 +315,10 @@ export async function PATCH(request: NextRequest) {
         expiry.setFullYear(expiry.getFullYear() + 5);
         const number = await generateCitizenId(character.city);
 
-        const memberNumber = application.memberNumber ?? (await nextMemberNumber());
-
+        // El documento queda generado, pero todavía no es definitivo: un staff tiene que
+        // revisar que el nombre, la edad y el personaje sean coherentes antes de aprobarlo
+        // (el memberNumber se asigna recién ahí, no acá — no tiene sentido gastar un número
+        // de miembro en un personaje que el staff puede terminar rechazando).
         return save({
           character,
           characterDraft: undefined,
@@ -327,9 +331,8 @@ export async function PATCH(request: NextRequest) {
             securityCode: generateDocumentNumber('SEC'),
             generatedAt: now,
           },
-          memberNumber,
-          currentPhase: 'completed',
-          completedAt: now,
+          status: 'pending',
+          currentPhase: 'dni_review',
         });
       }
 
@@ -340,13 +343,13 @@ export async function PATCH(request: NextRequest) {
         }
 
         const phase = data.phase as WhitelistPhase;
-        if (!phase || !(phase in { discord: 1, roblox: 1, questionnaire: 1, review: 1, dni: 1, completed: 1 })) {
+        if (!phase || !(phase in { discord: 1, roblox: 1, questionnaire: 1, review: 1, dni: 1, dni_review: 1, completed: 1 })) {
           return NextResponse.json({ success: false, error: 'Fase no válida' }, { status: 400 });
         }
 
         // Rellena lo mínimo de las fases anteriores para que la fase destino
         // tenga datos coherentes que mostrar.
-        const order: WhitelistPhase[] = ['discord', 'roblox', 'questionnaire', 'review', 'dni', 'completed'];
+        const order: WhitelistPhase[] = ['discord', 'roblox', 'questionnaire', 'review', 'dni', 'dni_review', 'completed'];
         const target = order.indexOf(phase);
         const update: Partial<WhitelistApplication> = { currentPhase: phase };
 
@@ -399,9 +402,11 @@ export async function PATCH(request: NextRequest) {
 
         // El estado acompaña a la fase destino.
         if (phase === 'review') update.status = 'pending';
-        if (phase === 'dni' || phase === 'completed') update.status = 'approved';
+        if (phase === 'dni') update.status = 'approved';
+        if (phase === 'dni_review') update.status = 'pending';
+        if (phase === 'completed') update.status = 'approved';
 
-        if (phase === 'completed') {
+        if (phase === 'dni_review' || phase === 'completed') {
           const expiry = new Date(now);
           expiry.setFullYear(expiry.getFullYear() + 5);
           const number = application.document?.number || await generateCitizenId(application.character?.city || 'los_santos');
@@ -424,6 +429,9 @@ export async function PATCH(request: NextRequest) {
             securityCode: generateDocumentNumber('SEC'),
             generatedAt: now,
           };
+        }
+
+        if (phase === 'completed') {
           update.memberNumber = application.memberNumber ?? (await nextMemberNumber());
           update.completedAt = application.completedAt || now;
         }

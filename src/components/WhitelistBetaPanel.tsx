@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FlaskConical, X, RotateCcw, Loader2, ChevronRight } from "lucide-react";
 import { PHASES, PHASE_ROUTES, type WhitelistPhase } from "@/lib/whitelistTypes";
 
-const JUMPABLE: WhitelistPhase[] = ["discord", "roblox", "questionnaire", "review", "dni", "completed"];
+const JUMPABLE: WhitelistPhase[] = ["discord", "roblox", "questionnaire", "review", "dni", "dni_review", "completed"];
 
 interface Props {
   currentPhase?: WhitelistPhase;
@@ -90,9 +90,9 @@ export default function WhitelistBetaPanel({ currentPhase }: Props) {
                 >
                   <span className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--card-bg-2)] text-[10px] font-bold flex items-center justify-center">
-                      {info?.number}
+                      {info?.number ?? "·"}
                     </span>
-                    {info?.title}
+                    {info?.title ?? "Revisión DNI"}
                   </span>
                   {busy === key ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

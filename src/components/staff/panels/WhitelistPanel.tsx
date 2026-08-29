@@ -42,13 +42,20 @@ const STATUS: Record<ApplicationStatus, { label: string; dot: string; chip: stri
 };
 const PHASE_LABEL: Record<WhitelistPhase, string> = {
   registration: "Acceso", discord: "Discord", roblox: "Roblox", questionnaire: "Formulario",
-  review: "Revisión", dni: "Documento", completed: "Completada",
+  review: "Revisión", dni: "Documento", dni_review: "Revisión de documento", completed: "Completada",
 };
 const FILTERS: { id: StatusFilter; label: string }[] = [
   { id: "all", label: "Todas" }, { id: "pending", label: "Pendientes" }, { id: "in_review", label: "En revisión" },
   { id: "approved", label: "Aprobadas" }, { id: "rejected", label: "Rechazadas" }, { id: "needs_revision", label: "Correcciones" },
 ];
 const scoreTone = (score = 0) => (score >= 80 ? "text-emerald-400" : score >= 60 ? "text-amber-400" : "text-rose-400");
+/** Edad real del personaje al día de hoy — para que el staff no tenga que hacer la cuenta a mano al revisar el DNI. */
+const characterAge = (birthDate?: string) => {
+  if (!birthDate) return null;
+  const parsed = new Date(birthDate);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return Math.floor((Date.now() - parsed.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+};
 
 export default function WhitelistPanel({ onChanged }: { onChanged?: () => void }) {
   const toast = useToast();
@@ -315,12 +322,25 @@ export default function WhitelistPanel({ onChanged }: { onChanged?: () => void }
               </section>
 
               {(selected.character || selected.document) && (
-                <section className="bg-[#111827] border border-[#1F2937] rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3"><CreditCard className="h-3.5 w-3.5 text-blue-400" /> Personaje y documento</div>
+                <section className={`bg-[#111827] border rounded-xl p-4 ${selected.currentPhase === "dni_review" ? "border-amber-500/40 ring-1 ring-amber-500/20" : "border-[#1F2937]"}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider"><CreditCard className="h-3.5 w-3.5 text-blue-400" /> Personaje y documento</div>
+                    {selected.currentPhase === "dni_review" && (
+                      <span className="text-[11px] font-semibold text-amber-300 bg-amber-500/10 px-2 py-1 rounded-md ring-1 ring-amber-500/30">
+                        Revisá que el nombre, la edad y el personaje sean coherentes
+                      </span>
+                    )}
+                  </div>
                   <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                     {selected.character && (
                       <>
                         <div className="flex justify-between gap-4"><dt className="text-slate-500">Nombre</dt><dd className="text-slate-300">{selected.character.firstName} {selected.character.lastName}</dd></div>
+                        <div className="flex justify-between gap-4">
+                          <dt className="text-slate-500">Edad</dt>
+                          <dd className={characterAge(selected.character.birthDate) != null && characterAge(selected.character.birthDate)! < 18 ? "text-rose-400 font-semibold" : "text-slate-300"}>
+                            {characterAge(selected.character.birthDate) ?? "—"} años
+                          </dd>
+                        </div>
                         <div className="flex justify-between gap-4"><dt className="text-slate-500">Ciudad</dt><dd className="text-slate-300">{selected.character.city}</dd></div>
                         <div className="flex justify-between gap-4"><dt className="text-slate-500">Nacionalidad</dt><dd className="text-slate-300">{selected.character.nationality}</dd></div>
                       </>
