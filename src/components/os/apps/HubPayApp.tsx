@@ -8,6 +8,7 @@ import HubPayPockets from './hubpay/HubPayPockets';
 import HubPayAccounts from './hubpay/HubPayAccounts';
 import HubPayCards from './hubpay/HubPayCards';
 import HubPayWithdraw from './hubpay/HubPayWithdraw';
+import HubPayLoans from './hubpay/HubPayLoans';
 import HubPayTaxes from './hubpay/HubPayTaxes';
 import HubPayHistory from './hubpay/HubPayHistory';
 import HubPaySidebar from './hubpay/HubPaySidebar';
@@ -23,6 +24,7 @@ function HubPayContent() {
       case 'accounts': return <HubPayAccounts />;
       case 'cards': return <HubPayCards />;
       case 'withdraw': return <HubPayWithdraw />;
+      case 'loans': return <HubPayLoans />;
       case 'taxes': return <HubPayTaxes />;
       case 'history': return <HubPayHistory />;
       default: return <HubPayHome />;

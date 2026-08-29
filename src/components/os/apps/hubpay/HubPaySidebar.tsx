@@ -12,7 +12,8 @@ import {
   ArrowDownToLine,
   Receipt,
   History,
-  Shield
+  Shield,
+  Landmark
 } from 'lucide-react';
 
 const menuItems = [
@@ -21,6 +22,7 @@ const menuItems = [
   { id: 'pockets', label: 'Bolsillos', icon: Wallet },
   { id: 'accounts', label: 'Cuentas', icon: Building2 },
   { id: 'cards', label: 'Tarjetas', icon: CreditCard },
+  { id: 'loans', label: 'Préstamos', icon: Landmark },
   { id: 'withdraw', label: 'Retirar', icon: ArrowDownToLine },
   { id: 'taxes', label: 'Impuestos', icon: Receipt },
   { id: 'history', label: 'Historial', icon: History },

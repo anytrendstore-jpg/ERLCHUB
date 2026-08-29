@@ -20,7 +20,7 @@ const WALLET_POLL_MS = 8000;
 interface HubPayContextType {
   wallet: HubPayWallet;
   loading: boolean;
-  activeView: 'home' | 'transfer' | 'pockets' | 'accounts' | 'cards' | 'withdraw' | 'taxes' | 'history';
+  activeView: 'home' | 'transfer' | 'pockets' | 'accounts' | 'cards' | 'withdraw' | 'taxes' | 'history' | 'loans';
 
   setActiveView: (view: HubPayContextType['activeView']) => void;
   refreshWallet: () => Promise<void>;

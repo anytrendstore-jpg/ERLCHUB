@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Banknote, Loader2, Save, Plus, Trash2, Send, ChevronDown, ChevronRight } from "lucide-react";
+import { Banknote, Loader2, Save, Plus, Trash2, Send, ChevronDown, ChevronRight, Landmark, Unlock } from "lucide-react";
 import { PanelHeader, Card, Kpi, LoadingBlock, ErrorBlock, AccessDenied, TextInput, PrimaryButton, useStaffPermissions, useToast } from "@/components/staff/ui";
 
 interface TreasuryLedgerEntry {
@@ -12,9 +12,9 @@ interface DistributionRate { departmentCode: string; percentage: number; label: 
 interface DepartmentBalance { departmentCode: string; balance: number }
 interface DepartmentEntry { id: string; type: "Allocation" | "Expense"; amount: number; description: string; category?: string; recordedByName: string; date: string }
 
-const TABS = ["saldo", "tesoro", "presupuestos"] as const;
+const TABS = ["saldo", "tesoro", "presupuestos", "prestamos"] as const;
 type Tab = (typeof TABS)[number];
-const TAB_LABELS: Record<Tab, string> = { saldo: "Saldo inicial", tesoro: "Tesoro", presupuestos: "Presupuestos departamentales" };
+const TAB_LABELS: Record<Tab, string> = { saldo: "Saldo inicial", tesoro: "Tesoro", presupuestos: "Presupuestos departamentales", prestamos: "Préstamos" };
 
 function money(n: number) {
   return `$${n.toLocaleString("es-ES")}`;
@@ -47,6 +47,7 @@ export default function EconomyControlCenterPanel(_props: { isDirector?: boolean
       {tab === "saldo" && <StartingBalanceSection canManage={canManage} />}
       {tab === "tesoro" && <TreasurySection canManage={canManage} />}
       {tab === "presupuestos" && <DepartmentsSection canManage={canManage} />}
+      {tab === "prestamos" && <LoansSection canManage={canManage} />}
     </div>
   );
 }
@@ -445,5 +446,192 @@ function DepartmentsSection({ canManage }: { canManage: boolean }) {
         </div>
       )}
     </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ * Préstamos * ------------------------------------------------------------------ */
+
+interface LoanRow {
+  id: string; discordId: string; principal: number; interestRate: number; termWeeks: number;
+  weeklyPayment: number; remainingBalance: number; status: "active" | "paid" | "defaulted";
+  missedPayments: number; nextPaymentDate: string; createdAt: string;
+}
+interface LoanConfig {
+  minScoreToBorrow: number;
+  rateTiers: { minScore: number; ratePct: number; label: string }[];
+  maxLoanMultiplier: number;
+  maxLoanAmount: number;
+  termOptionsWeeks: number[];
+  missedPaymentsBeforeDefault: number;
+}
+
+function LoansSection({ canManage }: { canManage: boolean }) {
+  const toast = useToast();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loans, setLoans] = useState<LoanRow[]>([]);
+  const [config, setConfig] = useState<LoanConfig | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"" | "active" | "defaulted" | "paid">("defaulted");
+  const [releasing, setReleasing] = useState<string | null>(null);
+  const [savingConfig, setSavingConfig] = useState(false);
+  const [configForm, setConfigForm] = useState({ minScoreToBorrow: 0, maxLoanMultiplier: 0, maxLoanAmount: 0, missedPaymentsBeforeDefault: 0 });
+
+  const load = useCallback(async (status: typeof statusFilter) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/staff/economy/loans${status ? `?status=${status}` : ""}`, { cache: "no-store" });
+      const json = await res.json();
+      if (json.success) {
+        setLoans(json.loans);
+        setConfig(json.config);
+        setConfigForm({
+          minScoreToBorrow: json.config.minScoreToBorrow,
+          maxLoanMultiplier: json.config.maxLoanMultiplier,
+          maxLoanAmount: json.config.maxLoanAmount,
+          missedPaymentsBeforeDefault: json.config.missedPaymentsBeforeDefault,
+        });
+      } else setError(json.error);
+    } catch {
+      setError("No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(statusFilter); }, [load, statusFilter]);
+
+  if (loading && loans.length === 0 && !config) return <LoadingBlock />;
+  if (error) return <ErrorBlock text={error} onRetry={() => load(statusFilter)} />;
+
+  const releaseGarnishment = async (discordId: string) => {
+    setReleasing(discordId);
+    try {
+      const res = await fetch("/api/staff/economy/loans", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "release_garnishment", discordId }),
+      });
+      const json = await res.json();
+      if (json.success) { toast.success("Embargo liberado"); await load(statusFilter); }
+      else toast.error(json.error || "No se pudo liberar");
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setReleasing(null);
+    }
+  };
+
+  const saveConfig = async () => {
+    setSavingConfig(true);
+    try {
+      const res = await fetch("/api/staff/economy/loans", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_config", ...configForm }),
+      });
+      const json = await res.json();
+      if (json.success) { toast.success("Configuración de préstamos actualizada"); await load(statusFilter); }
+      else toast.error(json.error || "No se pudo guardar");
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setSavingConfig(false);
+    }
+  };
+
+  const activeCount = loans.filter((l) => l.status === "active").length;
+  const defaultedLoans = loans.filter((l) => l.status === "defaulted");
+
+  return (
+    <div className="space-y-6">
+      <p className="text-xs text-slate-500">
+        Un solo tipo de préstamo, interés simple. El cobro semanal y el embargo por default corren solos (ver /api/cron/loan-payments) — reutiliza el mismo freeze de HubPay que ya usa Staff.
+      </p>
+
+      <div className="grid sm:grid-cols-3 gap-4">
+        <Kpi label="Préstamos listados" value={loans.length} icon={Landmark} tone="text-blue-400" ring="bg-blue-500/10" />
+        <Kpi label="En esta vista: activos" value={activeCount} icon={Landmark} tone="text-emerald-400" ring="bg-emerald-500/10" />
+        <Kpi label="En default (embargados)" value={defaultedLoans.length} icon={Banknote} tone="text-rose-400" ring="bg-rose-500/10" />
+      </div>
+
+      {canManage && config && (
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold text-white mb-3">Configuración</h3>
+          <div className="grid sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="text-xs text-slate-400 block mb-1.5">Score mínimo para pedir préstamo</label>
+              <TextInput type="number" value={configForm.minScoreToBorrow} onChange={(e) => setConfigForm((f) => ({ ...f, minScoreToBorrow: Number(e.target.value) }))} className="w-full" />
+            </div>
+            <div>
+              <label className="text-xs text-slate-400 block mb-1.5">Cuotas atrasadas antes del default</label>
+              <TextInput type="number" value={configForm.missedPaymentsBeforeDefault} onChange={(e) => setConfigForm((f) => ({ ...f, missedPaymentsBeforeDefault: Number(e.target.value) }))} className="w-full" />
+            </div>
+            <div>
+              <label className="text-xs text-slate-400 block mb-1.5">Múltiplo del saldo (monto máximo)</label>
+              <TextInput type="number" value={configForm.maxLoanMultiplier} onChange={(e) => setConfigForm((f) => ({ ...f, maxLoanMultiplier: Number(e.target.value) }))} className="w-full" />
+            </div>
+            <div>
+              <label className="text-xs text-slate-400 block mb-1.5">Tope absoluto ($)</label>
+              <TextInput type="number" value={configForm.maxLoanAmount} onChange={(e) => setConfigForm((f) => ({ ...f, maxLoanAmount: Number(e.target.value) }))} className="w-full" />
+            </div>
+          </div>
+          <div className="mb-4">
+            <p className="text-xs text-slate-400 mb-2">Tramos de tasa por credit score (fijos por ahora)</p>
+            <div className="space-y-1">
+              {config.rateTiers.map((t) => (
+                <div key={t.label} className="flex items-center gap-3 text-sm">
+                  <span className="text-slate-500 w-24 flex-shrink-0">Score ≥ {t.minScore}</span>
+                  <span className="text-white flex-1">{t.label}</span>
+                  <span className="text-slate-300 font-mono">{t.ratePct}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <PrimaryButton onClick={saveConfig} disabled={savingConfig}>
+            {savingConfig ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Guardar
+          </PrimaryButton>
+        </Card>
+      )}
+
+      <Card className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-white">Préstamos</h3>
+          <div className="flex gap-1">
+            {(["defaulted", "active", "paid", ""] as const).map((s) => (
+              <button
+                key={s || "all"}
+                onClick={() => setStatusFilter(s)}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${statusFilter === s ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
+              >
+                {s === "defaulted" ? "Default" : s === "active" ? "Activos" : s === "paid" ? "Pagados" : "Todos"}
+              </button>
+            ))}
+          </div>
+        </div>
+        {loans.length === 0 ? (
+          <p className="text-slate-500 text-sm">Sin préstamos en este filtro.</p>
+        ) : (
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {loans.map((loan) => (
+              <div key={loan.id} className="flex items-center gap-3 text-xs py-2 border-b border-[#1F2937]/60 last:border-0">
+                <span className="text-slate-500 font-mono w-32 flex-shrink-0 truncate">{loan.discordId}</span>
+                <span className="text-white w-20 flex-shrink-0">{money(loan.principal)}</span>
+                <span className="text-slate-400 flex-1">restante {money(loan.remainingBalance)} · {loan.missedPayments} atraso(s)</span>
+                <span className={`px-2 py-0.5 rounded flex-shrink-0 ${loan.status === "active" ? "bg-blue-500/15 text-blue-400" : loan.status === "paid" ? "bg-emerald-500/15 text-emerald-400" : "bg-rose-500/15 text-rose-400"}`}>
+                  {loan.status === "active" ? "Activo" : loan.status === "paid" ? "Pagado" : "Default"}
+                </span>
+                {canManage && loan.status === "defaulted" && (
+                  <button
+                    onClick={() => releaseGarnishment(loan.discordId)}
+                    disabled={releasing === loan.discordId}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-white/70 flex-shrink-0"
+                  >
+                    {releasing === loan.discordId ? <Loader2 className="h-3 w-3 animate-spin" /> : <Unlock className="h-3 w-3" />} Liberar
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }

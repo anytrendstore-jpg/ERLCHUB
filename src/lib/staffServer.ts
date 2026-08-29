@@ -50,6 +50,8 @@ export type StaffActionType =
   | 'social_page_details_changed'
   | 'hubpay_account_frozen'
   | 'hubpay_account_unfrozen'
+  | 'loan_garnishment_released'
+  | 'loan_config_updated'
   | 'inventory_item_transferred'
   | 'vps_plan_created'
   | 'vps_plan_updated'

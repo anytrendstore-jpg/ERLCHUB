@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/payroll", "schedule": "0 13 * * 1" },
     { "path": "/api/cron/treasury-distribution", "schedule": "30 13 * * 1" },
+    { "path": "/api/cron/loan-payments", "schedule": "0 14 * * *" },
     { "path": "/api/memberships/cron", "schedule": "0 12 * * *" }
   ]
 }
