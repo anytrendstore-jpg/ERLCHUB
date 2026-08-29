@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { DollarSign, ShoppingCart, Users, Coins, Crown, Package, Monitor, Smartphone, Tablet, Filter, MousePointerClick, CreditCard, CheckCircle2, Eye, Flame, Trophy } from "lucide-react";
+import { DollarSign, ShoppingCart, Users, Coins, Crown, Package, Monitor, Smartphone, Tablet, Filter, MousePointerClick, CreditCard, CheckCircle2, Eye, Flame, Trophy, TrendingUp, TrendingDown, XCircle, Wallet } from "lucide-react";
 import {
   ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid, XAxis, YAxis, Tooltip,
 } from "recharts";
@@ -9,8 +9,11 @@ import { PanelHeader, Card, Kpi, LoadingBlock, ErrorBlock, AccessDenied, useStaf
 
 interface SeriesPoint { key: string; label: string; revenue: number; hcSold: number }
 interface Analytics {
-  revenue: { gross: number; today: number; week: number; month: number; year: number };
+  revenue: { gross: number; today: number; week: number; month: number; year: number; prevMonth: number; growthPct: number | null };
   orders: { total: number; completed: number; pending: number; failed: number };
+  failedReasons: { reason: string; count: number }[];
+  paymentMethods: { method: string; count: number; revenue: number }[];
+  ltv: { average: number; topCustomers: { discordId: string; username: string; totalSpent: number; orders: number }[] };
   aov: number;
   hubCoins: { totalSold: number; byPackage: { catalogId: string; name: string; sold: number; revenue: number }[] };
   customers: { new: number; returning: number };
@@ -125,6 +128,26 @@ export default function ShopAnalyticsPanel(_props: { isDirector?: boolean }) {
       </div>
 
       <Card className="p-5 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-slate-500 mb-1">Ingresos este mes vs. mes anterior</p>
+            <div className="flex items-baseline gap-3">
+              <span className="text-2xl font-bold text-white">{money(data.revenue.month)}</span>
+              <span className="text-sm text-slate-500">vs {money(data.revenue.prevMonth)}</span>
+            </div>
+          </div>
+          {data.revenue.growthPct !== null ? (
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold ${data.revenue.growthPct >= 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+              {data.revenue.growthPct >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+              {data.revenue.growthPct >= 0 ? "+" : ""}{data.revenue.growthPct}%
+            </div>
+          ) : (
+            <span className="text-xs text-slate-500">Sin datos del mes anterior</span>
+          )}
+        </div>
+      </Card>
+
+      <Card className="p-5 mb-6">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-semibold text-white">Ingresos y Hub Coins vendidos — últimos 30 días</h3>
           <div className="flex items-center gap-4 text-xs">
@@ -189,6 +212,58 @@ export default function ShopAnalyticsPanel(_props: { isDirector?: boolean }) {
             <div><div className="text-xl font-bold text-white">{data.kits.hubCoinsSpent.toLocaleString()}</div><div className="text-[11px] text-slate-500">HC gastados</div></div>
             <div><div className="text-xl font-bold text-white">{data.kits.uniqueBuyers}</div><div className="text-[11px] text-slate-500">Compradores</div></div>
           </div>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-4 mt-6">
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><Wallet className="h-4 w-4 text-emerald-400" /> Métodos de pago</h3>
+          {data.paymentMethods.length === 0 ? (
+            <p className="text-slate-500 text-sm">Sin pagos completados todavía.</p>
+          ) : (
+            <div className="space-y-2">
+              {data.paymentMethods.map((m) => (
+                <div key={m.method} className="flex items-center justify-between text-sm">
+                  <span className="text-white">{m.method}</span>
+                  <span className="text-slate-400">{m.count} · <span className="text-emerald-400">{money(m.revenue)}</span></span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><XCircle className="h-4 w-4 text-red-400" /> Órdenes fallidas por motivo</h3>
+          {data.failedReasons.length === 0 ? (
+            <p className="text-slate-500 text-sm">Ninguna orden falló.</p>
+          ) : (
+            <div className="space-y-2">
+              {data.failedReasons.map((f) => (
+                <div key={f.reason} className="flex items-center justify-between text-sm">
+                  <span className="text-white truncate mr-2">{f.reason}</span>
+                  <span className="text-red-400 flex-shrink-0">{f.count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold text-white mb-3">LTV promedio: <span className="text-emerald-400">{money(data.ltv.average)}</span></h3>
+          {data.ltv.topCustomers.length === 0 ? (
+            <p className="text-slate-500 text-sm">Sin clientes todavía.</p>
+          ) : (
+            <div className="space-y-2">
+              {data.ltv.topCustomers.slice(0, 5).map((c, i) => (
+                <div key={c.discordId} className="flex items-center gap-3 text-sm">
+                  <span className="text-slate-600 w-4 text-xs">{i + 1}</span>
+                  <span className="text-white flex-1 truncate">{c.username}</span>
+                  <span className="text-slate-500 text-xs">{c.orders} ord.</span>
+                  <span className="text-emerald-400 font-medium">{money(c.totalSpent)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </div>
 

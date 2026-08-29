@@ -28,6 +28,10 @@ export async function GET(request: NextRequest) {
 
     const completedOrders = await ordersCol.find({ status: 'completed' }).sort({ completedAt: -1 }).toArray();
 
+    const revenueBetween = (from: Date, to: Date) => completedOrders.filter((o) => {
+      const d = o.completedAt || o.updatedAt;
+      return d >= from && d < to;
+    }).reduce((s, o) => s + o.amountUSD, 0);
     const revenueSince = (since: Date) => completedOrders.filter((o) => (o.completedAt || o.updatedAt) >= since).reduce((s, o) => s + o.amountUSD, 0);
     const grossRevenue = completedOrders.reduce((s, o) => s + o.amountUSD, 0);
     const revenueToday = revenueSince(startOfDay(now));
@@ -35,11 +39,52 @@ export async function GET(request: NextRequest) {
     const revenueMonth = revenueSince(startOfMonth(now));
     const revenueYear = revenueSince(startOfYear(now));
 
+    // Comparación contra el período anterior — mismo criterio para todas las órdenes reales
+    // (Hub Coins, membresías y whitelist fast; los kits no pasan por acá, ver comentario de arriba).
+    const startThisMonth = startOfMonth(now);
+    const startLastMonth = new Date(startThisMonth.getFullYear(), startThisMonth.getMonth() - 1, 1);
+    const revenuePrevMonth = revenueBetween(startLastMonth, startThisMonth);
+    const revenueGrowthPct = revenuePrevMonth > 0 ? Math.round(((revenueMonth - revenuePrevMonth) / revenuePrevMonth) * 1000) / 10 : null;
+
     const ordersByStatus = { total: completedOrders.length + 0, completed: completedOrders.length, pending: 0, failed: 0 };
     const allOrders = await ordersCol.find({}).toArray();
     ordersByStatus.total = allOrders.length;
     ordersByStatus.pending = allOrders.filter((o) => o.status === 'pending' || o.status === 'delivering').length;
     ordersByStatus.failed = allOrders.filter((o) => o.status === 'failed').length;
+
+    // Motivos reales de fallo (no hay sistema de reembolsos en el sitio — no se fabrica uno acá).
+    const failedByReason = new Map<string, number>();
+    for (const o of allOrders) {
+      if (o.status !== 'failed') continue;
+      const reason = o.failReason || 'desconocido';
+      failedByReason.set(reason, (failedByReason.get(reason) || 0) + 1);
+    }
+
+    // Método de pago real (Wompi lo manda en el webhook — ver deliverMembership/handleApprovedPayment).
+    const paymentMethods = new Map<string, { count: number; revenue: number }>();
+    for (const o of completedOrders) {
+      const method = o.paymentMethodType || 'Sin registrar';
+      const entry = paymentMethods.get(method) || { count: 0, revenue: 0 };
+      entry.count += 1;
+      entry.revenue += o.amountUSD;
+      paymentMethods.set(method, entry);
+    }
+
+    // LTV real por cliente — gasto histórico total, no una proyección.
+    const spendByCustomer = new Map<string, number>();
+    for (const o of completedOrders) spendByCustomer.set(o.discordId, (spendByCustomer.get(o.discordId) || 0) + o.amountUSD);
+    const ltvValues = Array.from(spendByCustomer.values());
+    const avgLtv = ltvValues.length > 0 ? ltvValues.reduce((a, b) => a + b, 0) / ltvValues.length : 0;
+    const topCustomerIds = Array.from(spendByCustomer.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const topCustomerUsers = topCustomerIds.length > 0
+      ? await db.collection('users').find({ discordId: { $in: topCustomerIds.map(([id]) => id) } }).toArray()
+      : [];
+    const topCustomers = topCustomerIds.map(([discordId, totalSpent]) => ({
+      discordId,
+      username: topCustomerUsers.find((u: any) => u.discordId === discordId)?.username || discordId,
+      totalSpent: Math.round(totalSpent * 100) / 100,
+      orders: completedOrders.filter((o) => o.discordId === discordId).length,
+    }));
 
     const aov = completedOrders.length > 0 ? grossRevenue / completedOrders.length : 0;
 
@@ -143,8 +188,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      revenue: { gross: grossRevenue, today: revenueToday, week: revenueWeek, month: revenueMonth, year: revenueYear },
+      revenue: {
+        gross: grossRevenue, today: revenueToday, week: revenueWeek, month: revenueMonth, year: revenueYear,
+        prevMonth: revenuePrevMonth, growthPct: revenueGrowthPct,
+      },
       orders: ordersByStatus,
+      failedReasons: Array.from(failedByReason.entries()).map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count),
+      paymentMethods: Array.from(paymentMethods.entries()).map(([method, v]) => ({ method, ...v })).sort((a, b) => b.revenue - a.revenue),
+      ltv: { average: Math.round(avgLtv * 100) / 100, topCustomers },
       aov: Math.round(aov * 100) / 100,
       hubCoins: { totalSold: hcSoldTotal, byPackage: Array.from(hcSalesByPackage.values()).sort((a, b) => b.revenue - a.revenue) },
       customers: { new: newCustomers, returning: returningCustomers },

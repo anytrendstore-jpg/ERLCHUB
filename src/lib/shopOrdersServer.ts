@@ -40,6 +40,9 @@ export interface ShopOrder {
   /** Id de sesión anónima del funnel de la tienda (ver storeEventsServer.ts) — permite medir la
    * conversión real del funnel contra órdenes de verdad, sin un evento de "compra" separado. */
   trackingSessionId?: string;
+  /** `payment_method.type` que devuelve Wompi en el webhook (CARD, NEQUI, PSE, BANCOLOMBIA_TRANSFER,
+   * etc.) — se completa recién en la entrega, nunca se conoce al crear la orden. */
+  paymentMethodType?: string;
   createdAt: Date;
   updatedAt: Date;
   completedAt?: Date;
@@ -106,9 +109,13 @@ export async function claimOrderForDelivery(reference: string): Promise<ShopOrde
   return result;
 }
 
-export async function markOrderCompleted(reference: string): Promise<void> {
+export async function markOrderCompleted(reference: string, paymentMethodType?: string): Promise<void> {
   const col = await shopOrdersCollection();
-  await col.updateOne({ reference }, { $set: { status: 'completed', updatedAt: new Date(), completedAt: new Date() } });
+  const now = new Date();
+  await col.updateOne(
+    { reference },
+    { $set: { status: 'completed', updatedAt: now, completedAt: now, ...(paymentMethodType ? { paymentMethodType } : {}) } }
+  );
 }
 
 export async function markOrderFailed(reference: string, reason: string): Promise<void> {

@@ -93,7 +93,7 @@ async function handleApprovedPayment(paymentData: any) {
   if (errors.length > 0) {
     await markOrderFailed(reference, errors.join('; '));
   } else {
-    await markOrderCompleted(reference);
+    await markOrderCompleted(reference, paymentData.payment_method?.type);
   }
 }
 
