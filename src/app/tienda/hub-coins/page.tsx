@@ -27,6 +27,7 @@ import { formatNumber, convertPrice } from "@/lib/shopData";
 import { CurrencyRate, HubCoinsPackage } from "@/lib/types";
 import CurrencySelector, { flagSrc } from "@/components/tienda/CurrencySelector";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
+import { trackStoreEvent, useTrackPageView } from "@/hooks/useStoreTracking";
 
 export default function HubCoinsPage() {
   const { currencies } = useExchangeRates();
@@ -34,6 +35,8 @@ export default function HubCoinsPage() {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyRate>(currencies[0]);
   const { addItem } = useCart();
+
+  useTrackPageView("hub-coins");
 
   useEffect(() => {
     setSelectedCurrency((prev) => currencies.find((c) => c.code === prev.code) || currencies[0]);
@@ -106,6 +109,7 @@ export default function HubCoinsPage() {
       coins: currentPackage.coins,
       bonus: currentPackage.bonus,
     });
+    trackStoreEvent("select_package", "hub-coins", currentPackage.id);
   };
 
   if (!currentPackage) {

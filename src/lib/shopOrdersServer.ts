@@ -37,6 +37,9 @@ export interface ShopOrder {
   paymentSourceId?: number;
   /** true si esta orden es una renovación automática disparada por el cron, no una compra iniciada por el usuario. */
   isRenewal?: boolean;
+  /** Id de sesión anónima del funnel de la tienda (ver storeEventsServer.ts) — permite medir la
+   * conversión real del funnel contra órdenes de verdad, sin un evento de "compra" separado. */
+  trackingSessionId?: string;
   createdAt: Date;
   updatedAt: Date;
   completedAt?: Date;
@@ -61,6 +64,7 @@ export async function createOrder(input: {
   discountCode?: string;
   discountPercentage?: number;
   originalAmountUSD?: number;
+  trackingSessionId?: string;
 }): Promise<ShopOrder> {
   const col = await shopOrdersCollection();
   const now = new Date();
@@ -78,6 +82,7 @@ export async function createOrder(input: {
     discountCode: input.discountCode,
     discountPercentage: input.discountPercentage,
     originalAmountUSD: input.originalAmountUSD,
+    trackingSessionId: input.trackingSessionId,
     createdAt: now,
     updatedAt: now,
   };

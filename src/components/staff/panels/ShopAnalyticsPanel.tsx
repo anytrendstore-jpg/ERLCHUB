@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { DollarSign, ShoppingCart, Users, Coins, Crown, Package } from "lucide-react";
+import { DollarSign, ShoppingCart, Users, Coins, Crown, Package, Monitor, Smartphone, Tablet, Filter, MousePointerClick, CreditCard, CheckCircle2, Eye, Flame, Trophy } from "lucide-react";
 import {
   ResponsiveContainer, ComposedChart, Area, Line, CartesianGrid, XAxis, YAxis, Tooltip,
 } from "recharts";
@@ -17,7 +17,33 @@ interface Analytics {
   memberships: { active: number; mrr: number; churnRatePct: number; mostPopular: string | null };
   kits: { sold: number; hubCoinsSpent: number; uniqueBuyers: number };
   series: SeriesPoint[];
+  visitors: number;
+  devices: { desktop: number; mobile: number; tablet: number };
+  trafficSources: { direct: number; discord: number; search: number; social: number; referral: number };
+  funnel: { pageViews: number; selectPackage: number; checkoutStart: number; purchases: number; conversionRate: number };
+  hubCoinsEconomy: {
+    totalIssued: number;
+    totalSpent: number;
+    circulating: number;
+    sinks: { type: string; amount: number }[];
+    topHolders: { discordId: string; username: string; avatar?: string; hubCoins: number }[];
+  };
 }
+
+const SINK_LABEL: Record<string, string> = {
+  purchase: "Compras (kits, etc.)",
+  spend: "Gasto general",
+  withdrawal: "Retiros",
+  referral_commission: "Comisiones de referidos",
+};
+
+const SOURCE_LABEL: Record<string, string> = {
+  direct: "Directo",
+  discord: "Discord",
+  search: "Buscadores",
+  social: "Redes sociales",
+  referral: "Otros sitios",
+};
 
 function money(n: number) { return `$${n.toLocaleString("es-ES", { maximumFractionDigits: 2 })}`; }
 
@@ -164,6 +190,133 @@ export default function ShopAnalyticsPanel(_props: { isDirector?: boolean }) {
             <div><div className="text-xl font-bold text-white">{data.kits.uniqueBuyers}</div><div className="text-[11px] text-slate-500">Compradores</div></div>
           </div>
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <h3 className="text-sm font-semibold text-white mb-3">Funnel de la tienda — últimos 30 días</h3>
+        <p className="text-xs text-slate-500 mb-4">
+          Tracking anónimo (sin geolocalización ni huella digital) en las páginas de Hub Coins, membresías y kits.
+          La compra final se mide contra órdenes reales, no un evento separado.
+        </p>
+        <Card className="p-5 mb-4">
+          <div className="grid sm:grid-cols-4 gap-4">
+            {[
+              { icon: Eye, label: "Vistas de página", value: data.funnel.pageViews, color: "text-blue-400" },
+              { icon: MousePointerClick, label: "Seleccionaron paquete", value: data.funnel.selectPackage, color: "text-violet-400" },
+              { icon: CreditCard, label: "Iniciaron checkout", value: data.funnel.checkoutStart, color: "text-amber-400" },
+              { icon: CheckCircle2, label: "Compraron", value: data.funnel.purchases, color: "text-emerald-400" },
+            ].map((step, i) => (
+              <div key={step.label} className="flex items-center gap-3">
+                {i > 0 && <div className="hidden sm:block w-px h-10 bg-[#1F2937] -ml-2 mr-1" />}
+                <step.icon className={`h-5 w-5 flex-shrink-0 ${step.color}`} />
+                <div>
+                  <div className="text-xl font-bold text-white">{step.value.toLocaleString("es-ES")}</div>
+                  <div className="text-[11px] text-slate-500">{step.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 pt-3 border-t border-[#1F2937] text-sm text-slate-400">
+            Tasa de conversión: <span className="text-emerald-400 font-semibold">{data.funnel.conversionRate}%</span>
+            <span className="text-slate-600"> · </span>
+            Visitantes únicos: <span className="text-white font-medium">{data.visitors.toLocaleString("es-ES")}</span>
+          </div>
+        </Card>
+
+        <div className="grid lg:grid-cols-2 gap-4">
+          <Card className="p-5">
+            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><Monitor className="h-4 w-4 text-blue-400" /> Dispositivo</h3>
+            <div className="space-y-2">
+              {[
+                { key: "desktop", icon: Monitor, label: "Escritorio" },
+                { key: "mobile", icon: Smartphone, label: "Móvil" },
+                { key: "tablet", icon: Tablet, label: "Tablet" },
+              ].map(({ key, icon: Icon, label }) => {
+                const value = data.devices[key as keyof typeof data.devices];
+                const pct = data.visitors > 0 ? Math.round((value / (data.devices.desktop + data.devices.mobile + data.devices.tablet || 1)) * 100) : 0;
+                return (
+                  <div key={key} className="flex items-center gap-3 text-sm">
+                    <Icon className="h-4 w-4 text-slate-500 flex-shrink-0" />
+                    <span className="text-white w-20">{label}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-[#1F2937] overflow-hidden">
+                      <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="text-slate-400 text-xs w-16 text-right">{value.toLocaleString("es-ES")} ({pct}%)</span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+
+          <Card className="p-5">
+            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><Filter className="h-4 w-4 text-violet-400" /> Fuente de tráfico</h3>
+            <div className="space-y-2">
+              {Object.entries(data.trafficSources).map(([key, value]) => {
+                const total = Object.values(data.trafficSources).reduce((a, b) => a + b, 0) || 1;
+                const pct = Math.round((value / total) * 100);
+                return (
+                  <div key={key} className="flex items-center gap-3 text-sm">
+                    <span className="text-white w-24 flex-shrink-0">{SOURCE_LABEL[key] || key}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-[#1F2937] overflow-hidden">
+                      <div className="h-full bg-violet-500 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="text-slate-400 text-xs w-16 text-right">{value.toLocaleString("es-ES")} ({pct}%)</span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h3 className="text-sm font-semibold text-white mb-3">Economía de Hub Coins</h3>
+        <div className="grid sm:grid-cols-3 gap-4 mb-4">
+          <Kpi label="HC emitidos (total histórico)" value={data.hubCoinsEconomy.totalIssued.toLocaleString("es-ES")} icon={Coins} tone="text-amber-400" ring="bg-amber-500/10" />
+          <Kpi label="HC gastados (total histórico)" value={data.hubCoinsEconomy.totalSpent.toLocaleString("es-ES")} icon={Flame} tone="text-orange-400" ring="bg-orange-500/10" />
+          <Kpi label="HC en circulación ahora" value={data.hubCoinsEconomy.circulating.toLocaleString("es-ES")} icon={DollarSign} tone="text-emerald-400" ring="bg-emerald-500/10" />
+        </div>
+        <div className="grid lg:grid-cols-2 gap-4">
+          <Card className="p-5">
+            <h3 className="text-sm font-semibold text-white mb-3">En qué se gastan (sinks)</h3>
+            {data.hubCoinsEconomy.sinks.length === 0 ? (
+              <p className="text-slate-500 text-sm">Sin gastos registrados todavía.</p>
+            ) : (
+              <div className="space-y-2">
+                {data.hubCoinsEconomy.sinks.map((s) => {
+                  const total = data.hubCoinsEconomy.totalSpent || 1;
+                  const pct = Math.round((s.amount / total) * 100);
+                  return (
+                    <div key={s.type} className="flex items-center gap-3 text-sm">
+                      <span className="text-white w-40 flex-shrink-0 truncate">{SINK_LABEL[s.type] || s.type}</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-[#1F2937] overflow-hidden">
+                        <div className="h-full bg-orange-500 rounded-full" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="text-slate-400 text-xs w-24 text-right">{s.amount.toLocaleString("es-ES")} HC</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-5">
+            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><Trophy className="h-4 w-4 text-amber-300" /> Top holders</h3>
+            {data.hubCoinsEconomy.topHolders.length === 0 ? (
+              <p className="text-slate-500 text-sm">Sin datos todavía.</p>
+            ) : (
+              <div className="space-y-2">
+                {data.hubCoinsEconomy.topHolders.map((u, i) => (
+                  <div key={u.discordId} className="flex items-center gap-3 text-sm">
+                    <span className="text-slate-600 w-4 text-xs">{i + 1}</span>
+                    <span className="text-white flex-1 truncate">{u.username}</span>
+                    <span className="text-amber-400 font-medium">{u.hubCoins.toLocaleString("es-ES")} HC</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );

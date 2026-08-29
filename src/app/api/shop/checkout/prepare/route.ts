@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Pagos no configurados (falta WOMPI_INTEGRITY_KEY)' }, { status: 500 });
     }
 
-    const { userId, items, discountCode } = await request.json();
+    const { userId, items, discountCode, trackingSessionId } = await request.json();
     if (!userId) return NextResponse.json({ success: false, error: 'Sin sesión' }, { status: 401 });
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ success: false, error: 'El carrito está vacío' }, { status: 400 });
@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
       discountCode: appliedDiscountCode,
       discountPercentage: appliedDiscountPercentage,
       originalAmountUSD: appliedDiscountCode ? originalAmountUSD : undefined,
+      trackingSessionId: typeof trackingSessionId === 'string' ? trackingSessionId.slice(0, 100) : undefined,
     });
 
     const signature = crypto

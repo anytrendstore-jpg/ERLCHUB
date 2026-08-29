@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { shopOrdersCollection } from '@/lib/shopOrdersServer';
+import { storeEventsCollection } from '@/lib/storeEventsServer';
 import { requirePermission } from '@/lib/permissions/engine';
 
 export const dynamic = 'force-dynamic';
@@ -99,6 +100,47 @@ export async function GET(request: NextRequest) {
       bucket.hcSold += order.items.filter((i) => i.type === 'hub-coins-package').reduce((s, i) => s + i.quantity, 0);
     }
 
+    // Funnel del sitio (últimos 30 días) — page_view -> select_package -> checkout_start, y la
+    // "compra" final sale de shop_orders (completadas) que traen trackingSessionId, no de un
+    // evento de "compra" separado que podría desincronizarse de lo que el webhook confirmó.
+    const eventsCol = await storeEventsCollection();
+    const recentEvents = await eventsCol.find({ timestamp: { $gte: since30 } }).toArray();
+    const pageViews = recentEvents.filter((e) => e.type === 'page_view');
+    const selectPackage = recentEvents.filter((e) => e.type === 'select_package');
+    const checkoutStart = recentEvents.filter((e) => e.type === 'checkout_start');
+    const purchasesWithSession = completedOrders.filter(
+      (o) => o.trackingSessionId && (o.completedAt || o.updatedAt) >= since30
+    );
+    const visitors = new Set(pageViews.map((e) => e.sessionId)).size;
+
+    const devices = { desktop: 0, mobile: 0, tablet: 0 };
+    for (const e of pageViews) devices[e.device]++;
+
+    const trafficSources = { direct: 0, discord: 0, search: 0, social: 0, referral: 0 };
+    for (const e of pageViews) if (e.trafficSource) trafficSources[e.trafficSource]++;
+
+    const funnel = {
+      pageViews: pageViews.length,
+      selectPackage: selectPackage.length,
+      checkoutStart: checkoutStart.length,
+      purchases: purchasesWithSession.length,
+      conversionRate: pageViews.length > 0 ? Math.round((purchasesWithSession.length / pageViews.length) * 1000) / 10 : 0,
+    };
+
+    // Economía de Hub Coins — 100% real, derivada de hubcoins_transactions y del saldo actual de
+    // cada usuario. "Sinks" = en qué se gastan, agrupado por el campo `type` que ya usa cada ruta
+    // que descuenta HC (kits, casino, marketplace, etc.) — no hay categorías inventadas acá.
+    const allHcTx = await db.collection('hubcoins_transactions').find({}).toArray();
+    const totalIssued = allHcTx.filter((t: any) => t.amount > 0).reduce((s: number, t: any) => s + t.amount, 0);
+    const totalSpent = allHcTx.filter((t: any) => t.amount < 0).reduce((s: number, t: any) => s + Math.abs(t.amount), 0);
+    const sinksByType = new Map<string, number>();
+    for (const t of allHcTx) {
+      if (t.amount >= 0) continue;
+      sinksByType.set(t.type || 'otro', (sinksByType.get(t.type || 'otro') || 0) + Math.abs(t.amount));
+    }
+    const topHoldersRaw = await db.collection('users').find({ hubCoins: { $gt: 0 } }).sort({ hubCoins: -1 }).limit(10).toArray();
+    const circulating = (await db.collection('users').aggregate([{ $group: { _id: null, total: { $sum: '$hubCoins' } } }]).toArray())[0]?.total || 0;
+
     return NextResponse.json({
       success: true,
       revenue: { gross: grossRevenue, today: revenueToday, week: revenueWeek, month: revenueMonth, year: revenueYear },
@@ -109,6 +151,17 @@ export async function GET(request: NextRequest) {
       memberships: { active: activeSubs.length, mrr: Math.round(mrr * 100) / 100, churnRatePct: churnRate, mostPopular: mostPopularMembership },
       kits: { sold: kitsSold, hubCoinsSpent: kitsHubCoinsSpent, uniqueBuyers: uniqueKitBuyers },
       series: days,
+      visitors,
+      devices,
+      trafficSources,
+      funnel,
+      hubCoinsEconomy: {
+        totalIssued,
+        totalSpent,
+        circulating,
+        sinks: Array.from(sinksByType.entries()).map(([type, amount]) => ({ type, amount })).sort((a, b) => b.amount - a.amount),
+        topHolders: topHoldersRaw.map((u: any) => ({ discordId: u.discordId, username: u.username || u.discordId, avatar: u.avatar, hubCoins: u.hubCoins })),
+      },
     });
   } catch (error) {
     console.error('Error calculando analíticas de tienda:', error);

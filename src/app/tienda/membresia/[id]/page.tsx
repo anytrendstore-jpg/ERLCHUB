@@ -16,6 +16,7 @@ import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import AddToCartButton from "@/components/AddToCartButton";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
 import CardTokenizeForm from "@/components/tienda/CardTokenizeForm";
+import { trackStoreEvent, useTrackPageView } from "@/hooks/useStoreTracking";
 
 export default function MembershipPage() {
   const params = useParams();
@@ -30,6 +31,8 @@ export default function MembershipPage() {
   const { addItem } = useCart();
   const { user, isAuthenticated } = useDiscordAuth();
   const tilt = useCardTilt<HTMLDivElement>();
+
+  useTrackPageView("membership", typeof params.id === "string" ? params.id : undefined);
 
   useEffect(() => {
     fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setMembership(d.success ? d.item : null));
@@ -75,6 +78,7 @@ export default function MembershipPage() {
       image: membership.image,
       paymentType: paymentType,
     });
+    trackStoreEvent("select_package", "membership", membership.id);
   };
 
   const handleSubscribeTokenized = async (cardToken: string) => {

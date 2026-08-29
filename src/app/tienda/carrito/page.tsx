@@ -15,6 +15,7 @@ import WompiWidget from "@/components/WompiWidget";
 import { convertPrice } from "@/lib/shopData";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import TrustSection from "@/components/tienda/TrustSection";
+import { trackStoreEvent, getStoreSessionId } from "@/hooks/useStoreTracking";
 
 const TYPE_BADGE: Record<string, { label: string; className: string }> = {
   membership: { label: "Membresía", className: "bg-purple-500/15 text-purple-300 border-purple-500/30" },
@@ -206,6 +207,15 @@ export default function CartPage() {
       // El servidor recalcula el precio real contra el catálogo — acá solo mandamos QUÉ se
       // quiere comprar, nunca un monto (ver /api/shop/checkout/prepare).
       const payableItems = items.filter((item) => item.priceUSD || item.price);
+
+      // Un checkout_start por cada categoría presente en el carrito — el mismo sessionId viaja
+      // con la orden (ver más abajo) para poder medir la conversión real contra shop_orders.
+      new Set(payableItems.map((item) => item.type)).forEach((type) => {
+        if (type === 'hub-coins' || type === 'membership' || type === 'kit') {
+          trackStoreEvent('checkout_start', type, payableItems.find((i) => i.type === type)?.id);
+        }
+      });
+
       const checkoutItems = payableItems.map((item) => {
         if (item.type === 'membership') {
           return {
@@ -220,7 +230,7 @@ export default function CartPage() {
       const response = await fetch('/api/shop/checkout/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, items: checkoutItems, discountCode: appliedDiscount?.code }),
+        body: JSON.stringify({ userId: user.id, items: checkoutItems, discountCode: appliedDiscount?.code, trackingSessionId: getStoreSessionId() }),
       });
 
       const data = await response.json();

@@ -14,6 +14,7 @@ import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useCardTilt } from "@/hooks/useCardTilt";
 import AddToCartButton from "@/components/AddToCartButton";
 import CurrencySelector from "@/components/tienda/CurrencySelector";
+import { trackStoreEvent, useTrackPageView } from "@/hooks/useStoreTracking";
 
 const DESCRIPTION_IMAGE: Record<string, string> = {
   "kit-dinero": "/tienda-membresias/kit-dinero-descripcion.png",
@@ -32,6 +33,8 @@ export default function KitPage() {
   const tilt = useCardTilt<HTMLDivElement>();
 
   const isWhitelistFast = params.id === "whitelist-fast";
+
+  useTrackPageView("kit", typeof params.id === "string" ? params.id : undefined);
 
   useEffect(() => {
     fetch(`/api/shop/catalog?id=${params.id}`).then((r) => r.json()).then((d) => setKit(d.success ? d.item : null));
@@ -60,6 +63,7 @@ export default function KitPage() {
       details: "Acceso instantáneo sin entrevistas",
       image: kit?.image,
     });
+    trackStoreEvent("select_package", "kit", "whitelist-fast");
     router.push("/tienda/carrito");
   };
 
@@ -102,6 +106,7 @@ export default function KitPage() {
       quantity: 1,
       image: kit.image,
     });
+    trackStoreEvent("select_package", "kit", kit.id);
   };
 
   return (
