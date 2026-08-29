@@ -58,7 +58,7 @@ export default function DocumentCard2D({
         <button
           type="button"
           onClick={() => setFlipped((v) => !v)}
-          className="relative w-full aspect-[500/350] block rounded-xl shadow-2xl"
+          className="relative w-full aspect-[1.586/1] block rounded-xl shadow-2xl"
           style={{
             containerType: "inline-size",
             transformStyle: "preserve-3d",

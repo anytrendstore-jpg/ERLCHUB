@@ -4,10 +4,10 @@ import type { City } from '@/lib/whitelistTypes';
 export const DOCUMENT_IMAGE_SIZE = { width: 500, height: 350 };
 
 /** Tamaño único para TODO el texto de datos, en los 3 tipos de documento — así se ve consistente en todas partes. */
-export const FIELD_SIZE = 12;
+export const FIELD_SIZE = 14;
 
 /** Separación entre una etiqueta dibujada por código y su valor (solo cuando `field.label` está presente). */
-export const LABEL_GAP = 0.044;
+export const LABEL_GAP = 0.05;
 
 export type DocumentField = {
   key:
@@ -77,16 +77,16 @@ function losSantosFields(): DocumentField[] {
   const idColWidth = 300; // ancho disponible en px (sobre un lienzo de 500px) para esa columna
   const row2 = [idCol, idCol + 0.19]; // sexo / altura, dos columnas iguales
   return [
-    field('firstName', idCol, 0.33, { label: 'NOMBRE COMPLETO', labelSize: 11, size: 20, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    field('lastName', idCol, 0.415, { size: 20, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('firstName', idCol, 0.315, { label: 'NOMBRE COMPLETO', labelSize: 12, size: 22, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('lastName', idCol, 0.41, { size: 22, weight: '700', uppercase: true, maxWidth: idColWidth }),
     // El ID de ciudadano va como su propio bloque arriba a la derecha, a la altura del nombre —
     // es el segundo dato que más debe resaltar en toda la tarjeta.
-    field('documentNumber', 0.665, 0.365, { label: 'ID DE CIUDADANO', size: 19, weight: '800', color: '#0f4c81' }),
+    field('documentNumber', 0.665, 0.36, { label: 'ID DE CIUDADANO', labelSize: 12, size: 22, weight: '800', color: '#0f4c81' }),
     field('birthDate', idCol, 0.535, { label: 'FECHA DE NACIMIENTO' }),
-    field('sex', row2[0], 0.635, { label: 'SEXO' }),
-    field('height', row2[1], 0.635, { label: 'ALTURA' }),
-    field('issuedAt', idCol, 0.735, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
-    field('robloxUsername', idCol, 0.85, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 10, weight: '600', maxWidth: idColWidth }),
+    field('sex', row2[0], 0.64, { label: 'SEXO' }),
+    field('height', row2[1], 0.64, { label: 'ALTURA' }),
+    field('issuedAt', idCol, 0.745, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
+    field('robloxUsername', idCol, 0.87, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 11, weight: '600', maxWidth: idColWidth }),
   ];
 }
 
