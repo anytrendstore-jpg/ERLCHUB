@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import CountUpStat from "@/components/CountUpStat";
 import {
-  ChevronRight, Shield, Headphones, Eye, Star, MessageSquare,
+  ChevronRight, Shield, Headphones, Star, MessageSquare,
   Gamepad2, UserCheck, FileCheck, Users,
   Instagram, Youtube, ChevronDown, Globe, LayoutDashboard, ClipboardCheck,
   ShoppingBag, Coins, Crown, Package, Quote,
@@ -172,7 +172,6 @@ export default function Home() {
   const { stats: reviewStats } = useHomeReviews();
 
   const communityRating = reviewStats.comunidad.avgRating > 0 ? reviewStats.comunidad.avgRating.toFixed(1) : "0";
-  const communityReviews = reviewStats.comunidad.count > 0 ? `${reviewStats.comunidad.count}` : "0";
   const [serverStatus, setServerStatus] = useState({ online: 0, max: 40 });
   const [serverPlayers, setServerPlayers] = useState<Record<string, number>>({});
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
@@ -212,10 +211,10 @@ export default function Home() {
   const totalMaxPlayers = servers.reduce((sum, s) => sum + s.maxPlayers, 0);
 
   const dynamicStats = [
-    { icon: DiscordIcon, value: <CountUpStat target={13000} />, label: "MIEMBROS DISCORD" },
-    { icon: Eye, value: `${serverStatus.online}/${serverStatus.max}`, label: "EN LÍNEA" },
-    { icon: Star, value: communityRating, label: "RATING" },
-    { icon: MessageSquare, value: communityReviews, label: "RESEÑAS" },
+    { icon: DiscordIcon, value: <CountUpStat target={13894} />, label: "MIEMBROS DISCORD" },
+    { icon: Users, value: <><CountUpStat target={serverStatus.online} />/{serverStatus.max}</>, label: "EN LÍNEA" },
+    { icon: Star, value: <CountUpStat target={reviewStats.comunidad.avgRating} decimals={1} />, label: "RATING" },
+    { icon: MessageSquare, value: <CountUpStat target={reviewStats.comunidad.count} />, label: "RESEÑAS" },
   ];
 
   const featuredMembership = memberships.find((m) => m.id === "mem-elite") || memberships[0];
@@ -322,7 +321,7 @@ export default function Home() {
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22c55e]" />
                     </span>
                     <span className="text-xs font-bold uppercase tracking-wider text-[#22c55e]">
-                      {serverStatus.online} jugadores en línea ahora
+                      <CountUpStat target={serverStatus.online} /> jugadores en línea ahora
                     </span>
                   </div>
 
@@ -333,8 +332,8 @@ export default function Home() {
                       ))}
                     </div>
                     <div>
-                      <div className="text-[var(--foreground)] font-bold leading-none">{communityRating}/5</div>
-                      <div className="text-xs text-[var(--text-faint)]">{communityReviews} reseñas de la comunidad</div>
+                      <div className="text-[var(--foreground)] font-bold leading-none"><CountUpStat target={reviewStats.comunidad.avgRating} decimals={1} />/5</div>
+                      <div className="text-xs text-[var(--text-faint)]"><CountUpStat target={reviewStats.comunidad.count} /> reseñas de la comunidad</div>
                     </div>
                   </div>
 
@@ -530,7 +529,7 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-[#22c55e] rounded-full animate-pulse shadow-lg shadow-[#22c55e]/50" />
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl sm:text-5xl font-black text-[var(--foreground)]">{serverStatus.online}</span>
+                  <span className="text-4xl sm:text-5xl font-black text-[var(--foreground)]"><CountUpStat target={serverStatus.online} /></span>
                   <div className="text-[var(--text-faint)] text-sm uppercase tracking-wider">
                     <div>ONLINE</div>
                     <div>AHORA</div>
@@ -538,7 +537,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl sm:text-5xl font-black text-[var(--foreground)]">{totalMaxPlayers}</span>
+                <span className="text-4xl sm:text-5xl font-black text-[var(--foreground)]"><CountUpStat target={totalMaxPlayers} /></span>
                 <div className="text-[var(--text-faint)] text-sm uppercase tracking-wider">
                   <div>MÁXIMO</div>
                   <div>JUGADORES</div>
@@ -568,7 +567,7 @@ export default function Home() {
                   )}
 
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/10 p-2">
+                    <div className="w-24 h-24 rounded-xl overflow-hidden bg-white/10 p-2">
                       <img src={`/server/${server.id}.png`} alt={server.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex items-center gap-2">
@@ -593,7 +592,7 @@ export default function Home() {
                     <div className="flex justify-between text-xs">
                       <span className="text-[var(--text-faint)]">Jugadores</span>
                       <span className="text-[var(--foreground)] font-medium">
-                        {server.comingSoon ? "0" : (serverPlayers[server.id] || 0)}/{server.maxPlayers}
+                        {server.comingSoon ? "0" : <CountUpStat target={serverPlayers[server.id] || 0} />}/{server.maxPlayers}
                       </span>
                     </div>
                     <div className="h-1.5 bg-[var(--card-bg-2)] rounded-full overflow-hidden">
@@ -722,9 +721,9 @@ export default function Home() {
                     <Star key={i} className={`h-5 w-5 ${i < Math.round(overallReviewAvg) ? "text-[#f59e0b] fill-[#f59e0b]" : "text-[#2a2a3a]"}`} />
                   ))}
                 </div>
-                <span className="text-[var(--foreground)] font-bold">{overallReviewAvg > 0 ? overallReviewAvg.toFixed(1) : "0"}/5</span>
+                <span className="text-[var(--foreground)] font-bold"><CountUpStat target={overallReviewAvg} decimals={1} />/5</span>
               </div>
-              <p className="text-[var(--text-muted)]">{overallReviewCount} reseñas de la comunidad y de la tienda</p>
+              <p className="text-[var(--text-muted)]"><CountUpStat target={overallReviewCount} /> reseñas de la comunidad y de la tienda</p>
             </div>
           </AnimatedSection>
 
@@ -788,7 +787,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-500" />
                     <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg">
                       <p className="text-white font-medium">Nuestra Comunidad</p>
-                      <p className="text-sm text-[var(--text-muted)]">{serverStatus.online} jugadores conectados ahora</p>
+                      <p className="text-sm text-[var(--text-muted)]"><CountUpStat target={serverStatus.online} /> jugadores conectados ahora</p>
                     </div>
                   </div>
                   
@@ -821,8 +820,8 @@ export default function Home() {
                       <Star className="w-6 h-6 text-[#8e00f7]" />
                     </div>
                     <div>
-                      <div className="text-2xl font-black text-[var(--foreground)]">{communityRating}</div>
-                      <div className="text-xs text-[var(--text-faint)]">{communityReviews} reseñas</div>
+                      <div className="text-2xl font-black text-[var(--foreground)]"><CountUpStat target={reviewStats.comunidad.avgRating} decimals={1} /></div>
+                      <div className="text-xs text-[var(--text-faint)]"><CountUpStat target={reviewStats.comunidad.count} /> reseñas</div>
                     </div>
                   </div>
                 </div>
@@ -872,8 +871,8 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[var(--card-border)]">
-                  <div><div className="text-3xl font-black text-[var(--foreground)]">{serverStatus.online}</div><div className="text-sm text-[var(--text-faint)]">En línea ahora</div></div>
-                  <div><div className="text-3xl font-black text-[var(--foreground)]">{communityRating}/5</div><div className="text-sm text-[var(--text-faint)]">Calificación</div></div>
+                  <div><div className="text-3xl font-black text-[var(--foreground)]"><CountUpStat target={serverStatus.online} /></div><div className="text-sm text-[var(--text-faint)]">En línea ahora</div></div>
+                  <div><div className="text-3xl font-black text-[var(--foreground)]"><CountUpStat target={reviewStats.comunidad.avgRating} decimals={1} />/5</div><div className="text-sm text-[var(--text-faint)]">Calificación</div></div>
                   <div><div className="text-3xl font-black text-[var(--foreground)]">24/7</div><div className="text-sm text-[var(--text-faint)]">Soporte</div></div>
                 </div>
               </div>

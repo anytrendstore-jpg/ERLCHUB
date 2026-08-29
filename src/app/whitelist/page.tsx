@@ -154,7 +154,7 @@ export default function WhitelistPage() {
               <div className="grid grid-cols-3 gap-4 pt-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8e00f7]">
-                    <CountUpStat target={13000} />
+                    <CountUpStat target={13000} compact suffix="+" />
                   </div>
                   <div className="text-[var(--text-faint)] text-xs">Jugadores Activos</div>
                 </div>
