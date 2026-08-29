@@ -68,5 +68,14 @@ export default function DocumentViewer3D(props: DocumentViewer3DProps) {
 
   const layout = props.documentType === "residence_card" ? RESIDENCE_CARD_LAYOUT : LICENSE_LAYOUTS[props.city];
 
-  return <DocumentCard2D layout={layout} values={values} photoUrl={props.photoUrl} documentNumber={props.documentNumber} />;
+  return (
+    <DocumentCard2D
+      layout={layout}
+      values={values}
+      photoUrl={props.photoUrl}
+      documentNumber={props.documentNumber}
+      issueDate={props.issueDate}
+      expiryDate={props.expiryDate}
+    />
+  );
 }

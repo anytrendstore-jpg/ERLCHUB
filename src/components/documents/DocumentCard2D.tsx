@@ -11,16 +11,40 @@ function formatValue(raw: string | undefined, uppercase?: boolean) {
   return uppercase ? raw.toUpperCase() : raw;
 }
 
+/** Franja de barras derivada de verdad de los dígitos del documento — no es un
+ * código de barras estándar decodificable, pero tampoco son barras al azar:
+ * el mismo número siempre da el mismo patrón. */
+function drawDerivedBarcode(ctx: CanvasRenderingContext2D, code: string, x: number, y: number, w: number, h: number, color: string) {
+  const digits = code.replace(/\D/g, "") || code;
+  if (!digits) return;
+  ctx.save();
+  ctx.fillStyle = color;
+  const barCount = Math.max(24, digits.length * 4);
+  const slot = w / barCount;
+  for (let i = 0; i < barCount; i++) {
+    const d = digits.charCodeAt(i % digits.length) + i;
+    if (d % 3 === 0) continue; // deja huecos, si no se ve un bloque sólido
+    const bw = slot * (0.35 + (d % 5) / 8);
+    const bh = h * (0.5 + (d % 4) / 6);
+    ctx.fillRect(x + i * slot, y + (h - bh), Math.max(1, bw), bh);
+  }
+  ctx.restore();
+}
+
 export default function DocumentCard2D({
   layout,
   values,
   photoUrl,
   documentNumber,
+  issueDate,
+  expiryDate,
 }: {
   layout: DocumentLayout;
   values: DocumentFieldValues;
   photoUrl?: string;
   documentNumber?: string;
+  issueDate?: string;
+  expiryDate?: string;
 }) {
   const [flipped, setFlipped] = useState(false);
   const backCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,15 +61,27 @@ export default function DocumentCard2D({
     if (layout.artKey === "residence_card") drawResidenceBack(ctx, w, h);
     else drawLicenseBack(ctx, w, h, layout.artKey);
 
+    // Valores dinámicos, dibujados encima del arte estático — mismas coordenadas
+    // que reservó drawGenericLicenseBack (ver cardArt.ts) para cada elemento.
+    const accent = "#1a1a2e";
+
     if (documentNumber) {
       ctx.save();
-      ctx.fillStyle = "rgba(0,0,0,0.55)";
-      ctx.font = `700 ${h * 0.026}px monospace`;
+      ctx.fillStyle = accent;
       ctx.textAlign = "left";
-      ctx.fillText(documentNumber, w * 0.06, h * 0.24);
+      ctx.font = `700 ${h * 0.034}px monospace`;
+      const rowY = [0.27, 0.405, 0.54, 0.675];
+      ctx.fillText(documentNumber, w * 0.44, h * rowY[0]);
+      if (issueDate) ctx.fillText(issueDate, w * 0.44, h * rowY[1]);
+      if (expiryDate) ctx.fillText(expiryDate, w * 0.44, h * rowY[2]);
+      ctx.fillStyle = "#1a8f4c";
+      ctx.font = `700 ${h * 0.03}px Arial, sans-serif`;
+      ctx.fillText("● VÁLIDO", w * 0.44, h * rowY[3]);
       ctx.restore();
+
+      drawDerivedBarcode(ctx, documentNumber, w * 0.055, h * 0.878, w * 0.65, h * 0.032, accent);
     }
-  }, [layout, documentNumber]);
+  }, [layout, documentNumber, issueDate, expiryDate]);
 
   const values_: Record<string, string | undefined> = values;
 
@@ -64,6 +100,11 @@ export default function DocumentCard2D({
             transformStyle: "preserve-3d",
             transition: "transform 0.7s cubic-bezier(0.4,0.2,0.2,1)",
             transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            // Mantiene la tarjeta siempre en su propia capa compuesta por GPU — sin esto,
+            // Chrome la "baja de categoría" cuando queda quieta y la vuelve a dibujar más
+            // nítida recién cuando algo la fuerza a repintar (por eso se veía borrosa en
+            // reposo y nítida al moverse).
+            willChange: "transform",
           }}
           aria-label="Voltear documento"
         >
@@ -76,13 +117,20 @@ export default function DocumentCard2D({
             {/* La plantilla de Los Santos trae un margen blanco de fábrica alrededor de la
                 tarjeta (medido en píxeles reales: ~9% arriba, ~6-7% en los otros lados) — se
                 recorta agrandando la imagen para que la tarjeta llene el marco entero, sin
-                ningún borde blanco visible. Las otras plantillas ya vienen a sangre y tienen
-                texto propio impreso en coordenadas fijas, así que no se tocan. */}
+                ningún borde blanco visible. El agrandado se hace con width/height (no con
+                transform:scale) porque un transform sobre una imagen rasterizada dentro de
+                esta tarjeta 3D se veía borrosa en reposo y solo nítida mientras algo forzaba
+                un repintado. Las otras plantillas ya vienen a sangre y tienen texto propio
+                impreso en coordenadas fijas, así que no se tocan. */}
             <img
               src={layout.image}
               alt="Documento"
-              className="absolute inset-0 w-full h-full object-cover select-none"
-              style={layout.artKey === "los_santos" ? { transform: "scale(1.22)", transformOrigin: "center" } : undefined}
+              className="absolute object-cover select-none"
+              style={
+                layout.artKey === "los_santos"
+                  ? { top: "-11%", left: "-11%", width: "122%", height: "122%" }
+                  : { inset: 0, width: "100%", height: "100%" }
+              }
               draggable={false}
             />
 

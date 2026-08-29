@@ -534,47 +534,159 @@ export function drawLasVenturasBack(ctx: Ctx, w: number, h: number) {
 
 /* -------------------------------------------------------------------- *
  * Dorso genérico de licencia (compartido, coloreado por ciudad)
+ *
+ * El frente vende la identidad del personaje; el dorso vende la
+ * autenticidad del documento. Acá se dibuja SOLO el arte estático
+ * (encabezado, cajas, etiquetas, sello, texto legal) — los valores
+ * dinámicos (ID, fechas, estado, el QR real y el código de barras
+ * derivado del número real) los dibuja DocumentCard2D.tsx encima, en el
+ * mismo lienzo, porque son los únicos que conocen esos datos.
  * -------------------------------------------------------------------- */
+
+/** Sello institucional circular — el emblema "oficial" del reverso. */
+function institutionalSeal(ctx: Ctx, cx: number, cy: number, r: number, color: string) {
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Relleno tenue entre los anillos, para que se lea como un sello grabado y no como
+  // un simple contorno.
+  ctx.save();
+  const ringFill = ctx.createRadialGradient(0, 0, r * 0.5, 0, 0, r);
+  ringFill.addColorStop(0, 'rgba(255,255,255,0)');
+  ringFill.addColorStop(1, `${color}14`);
+  ctx.fillStyle = ringFill;
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.strokeStyle = color;
+  ctx.globalAlpha = 0.9;
+  ctx.lineWidth = r * 0.045;
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.lineWidth = r * 0.016;
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.8, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Estrella central con un pequeño halo, más nítida que un simple polígono plano.
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = r * 0.06;
+  drawStar(ctx, 0, -r * 0.06, r * 0.24, color);
+  ctx.restore();
+
+  ctx.font = `700 ${r * 0.115}px Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = color;
+  const text = 'ERLCHUB · AUTORIDAD DE IDENTIFICACIÓN · ERLCHUB · ';
+  for (let i = 0; i < text.length; i++) {
+    const ang = (i / text.length) * Math.PI * 2 - Math.PI / 2;
+    ctx.save();
+    ctx.rotate(ang);
+    ctx.translate(0, -r * 0.615);
+    ctx.fillText(text[i], 0, 0);
+    ctx.restore();
+  }
+  ctx.restore();
+}
 
 function drawGenericLicenseBack(ctx: Ctx, w: number, h: number, accent: string, bg: string) {
   ctx.save();
   backdrop(ctx, w, h);
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
-  crosshatch(ctx, w, h, accent, 0.06);
-  ghostWatermark(ctx, w, h, w * 0.72, h * 0.55, 0.8);
+  crosshatch(ctx, w, h, accent, 0.05);
 
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(0, h * 0.08, w, h * 0.15);
+  // Encabezado: wordmark a la izquierda, título del documento a la derecha.
+  ctx.save();
+  ctx.fillStyle = accent;
+  ctx.textAlign = 'left';
+  ctx.font = `800 ${h * 0.058}px Arial, sans-serif`;
+  ctx.fillText('ERLCHUB', w * 0.055, h * 0.115);
+  ctx.textAlign = 'right';
+  ctx.font = `700 ${h * 0.036}px Arial, sans-serif`;
+  ctx.fillText('DOCUMENTO NACIONAL', w * 0.945, h * 0.085);
+  ctx.fillText('DE IDENTIDAD', w * 0.945, h * 0.125);
+  ctx.restore();
 
   ctx.save();
-  ctx.translate(w * 0.06, h * 0.3);
-  ctx.fillStyle = '#111';
-  let bx = 0;
-  for (let i = 0; i < 46; i++) {
-    const bw = ((i * 37) % 5) / 5 * (w * 0.006) + w * 0.0025;
-    if (i % 2 === 0) ctx.fillRect(bx, 0, bw, h * 0.1);
-    bx += bw + w * 0.003;
-  }
+  ctx.strokeStyle = accent;
+  ctx.globalAlpha = 0.35;
+  ctx.lineWidth = h * 0.003;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.055, h * 0.155);
+  ctx.lineTo(w * 0.945, h * 0.155);
+  ctx.stroke();
   ctx.restore();
+
+  // Marca de agua tenue centrada — le da textura al cuerpo de la tarjeta sin
+  // recurrir a cajas de "seguridad"/"verificación" decorativas.
+  ghostWatermark(ctx, w, h, w * 0.5, h * 0.46, 0.85);
+
+  // Tabla administrativa: acá van solo las ETIQUETAS — los valores reales
+  // (ID/fechas/estado) los pinta DocumentCard2D encima, a la misma altura,
+  // más a la derecha. Ocupa todo el cuerpo de la tarjeta que antes usaban
+  // las cajas de QR/seguridad.
+  const rows = ['ID DOCUMENTO', 'EXPEDICIÓN', 'VENCIMIENTO', 'ESTADO'];
+  const rowsTop = 0.27;
+  const rowGap = 0.135;
 
   ctx.save();
   ctx.fillStyle = accent;
   ctx.textAlign = 'left';
-  ctx.font = `700 ${h * 0.032}px Arial, sans-serif`;
-  ctx.fillText('RESTRICCIONES / ENDOSOS', w * 0.06, h * 0.48);
-  ctx.font = `400 ${h * 0.025}px Arial, sans-serif`;
+  ctx.font = `700 ${h * 0.036}px Arial, sans-serif`;
   ctx.globalAlpha = 0.85;
-  const lines = [
-    'NONE · Este documento es propiedad de ERLC HUB y se emite',
-    'únicamente para uso dentro del roleplay del servidor.',
-    'Si se encuentra, repórtelo al equipo de soporte de ERLC HUB.',
-    'La alteración o falsificación de este documento está prohibida.',
-  ];
-  lines.forEach((line, i) => ctx.fillText(line, w * 0.06, h * 0.56 + i * h * 0.045));
+  rows.forEach((label, i) => ctx.fillText(label, w * 0.055, h * (rowsTop + i * rowGap)));
   ctx.restore();
 
-  erlcBadge(ctx, w * 0.845, h * 0.85, w * 0.13, h * 0.11);
+  ctx.save();
+  ctx.strokeStyle = accent;
+  ctx.globalAlpha = 0.16;
+  ctx.lineWidth = h * 0.0022;
+  for (let i = 1; i < rows.length; i++) {
+    const y = h * (rowsTop + i * rowGap - rowGap * 0.42);
+    ctx.beginPath();
+    ctx.moveTo(w * 0.055, y);
+    ctx.lineTo(w * 0.945, y);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle = accent;
+  ctx.globalAlpha = 0.3;
+  ctx.lineWidth = h * 0.003;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.055, h * 0.76);
+  ctx.lineTo(w * 0.945, h * 0.76);
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = accent;
+  ctx.globalAlpha = 0.6;
+  ctx.textAlign = 'left';
+  ctx.font = `600 ${h * 0.02}px Arial, sans-serif`;
+  ctx.fillText('CÓDIGO DE DOCUMENTO', w * 0.055, h * 0.87);
+  ctx.restore();
+
+  institutionalSeal(ctx, w * 0.885, h * 0.9, h * 0.07, accent);
+
+  ctx.save();
+  ctx.fillStyle = accent;
+  ctx.globalAlpha = 0.7;
+  ctx.textAlign = 'left';
+  ctx.font = `italic 400 ${h * 0.018}px Arial, sans-serif`;
+  ctx.fillText('Este documento es propiedad de la autoridad de identificación de ERLC HUB.', w * 0.055, h * 0.94);
+  ctx.fillText('Su alteración o falsificación está sujeta a las reglas del servidor.', w * 0.055, h * 0.96);
+  ctx.globalAlpha = 0.55;
+  ctx.font = `600 ${h * 0.019}px Arial, sans-serif`;
+  ctx.fillText('Documento oficial · ERLCHUB', w * 0.055, h * 0.982);
+  ctx.restore();
+
   ctx.restore();
   borderFrame(ctx, w, h, accent);
 }
