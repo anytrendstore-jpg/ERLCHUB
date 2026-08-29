@@ -16,7 +16,7 @@ import {
 /** Tailwind no puede resolver clases armadas con template strings — necesita ver el
  * nombre completo de la clase de forma literal en el código fuente. */
 const METHOD_COLOR: Record<string, { bg: string; text: string }> = {
-  blue: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+  purple: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
   orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
   green: { bg: 'bg-green-500/20', text: 'text-green-400' },
 };
@@ -35,7 +35,7 @@ export default function HubPayWithdraw() {
       icon: Building2,
       fee: '2%',
       time: '1-3 días',
-      color: 'blue'
+      color: 'purple'
     },
     {
       id: 'crypto' as const,
@@ -106,16 +106,16 @@ export default function HubPayWithdraw() {
 
             return (
               <React.Fragment key={label}>
-                <div className={`flex items-center gap-2 ${isActive ? 'text-blue-400' : 'text-white/30'}`}>
+                <div className={`flex items-center gap-2 ${isActive ? 'text-green-400' : 'text-white/30'}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all
-                    ${isCurrent ? 'bg-blue-600 text-white' : isActive ? 'bg-blue-600/30 text-blue-400' : 'bg-white/10 text-white/30'}
+                    ${isCurrent ? 'bg-green-600 text-white' : isActive ? 'bg-green-600/30 text-green-400' : 'bg-white/10 text-white/30'}
                   `}>
                     {stepNum}
                   </div>
                   <span className="text-sm hidden sm:inline">{label}</span>
                 </div>
                 {index < 2 && (
-                  <div className={`flex-1 h-0.5 ${isActive && stepNum < currentStep ? 'bg-blue-600' : 'bg-white/10'}`} />
+                  <div className={`flex-1 h-0.5 ${isActive && stepNum < currentStep ? 'bg-green-600' : 'bg-white/10'}`} />
                 )}
               </React.Fragment>
             );
@@ -169,7 +169,7 @@ export default function HubPayWithdraw() {
               </div>
               <button
                 onClick={() => setStep('method')}
-                className="ml-auto text-blue-400 text-sm hover:text-blue-300"
+                className="ml-auto text-green-400 text-sm hover:text-green-300"
               >
                 Cambiar
               </button>
@@ -185,7 +185,7 @@ export default function HubPayWithdraw() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10 transition-colors"
                 />
               </div>
               <p className="text-white/40 text-sm mt-2">
@@ -211,7 +211,7 @@ export default function HubPayWithdraw() {
             <button
               onClick={handleContinue}
               disabled={!amount || Number.parseFloat(amount) <= 0 || Number.parseFloat(amount) > wallet.availableBalance}
-              className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
             >
               Continuar <ArrowRight className="w-5 h-5" />
             </button>
@@ -268,7 +268,7 @@ export default function HubPayWithdraw() {
               </button>
               <button
                 onClick={handleConfirm}
-                className="flex-1 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+                className="flex-1 py-4 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors"
               >
                 Confirmar retiro
               </button>
@@ -278,8 +278,8 @@ export default function HubPayWithdraw() {
 
         {step === 'processing' && (
           <div className="text-center py-16">
-            <div className="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6">
-              <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
+            <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-10 h-10 text-green-400 animate-spin" />
             </div>
             <h2 className="text-white text-2xl font-bold mb-2">Procesando retiro...</h2>
             <p className="text-white/50">Por favor espera mientras verificamos tu solicitud</p>
@@ -307,7 +307,7 @@ export default function HubPayWithdraw() {
               </button>
               <button
                 onClick={() => setActiveView('home')}
-                className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+                className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors"
               >
                 Ir al inicio
               </button>

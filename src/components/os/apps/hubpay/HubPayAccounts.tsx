@@ -105,7 +105,7 @@ export default function HubPayAccounts() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
         >
           <Plus className="w-5 h-5" />
           Nueva cuenta
@@ -189,7 +189,7 @@ export default function HubPayAccounts() {
             <p className="text-white/40 mb-4">No tienes cuentas bancarias</p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+              className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
             >
               Crear mi primera cuenta
             </button>
@@ -235,7 +235,7 @@ export default function HubPayAccounts() {
                       <p className="text-white/50 text-sm">{type.description}</p>
                     </div>
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                      ${isSelected ? 'border-blue-500 bg-blue-500' : 'border-white/30'}
+                      ${isSelected ? 'border-green-500 bg-green-500' : 'border-white/30'}
                     `}>
                       {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
                     </div>
@@ -259,7 +259,7 @@ export default function HubPayAccounts() {
               </button>
               <button
                 onClick={handleCreate}
-                className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
               >
                 Crear cuenta
               </button>

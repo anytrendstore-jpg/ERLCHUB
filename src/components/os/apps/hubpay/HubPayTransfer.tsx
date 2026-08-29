@@ -119,16 +119,16 @@ export default function HubPayTransfer() {
 
           return (
             <React.Fragment key={label}>
-              <div className={`flex items-center gap-2 ${isActive ? 'text-blue-400' : 'text-white/30'}`}>
+              <div className={`flex items-center gap-2 ${isActive ? 'text-green-400' : 'text-white/30'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all
-                  ${isCurrent ? 'bg-blue-600 text-white' : isActive ? 'bg-blue-600/30 text-blue-400' : 'bg-white/10 text-white/30'}
+                  ${isCurrent ? 'bg-green-600 text-white' : isActive ? 'bg-green-600/30 text-green-400' : 'bg-white/10 text-white/30'}
                 `}>
                   {stepNum}
                 </div>
                 <span className="text-sm hidden sm:inline">{label}</span>
               </div>
               {index < 2 && (
-                <div className={`flex-1 h-0.5 ${isActive && stepNum < currentStep ? 'bg-blue-600' : 'bg-white/10'}`} />
+                <div className={`flex-1 h-0.5 ${isActive && stepNum < currentStep ? 'bg-green-600' : 'bg-white/10'}`} />
               )}
             </React.Fragment>
           );
@@ -146,7 +146,7 @@ export default function HubPayTransfer() {
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
                 placeholder="Buscar por nombre o ID de usuario"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder-white/40 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10 transition-colors"
               />
             </div>
 
@@ -188,7 +188,7 @@ export default function HubPayTransfer() {
                       <img
                         src={user.avatar}
                         alt={user.name}
-                        className="w-14 h-14 rounded-full bg-gray-700 ring-2 ring-transparent group-hover:ring-blue-500 transition-all"
+                        className="w-14 h-14 rounded-full bg-gray-700 ring-2 ring-transparent group-hover:ring-green-500 transition-all"
                       />
                       <span className="text-white/60 text-xs group-hover:text-white transition-colors">
                         {user.name}
@@ -216,7 +216,7 @@ export default function HubPayTransfer() {
               </div>
               <button
                 onClick={() => setStep('search')}
-                className="ml-auto text-blue-400 text-sm hover:text-blue-300"
+                className="ml-auto text-green-400 text-sm hover:text-green-300"
               >
                 Cambiar
               </button>
@@ -232,7 +232,7 @@ export default function HubPayTransfer() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-3xl font-bold placeholder-white/20 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10 transition-colors"
                 />
               </div>
               <p className="text-white/40 text-sm mt-2">
@@ -261,7 +261,7 @@ export default function HubPayTransfer() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ej: Pago de deuda"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10 transition-colors"
               />
             </div>
 
@@ -269,7 +269,7 @@ export default function HubPayTransfer() {
             <button
               onClick={handleContinue}
               disabled={!amount || Number.parseFloat(amount) <= 0 || Number.parseFloat(amount) > wallet.availableBalance}
-              className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
             >
               Continuar <ArrowRight className="w-5 h-5" />
             </button>
@@ -324,7 +324,7 @@ export default function HubPayTransfer() {
               <button
                 onClick={handleConfirm}
                 disabled={isLoading}
-                className="flex-1 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-4 rounded-xl bg-green-600 hover:bg-green-500 disabled:bg-green-800 text-white font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
@@ -360,7 +360,7 @@ export default function HubPayTransfer() {
               </button>
               <button
                 onClick={() => setActiveView('home')}
-                className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+                className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors"
               >
                 Ir al inicio
               </button>
@@ -379,7 +379,7 @@ export default function HubPayTransfer() {
             </p>
             <button
               onClick={handleReset}
-              className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+              className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors"
             >
               Intentar de nuevo
             </button>

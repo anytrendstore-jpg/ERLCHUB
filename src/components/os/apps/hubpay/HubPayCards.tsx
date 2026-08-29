@@ -93,7 +93,7 @@ export default function HubPayCards() {
               {card.status === 'frozen' && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
                   <div className="text-center">
-                    <Snowflake className="w-12 h-12 text-blue-300 mx-auto mb-2 animate-pulse" />
+                    <Snowflake className="w-12 h-12 text-white/70 mx-auto mb-2 animate-pulse" />
                     <p className="text-white font-medium">Tarjeta Congelada</p>
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export default function HubPayCards() {
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-colors
                   ${card.status === 'frozen'
                     ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                    : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'
+                    : 'bg-white/10 text-white/70 hover:bg-white/15'
                   }
                 `}
               >

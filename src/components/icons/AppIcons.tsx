@@ -8,7 +8,7 @@ interface IconProps {
   active?: boolean;
 }
 
-// HubPay - Icono de billetera/banco moderno
+// HubPay / Fleeca Bank - Icono de billetera/banco, en el verde real del logo (public/flecalogo.png)
 export const HubPayIcon: React.FC<IconProps> = ({ className = '', size = 24, active = false }) => (
   <svg
     width={size}
@@ -19,12 +19,12 @@ export const HubPayIcon: React.FC<IconProps> = ({ className = '', size = 24, act
   >
     <defs>
       <linearGradient id="hubpay-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#3B82F6" />
-        <stop offset="100%" stopColor="#1D4ED8" />
+        <stop offset="0%" stopColor="#0f8f38" />
+        <stop offset="100%" stopColor="#096e28" />
       </linearGradient>
     </defs>
     <rect x="2" y="5" width="20" height="14" rx="3" fill="url(#hubpay-grad)" />
-    <rect x="2" y="9" width="20" height="3" fill="#1E3A8A" opacity="0.5" />
+    <rect x="2" y="9" width="20" height="3" fill="#053d16" opacity="0.5" />
     <circle cx="17" cy="15" r="2" fill="#FCD34D" />
     <circle cx="14" cy="15" r="2" fill="#F59E0B" />
   </svg>

@@ -84,7 +84,7 @@ export default function HubPayPockets() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition-colors"
         >
           <Plus className="w-5 h-5" />
           Crear bolsillo
@@ -199,10 +199,10 @@ export default function HubPayPockets() {
         {/* Add New Pocket Card */}
         <button
           onClick={() => setShowCreateModal(true)}
-          className="p-5 rounded-2xl border-2 border-dashed border-white/10 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all flex flex-col items-center justify-center gap-3 min-h-[200px] group"
+          className="p-5 rounded-2xl border-2 border-dashed border-white/10 hover:border-green-500/50 hover:bg-green-500/5 transition-all flex flex-col items-center justify-center gap-3 min-h-[200px] group"
         >
-          <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-            <Plus className="w-6 h-6 text-blue-400" />
+          <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+            <Plus className="w-6 h-6 text-green-400" />
           </div>
           <p className="text-white/60 group-hover:text-white transition-colors">Crear nuevo bolsillo</p>
         </button>
@@ -230,7 +230,7 @@ export default function HubPayPockets() {
                   value={newPocketName}
                   onChange={(e) => setNewPocketName(e.target.value)}
                   placeholder="Ej: Ahorro para vehículo"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10"
                 />
               </div>
 
@@ -243,7 +243,7 @@ export default function HubPayPockets() {
                       onClick={() => setNewPocketIcon(iconOpt.id)}
                       className={`w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110
                         ${newPocketIcon === iconOpt.id
-                          ? 'bg-blue-600 ring-2 ring-blue-400 scale-110'
+                          ? 'bg-green-600 ring-2 ring-green-400 scale-110'
                           : 'bg-white/5 hover:bg-white/10'
                         }
                       `}
@@ -264,7 +264,7 @@ export default function HubPayPockets() {
                     value={newPocketGoal}
                     onChange={(e) => setNewPocketGoal(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10"
                   />
                 </div>
               </div>
@@ -280,7 +280,7 @@ export default function HubPayPockets() {
               <button
                 onClick={handleCreatePocket}
                 disabled={!newPocketName}
-                className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-medium transition-colors"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-medium transition-colors"
               >
                 Crear
               </button>
@@ -314,7 +314,7 @@ export default function HubPayPockets() {
                   value={moveAmount}
                   onChange={(e) => setMoveAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-2xl font-bold placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-4 text-white text-2xl font-bold placeholder-white/20 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10"
                 />
               </div>
               <p className="text-white/40 text-sm mt-2">
@@ -338,7 +338,7 @@ export default function HubPayPockets() {
                 className={`flex-1 py-3 rounded-xl text-white font-medium transition-colors disabled:bg-gray-700 disabled:cursor-not-allowed
                   ${showMoveModal.type === 'add'
                     ? 'bg-green-600 hover:bg-green-500'
-                    : 'bg-blue-600 hover:bg-blue-500'
+                    : 'bg-white/10 hover:bg-white/15'
                   }
                 `}
               >

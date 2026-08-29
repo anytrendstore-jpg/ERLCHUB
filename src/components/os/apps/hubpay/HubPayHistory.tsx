@@ -202,14 +202,14 @@ export default function HubPayHistory() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por descripción, tipo o número de operación..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10 transition-colors"
           />
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-colors
             ${showFilters
-              ? 'bg-blue-600 border-blue-500 text-white'
+              ? 'bg-green-600 border-green-500 text-white'
               : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
             }
           `}
@@ -232,7 +232,7 @@ export default function HubPayHistory() {
                   onClick={() => setSelectedFilter(filter.id)}
                   className={`px-4 py-2 rounded-full text-sm transition-colors
                     ${selectedFilter === filter.id
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-green-600 text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
                     }
                   `}
@@ -251,7 +251,7 @@ export default function HubPayHistory() {
                   onClick={() => setDateRange(r.id)}
                   className={`px-4 py-2 rounded-full text-sm transition-colors
                     ${dateRange === r.id
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-green-600 text-white'
                       : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
                     }
                   `}
@@ -283,8 +283,8 @@ export default function HubPayHistory() {
           </p>
         </div>
         <div className="hs-card hs-card-hover p-3 rounded-xl text-center">
-          <p className="text-blue-400/60 text-xs mb-1">Transferencias</p>
-          <p className="text-blue-400 font-bold tabular-nums">
+          <p className="text-purple-400/60 text-xs mb-1">Transferencias</p>
+          <p className="text-purple-400 font-bold tabular-nums">
             {filteredTransactions.filter(t => t.type === 'transfer_in' || t.type === 'transfer_out').length}
           </p>
         </div>
@@ -358,11 +358,11 @@ export default function HubPayHistory() {
         return (
           <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => { setReceipt(null); setShowSharePicker(false); }}>
             <div className="bg-[#0d0d14] border border-white/10 rounded-2xl w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <div className="p-5 bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-b border-white/10 relative">
+              <div className="p-5 bg-gradient-to-br from-green-600/20 to-green-900/20 border-b border-white/10 relative">
                 <button onClick={() => { setReceipt(null); setShowSharePicker(false); }} className="absolute top-3 right-3 text-white/40 hover:text-white">
                   <X className="w-4 h-4" />
                 </button>
-                <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold mb-3">
+                <div className="flex items-center gap-2 text-green-400 text-xs font-semibold mb-3">
                   <Receipt className="w-4 h-4" /> Comprobante HubPay
                 </div>
                 <p className={`text-3xl font-bold tabular-nums ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -415,7 +415,7 @@ export default function HubPayHistory() {
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={c.displayAvatar} alt="" className="w-6 h-6 rounded-full" />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-blue-500/20" />
+                            <div className="w-6 h-6 rounded-full bg-green-500/20" />
                           )}
                           <span className="text-white/80 text-xs truncate">{c.displayName}</span>
                         </button>
@@ -427,7 +427,7 @@ export default function HubPayHistory() {
                 <div className="px-5 pb-5">
                   <button
                     onClick={openSharePicker}
-                    className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                    className="w-full py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" /> Compartir por HubChat
                   </button>

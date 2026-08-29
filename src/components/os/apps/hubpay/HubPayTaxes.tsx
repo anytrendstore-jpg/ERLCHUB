@@ -103,7 +103,7 @@ export default function HubPayTaxes() {
               <div key={rate.category} className="hs-card hs-card-hover p-4 rounded-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-white font-medium text-sm">{rate.label}</h3>
-                  <span className="text-blue-400 font-bold tabular-nums">{rate.percentage}%</span>
+                  <span className="text-green-400 font-bold tabular-nums">{rate.percentage}%</span>
                 </div>
               </div>
             ))}
@@ -111,9 +111,9 @@ export default function HubPayTaxes() {
         )}
       </div>
 
-      <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex gap-3 mb-8">
-        <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-        <p className="text-blue-400/70 text-sm">
+      <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl flex gap-3 mb-8">
+        <Info className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+        <p className="text-green-400/70 text-sm">
           Estas tasas las fija el equipo de Staff desde su panel administrativo y se aplican automáticamente en cada operación correspondiente (transferencias, compras, ventas, etc.).
         </p>
       </div>
@@ -133,7 +133,7 @@ export default function HubPayTaxes() {
                 onChange={(e) => setCitationQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && searchCitation()}
                 placeholder="Número de multa (ej. CIT-1001)"
-                className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10"
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10"
               />
             </div>
             <button onClick={searchCitation} disabled={searching || !citationQuery.trim()} className="px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-40 text-white text-sm font-medium transition-colors">
@@ -158,7 +158,7 @@ export default function HubPayTaxes() {
                 <span className="text-white font-bold text-lg tabular-nums">${foundCitation.fineAmount.toLocaleString('es-CO')}</span>
               </div>
               {foundCitation.status !== 'Paid' ? (
-                <button onClick={payCitation} disabled={paying} className="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-sm transition-colors">
+                <button onClick={payCitation} disabled={paying} className="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold text-sm transition-colors">
                   {paying ? 'Procesando...' : `Pagar $${foundCitation.fineAmount.toLocaleString('es-CO')}`}
                 </button>
               ) : (
