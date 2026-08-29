@@ -26,7 +26,7 @@ interface StaffApplication {
   discord: { id: string; username: string; globalName?: string; avatar?: string; source: "oauth" | "dev"; joinedServer: boolean; acceptedRules: boolean };
   roblox?: { username: string; displayName?: string; avatar?: string; verificationCode: string; verified: boolean; verifiedMode?: "api" | "offline" | "oauth" };
   character?: {
-    firstName: string; lastName: string; birthDate: string; birthPlace: string;
+    firstName: string; lastName: string; birthDate: string;
     gender: "male" | "female" | "other"; height: string; nationality: string;
     city: City; photoUrl?: string;
   };
@@ -341,7 +341,6 @@ export default function WhitelistPanel({ onChanged }: { onChanged?: () => void }
                         firstName={selected.character.firstName}
                         lastName={selected.character.lastName}
                         birthDate={selected.character.birthDate}
-                        birthPlace={selected.character.birthPlace}
                         gender={selected.character.gender}
                         height={selected.character.height}
                         nationality={selected.character.nationality}

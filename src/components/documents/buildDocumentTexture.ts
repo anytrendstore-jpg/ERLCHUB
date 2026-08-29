@@ -1,7 +1,6 @@
 export interface DocumentFieldValues {
   firstName?: string;
   lastName?: string;
-  birthPlace?: string;
   sex?: string;
   height?: string;
   birthDate?: string;

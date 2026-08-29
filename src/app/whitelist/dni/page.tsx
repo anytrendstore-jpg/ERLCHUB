@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight, ArrowLeft, Loader2, CreditCard,
-  User, Calendar, MapPin,
+  User, Calendar,
   Check, Download, Eye, Lock, X,
   Sparkles, AlertCircle, ChevronDown
 } from "lucide-react";
@@ -19,7 +19,7 @@ import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState"
 import WhitelistCard from "@/components/whitelist/WhitelistCard";
 import { useCardTilt } from "@/hooks/useCardTilt";
 import {
-  CITIES, HEIGHT_OPTIONS, BIRTHPLACE_OPTIONS,
+  CITIES, HEIGHT_OPTIONS,
   type City, type CityInfo, type DocumentType
 } from "@/lib/whitelistTypes";
 
@@ -241,7 +241,6 @@ export default function DNIPage() {
     firstName: "",
     lastName: "",
     birthDate: "",
-    birthPlace: "",
     gender: "" as "male" | "female" | "other" | "",
     height: "",
     // La licencia es de un servidor estadounidense — no tiene sentido preguntarle
@@ -299,7 +298,6 @@ export default function DNIPage() {
             firstName: draft.firstName || prev.firstName,
             lastName: draft.lastName || prev.lastName,
             birthDate: draft.birthDate || prev.birthDate,
-            birthPlace: draft.birthPlace || prev.birthPlace,
             gender: (draft.gender || prev.gender) as typeof prev.gender,
             height: draft.height || prev.height,
           }
@@ -376,7 +374,6 @@ export default function DNIPage() {
       formData.lastName.trim() &&
       formData.birthDate &&
       !isUnderage &&
-      formData.birthPlace.trim() &&
       formData.gender &&
       formData.height
     );
@@ -394,7 +391,6 @@ export default function DNIPage() {
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           birthDate: formData.birthDate,
-          birthPlace: formData.birthPlace.trim(),
           gender: formData.gender,
           height: formData.height,
           nationality: formData.nationality,
@@ -657,25 +653,6 @@ export default function DNIPage() {
 
                     <div>
                       <label className="block text-sm text-[var(--text-muted)] mb-2">
-                        Lugar de Nacimiento <span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--text-faint)]" />
-                        <select
-                          value={formData.birthPlace}
-                          onChange={(e) => handleFormChange("birthPlace", e.target.value)}
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
-                        >
-                          <option value="">Seleccionar...</option>
-                          {BIRTHPLACE_OPTIONS.map((b) => (
-                            <option key={b} value={b}>{b}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-2">
                         Sexo <span className="text-red-400">*</span>
                       </label>
                       <select
@@ -769,7 +746,6 @@ export default function DNIPage() {
                     firstName={formData.firstName}
                     lastName={formData.lastName}
                     birthDate={formData.birthDate}
-                    birthPlace={formData.birthPlace}
                     gender={formData.gender}
                     height={formData.height}
                     nationality={formData.nationality}
@@ -802,7 +778,6 @@ export default function DNIPage() {
                       firstName={formData.firstName}
                       lastName={formData.lastName}
                       birthDate={formData.birthDate}
-                      birthPlace={formData.birthPlace}
                       gender={formData.gender}
                       height={formData.height}
                       nationality={formData.nationality}
@@ -858,7 +833,6 @@ export default function DNIPage() {
                       firstName={formData.firstName}
                       lastName={formData.lastName}
                       birthDate={formData.birthDate}
-                      birthPlace={formData.birthPlace}
                       gender={formData.gender}
                       height={formData.height}
                       nationality={formData.nationality}
@@ -949,7 +923,6 @@ export default function DNIPage() {
                 firstName={formData.firstName}
                 lastName={formData.lastName}
                 birthDate={formData.birthDate}
-                birthPlace={formData.birthPlace}
                 gender={formData.gender}
                 height={formData.height}
                 nationality={formData.nationality}

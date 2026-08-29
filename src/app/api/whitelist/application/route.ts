@@ -47,8 +47,10 @@ async function lookupRobloxUser(username: string) {
   const user = data?.data?.[0];
   if (!user) return null;
 
+  // "avatar-bust" (cabeza + hombros) en vez de "avatar-headshot" (solo cara) — para el DNI
+  // se quiere ver un poco más del personaje, no un primerísimo primer plano de la cara.
   const avatarData = await robloxRequest(
-    `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=150x150&format=Png&isCircular=false`
+    `https://thumbnails.roblox.com/v1/users/avatar-bust?userIds=${user.id}&size=420x420&format=Png&isCircular=false`
   );
 
   return {
@@ -278,7 +280,7 @@ export async function PATCH(request: NextRequest) {
         }
 
         const character = data.character || {};
-        const required = ['firstName', 'lastName', 'birthDate', 'birthPlace', 'gender', 'height', 'nationality', 'city'];
+        const required = ['firstName', 'lastName', 'birthDate', 'gender', 'height', 'nationality', 'city'];
         const missing = required.filter((field) => !String(character[field] || '').trim());
         if (missing.length) {
           return NextResponse.json(
@@ -408,7 +410,6 @@ export async function PATCH(request: NextRequest) {
             firstName: 'Beta',
             lastName: 'Tester',
             birthDate: '1998-01-01',
-            birthPlace: 'Los Santos',
             gender: 'other',
             height: '1.71m - 1.75m',
             nationality: 'Estadounidense',

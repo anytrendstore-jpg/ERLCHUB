@@ -141,7 +141,7 @@ export default function DocumentCard2D({
                     style={{
                       left: `${sigLeft}%`,
                       width: `${sigWidth}%`,
-                      top: `${(layout.photo!.y + layout.photo!.h / 2) * 100 + 5.5}%`,
+                      top: `${(layout.photo!.y + layout.photo!.h / 2) * 100 + 4.2}%`,
                       transform: "translateY(-50%)",
                       fontFamily: "var(--font-signature), cursive",
                       fontSize: "3.3cqw",
@@ -156,7 +156,7 @@ export default function DocumentCard2D({
                     style={{
                       left: `${sigLeft}%`,
                       width: `${sigWidth}%`,
-                      top: `${(layout.photo!.y + layout.photo!.h / 2) * 100 + 11}%`,
+                      top: `${(layout.photo!.y + layout.photo!.h / 2) * 100 + 8.5}%`,
                       transform: "translateY(-50%)",
                       fontFamily: "Arial, sans-serif",
                       fontSize: "2.6cqw",
@@ -182,7 +182,7 @@ export default function DocumentCard2D({
                         left: `${f.x * 100}%`,
                         top: `${(f.y - LABEL_GAP) * 100}%`,
                         transform: "translateY(-50%)",
-                        fontSize: `${(7.5 / 500) * 100}cqw`,
+                        fontSize: `${((f.labelSize || 9) / 500) * 100}cqw`,
                         lineHeight: 1,
                         fontWeight: 700,
                         color: "#4b5563",

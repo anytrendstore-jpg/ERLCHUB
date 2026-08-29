@@ -78,7 +78,6 @@ export interface CharacterData {
   firstName: string;
   lastName: string;
   birthDate: string;
-  birthPlace: string;
   gender: "male" | "female" | "other";
   height: string;
   nationality: string;
@@ -431,11 +430,3 @@ export const NATIONALITY_OPTIONS = [
   "Puertorriqueño"
 ];
 
-/** Lugar de nacimiento: las 4 ciudades del servidor + un cajón para el resto del mundo hispano. */
-export const BIRTHPLACE_OPTIONS = [
-  "Los Santos",
-  "Liberty City",
-  "Vice City",
-  "Las Venturas",
-  "Países Hispanos"
-];

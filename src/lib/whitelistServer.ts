@@ -76,7 +76,6 @@ export interface WhitelistCharacter {
   firstName: string;
   lastName: string;
   birthDate: string;
-  birthPlace: string;
   gender: string;
   height: string;
   nationality: string;

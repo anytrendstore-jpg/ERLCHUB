@@ -12,7 +12,6 @@ export interface DocumentViewer3DProps {
   firstName: string;
   lastName: string;
   birthDate: string;
-  birthPlace: string;
   gender: "male" | "female" | "other" | "";
   height: string;
   nationality: string;
@@ -44,14 +43,12 @@ export default function DocumentViewer3D(props: DocumentViewer3DProps) {
   // la residencia y el pasaporte separan "EMITIDO EL" / "EXPIRA EL" / "LUGAR DE EXPEDICIÓN".
   const isCombinedIssueRow = !isPassport && props.documentType !== "residence_card";
 
-  // El documento lo expide la ciudad que el jugador eligió (donde tramitó la licencia),
-  // no necesariamente donde nació el personaje — son dos datos distintos.
-  const issuingCity = CITIES.find((c) => c.id === props.city)?.name || props.birthPlace;
+  // El documento lo expide la ciudad que el jugador eligió (donde tramitó la licencia).
+  const issuingCity = CITIES.find((c) => c.id === props.city)?.name || props.city;
 
   const values: DocumentFieldValues = {
     firstName: props.firstName,
     lastName: props.lastName,
-    birthPlace: props.birthPlace,
     sex: genderLabel(props.gender),
     height: props.height,
     birthDate: formatDate(props.birthDate),

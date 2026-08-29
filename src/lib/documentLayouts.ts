@@ -4,14 +4,14 @@ import type { City } from '@/lib/whitelistTypes';
 export const DOCUMENT_IMAGE_SIZE = { width: 500, height: 350 };
 
 /** Tamaño único para TODO el texto de datos, en los 3 tipos de documento — así se ve consistente en todas partes. */
-export const FIELD_SIZE = 10;
+export const FIELD_SIZE = 12;
 
 /** Separación entre una etiqueta dibujada por código y su valor (solo cuando `field.label` está presente). */
-export const LABEL_GAP = 0.038;
+export const LABEL_GAP = 0.044;
 
 export type DocumentField = {
   key:
-    | 'firstName' | 'lastName' | 'birthPlace' | 'sex' | 'height'
+    | 'firstName' | 'lastName' | 'sex' | 'height'
     | 'birthDate' | 'issuedAt' | 'issuePlace' | 'expiryDate' | 'robloxUsername'
     | 'nationality' | 'documentNumber';
   /** Posición del VALOR como fracción del ancho/alto de la imagen (0-1). */
@@ -25,6 +25,8 @@ export type DocumentField = {
   maxWidth?: number;
   /** Solo si la plantilla NO trae la etiqueta ya impresa — se dibuja justo encima del valor. */
   label?: string;
+  /** Tamaño de la etiqueta — por defecto un poco más chico que el valor; se puede agrandar para un campo puntual. */
+  labelSize?: number;
 };
 
 export type PhotoSlot = { x: number; y: number; w: number; h: number; shape: 'circle' | 'rect' };
@@ -56,7 +58,6 @@ function licenseFields(): DocumentField[] {
     field('firstName', 0.335, 0.385, { weight: '700', uppercase: true }),
     field('robloxUsername', 0.774, 0.385, { color: '#7c3aed', weight: '700', maxWidth: 100 }),
     field('lastName', 0.335, 0.478, { weight: '700', uppercase: true }),
-    field('birthPlace', 0.335, 0.573, { maxWidth: 130 }),
     field('sex', 0.335, 0.648),
     field('height', 0.45, 0.648),
     field('birthDate', 0.335, 0.723),
@@ -76,15 +77,16 @@ function losSantosFields(): DocumentField[] {
   const idColWidth = 300; // ancho disponible en px (sobre un lienzo de 500px) para esa columna
   const row2 = [idCol, idCol + 0.19]; // sexo / altura, dos columnas iguales
   return [
-    field('firstName', idCol, 0.325, { label: 'NOMBRE COMPLETO', size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    field('lastName', idCol, 0.385, { size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    // El ID de ciudadano es el dato que más debe resaltar en la tarjeta después del nombre.
-    field('documentNumber', idCol, 0.478, { label: 'ID DE CIUDADANO', size: 17, weight: '800', color: '#0f4c81' }),
-    field('birthDate', idCol, 0.575, { label: 'FECHA DE NACIMIENTO' }),
-    field('sex', row2[0], 0.665, { label: 'SEXO' }),
-    field('height', row2[1], 0.665, { label: 'ALTURA' }),
-    field('issuedAt', idCol, 0.755, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
-    field('robloxUsername', idCol, 0.835, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 9, weight: '600', maxWidth: idColWidth }),
+    field('firstName', idCol, 0.33, { label: 'NOMBRE COMPLETO', labelSize: 11, size: 20, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('lastName', idCol, 0.415, { size: 20, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    // El ID de ciudadano va como su propio bloque arriba a la derecha, a la altura del nombre —
+    // es el segundo dato que más debe resaltar en toda la tarjeta.
+    field('documentNumber', 0.665, 0.365, { label: 'ID DE CIUDADANO', size: 19, weight: '800', color: '#0f4c81' }),
+    field('birthDate', idCol, 0.535, { label: 'FECHA DE NACIMIENTO' }),
+    field('sex', row2[0], 0.635, { label: 'SEXO' }),
+    field('height', row2[1], 0.635, { label: 'ALTURA' }),
+    field('issuedAt', idCol, 0.735, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
+    field('robloxUsername', idCol, 0.85, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 10, weight: '600', maxWidth: idColWidth }),
   ];
 }
 
@@ -96,7 +98,7 @@ export const LICENSE_LAYOUTS: Record<City, DocumentLayout> = {
     // La foto ocupa la columna izquierda de arriba a abajo, dejando una franja libre justo
     // debajo para la firma (ver DocumentCard2D.tsx).
     image: '/documents/license-los_santos.png', artKey: 'los_santos', fields: losSantosFields(),
-    photo: { x: 0.155, y: 0.545, w: 0.25, h: 0.52, shape: 'rect' },
+    photo: { x: 0.175, y: 0.56, w: 0.3, h: 0.6, shape: 'rect' },
   },
   liberty_city: {
     image: '/documents/license-liberty_city.png', artKey: 'liberty_city', fields: licenseFields(),
