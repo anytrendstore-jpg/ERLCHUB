@@ -11,6 +11,7 @@ import { useWompi } from "@/hooks/useWompi";
 import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import CardTokenizeForm from "@/components/tienda/CardTokenizeForm";
+import WompiWidget from "@/components/WompiWidget";
 import { convertPrice } from "@/lib/shopData";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import TrustSection from "@/components/tienda/TrustSection";
@@ -185,6 +186,9 @@ export default function CartPage() {
     amountInCents: number;
   } | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  // "card" = tarjeta tokenizada (rápido, pide lo mínimo). "other" = widget alojado de Wompi,
+  // para quien quiere pagar con PSE, Nequi, Bancolombia u otro método que no sea tarjeta.
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'other'>('card');
 
 
   const handleCheckout = async () => {
@@ -227,6 +231,7 @@ export default function CartPage() {
           signature: data.signature,
           amountInCents: data.amountInCents,
         });
+        setPaymentMethod('card');
         setShowPaymentModal(true);
       } else {
         throw new Error(data.error || 'Error iniciando el pago');
@@ -1012,9 +1017,35 @@ export default function CartPage() {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8e00f7]" />
                   <p className="text-sm text-[var(--text-muted)]">Procesando tu pago...</p>
                 </div>
-              ) : (
+              ) : paymentMethod === 'card' ? (
                 <>
                   <CardTokenizeForm onTokenized={handleCardTokenized} submitLabel={`Pagar ${getConvertedPrice(finalUsdTotal)}`} />
+                  <button
+                    onClick={() => setPaymentMethod('other')}
+                    className="w-full text-center text-[#8e00f7] text-sm mt-3 hover:underline"
+                  >
+                    ¿PSE, Nequi, Bancolombia u otro método? Pagar con otro método
+                  </button>
+                  <button
+                    onClick={() => { setShowPaymentModal(false); setPaymentData(null); }}
+                    className="w-full text-center text-[var(--text-muted)] text-sm mt-2 hover:text-[var(--foreground)] transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <WompiWidget
+                    amountInCents={paymentData.amountInCents}
+                    reference={paymentData.reference}
+                    currency="COP"
+                    redirectUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/tienda/checkout/success`}
+                    signature={paymentData.signature}
+                    mostrarBotonReal
+                    onPaymentComplete={handlePaymentComplete}
+                    onPaymentError={handlePaymentError}
+                    onCancel={() => setPaymentMethod('card')}
+                  />
                   <button
                     onClick={() => { setShowPaymentModal(false); setPaymentData(null); }}
                     className="w-full text-center text-[var(--text-muted)] text-sm mt-3 hover:text-[var(--foreground)] transition-colors"
