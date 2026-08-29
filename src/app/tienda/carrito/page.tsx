@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle, AlertCircle, X, Tag, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, ArrowRight, CreditCard, Shield, Clock, Globe, CheckCircle, AlertCircle, X, Tag, ChevronDown, ChevronUp, Sparkles, Landmark } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -1017,35 +1017,48 @@ export default function CartPage() {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8e00f7]" />
                   <p className="text-sm text-[var(--text-muted)]">Procesando tu pago...</p>
                 </div>
-              ) : paymentMethod === 'card' ? (
-                <>
-                  <CardTokenizeForm onTokenized={handleCardTokenized} submitLabel={`Pagar ${getConvertedPrice(finalUsdTotal)}`} />
-                  <button
-                    onClick={() => setPaymentMethod('other')}
-                    className="w-full text-center text-[#8e00f7] text-sm mt-3 hover:underline"
-                  >
-                    ¿PSE, Nequi, Bancolombia u otro método? Pagar con otro método
-                  </button>
-                  <button
-                    onClick={() => { setShowPaymentModal(false); setPaymentData(null); }}
-                    className="w-full text-center text-[var(--text-muted)] text-sm mt-2 hover:text-[var(--foreground)] transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                </>
               ) : (
                 <>
-                  <WompiWidget
-                    amountInCents={paymentData.amountInCents}
-                    reference={paymentData.reference}
-                    currency="COP"
-                    redirectUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/tienda/checkout/success`}
-                    signature={paymentData.signature}
-                    mostrarBotonReal
-                    onPaymentComplete={handlePaymentComplete}
-                    onPaymentError={handlePaymentError}
-                    onCancel={() => setPaymentMethod('card')}
-                  />
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <button
+                      onClick={() => setPaymentMethod('card')}
+                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all ${
+                        paymentMethod === 'card'
+                          ? 'border-[#8e00f7] bg-[#8e00f7]/10 text-[var(--foreground)]'
+                          : 'border-[var(--card-border-soft)] text-[var(--text-muted)] hover:border-[#8e00f7]/40'
+                      }`}
+                    >
+                      <CreditCard className="h-5 w-5" />
+                      <span className="text-sm font-medium">Tarjeta</span>
+                    </button>
+                    <button
+                      onClick={() => setPaymentMethod('other')}
+                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all ${
+                        paymentMethod === 'other'
+                          ? 'border-[#8e00f7] bg-[#8e00f7]/10 text-[var(--foreground)]'
+                          : 'border-[var(--card-border-soft)] text-[var(--text-muted)] hover:border-[#8e00f7]/40'
+                      }`}
+                    >
+                      <Landmark className="h-5 w-5" />
+                      <span className="text-sm font-medium">PSE / Nequi / otros</span>
+                    </button>
+                  </div>
+
+                  {paymentMethod === 'card' ? (
+                    <CardTokenizeForm onTokenized={handleCardTokenized} submitLabel={`Pagar ${getConvertedPrice(finalUsdTotal)}`} />
+                  ) : (
+                    <WompiWidget
+                      amountInCents={paymentData.amountInCents}
+                      reference={paymentData.reference}
+                      currency="COP"
+                      redirectUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/tienda/checkout/success`}
+                      signature={paymentData.signature}
+                      mostrarBotonReal
+                      onPaymentComplete={handlePaymentComplete}
+                      onPaymentError={handlePaymentError}
+                    />
+                  )}
+
                   <button
                     onClick={() => { setShowPaymentModal(false); setPaymentData(null); }}
                     className="w-full text-center text-[var(--text-muted)] text-sm mt-3 hover:text-[var(--foreground)] transition-colors"
