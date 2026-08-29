@@ -5,6 +5,8 @@ import { getBalance, adjustBalance } from '@/lib/hubPayServer';
 import { notifyUser } from '@/lib/notificationsServer';
 import { socialProfilesCollection } from '@/lib/socialServer';
 import { getWeaponCapacityUsage, weaponWeight } from '@/lib/inventoryCapacity';
+import { economyTaxRates } from '@/lib/staffServer';
+import { adjustTreasury } from '@/lib/treasuryServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,16 +54,29 @@ export async function POST(request: NextRequest) {
       }, { status: 403 });
     }
 
+    const taxCol = await economyTaxRates();
+    const taxDoc = await taxCol.findOne({ category: 'tienda' });
+    const taxRate = (taxDoc?.percentage ?? 0) / 100;
+    const tax = Math.round(item.price * taxRate * 100) / 100;
+    const totalCharge = item.price + tax;
+
     const balance = await getBalance(me.id);
-    if (balance < item.price) return NextResponse.json({ success: false, error: 'Saldo insuficiente en HubPay' }, { status: 400 });
+    if (balance < totalCharge) return NextResponse.json({ success: false, error: 'Saldo insuficiente en HubPay' }, { status: 400 });
 
     await adjustBalance({
       discordId: me.id,
-      delta: -item.price,
+      delta: -totalCharge,
       type: 'expense',
       description: giftRecipient ? `Regalo para @${giftRecipient.username}: ${item.name}` : `Ammu-Nation: ${item.name}`,
       counterpartyId: giftRecipient?.discordId,
+      metadata: tax > 0 ? { tax, basePrice: item.price } : undefined,
     });
+    if (tax > 0) {
+      await adjustTreasury({
+        delta: tax, type: 'tax_revenue', description: `Impuesto de tienda — Ammu-Nation: ${item.name}`,
+        actorId: 'system', actorName: 'Ammu-Nation automático',
+      });
+    }
     await itemsCol.updateOne({ id: itemId }, { $inc: { stock: -1 } });
 
     const weaponsCol = await playerWeaponsCollection();
@@ -76,7 +91,7 @@ export async function POST(request: NextRequest) {
       await notifyUser(me.id, { title: 'Regalo enviado', message: `Le regalaste ${item.name} a ${giftRecipient.displayName}`, type: 'success', appId: 'ammunation' });
       await notifyUser(giftRecipient.discordId, { title: '🎁 Recibiste un regalo', message: `${me.displayName} te regaló ${item.name} en Ammu-Nation`, type: 'success', appId: 'ammunation' });
     } else {
-      await notifyUser(me.id, { title: 'Compra realizada', message: `Compraste ${item.name} por $${item.price.toLocaleString('es-CO')}`, type: 'success', appId: 'ammunation' });
+      await notifyUser(me.id, { title: 'Compra realizada', message: `Compraste ${item.name} por $${totalCharge.toLocaleString('es-CO')}${tax > 0 ? ` (incluye $${tax.toLocaleString('es-CO')} de impuesto)` : ''}`, type: 'success', appId: 'ammunation' });
     }
 
     return NextResponse.json({ success: true, item: doc });

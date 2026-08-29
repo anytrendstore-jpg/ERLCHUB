@@ -4,6 +4,8 @@ import { currentPropertiesUser, propertyListingsCollection, playerPropertiesColl
 import { getBalance, adjustBalance } from '@/lib/hubPayServer';
 import { notifyUser } from '@/lib/notificationsServer';
 import { socialProfilesCollection } from '@/lib/socialServer';
+import { economyTaxRates } from '@/lib/staffServer';
+import { adjustTreasury } from '@/lib/treasuryServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,16 +29,32 @@ export async function POST(request: NextRequest) {
     }
     const ownerId = giftRecipient?.discordId || me.id;
 
+    // Esto es un impuesto de transferencia (se cobra una sola vez, al comprar) — no el Property
+    // Tax semanal recurrente que describe el prompt del motor económico, porque eso requiere un
+    // sistema de cobros automáticos periódicos que todavía no existe en el sitio.
+    const taxCol = await economyTaxRates();
+    const taxDoc = await taxCol.findOne({ category: 'property' });
+    const taxRate = (taxDoc?.percentage ?? 0) / 100;
+    const transferTax = Math.round(listing.price * taxRate * 100) / 100;
+    const totalCharge = listing.price + transferTax;
+
     const balance = await getBalance(me.id);
-    if (balance < listing.price) return NextResponse.json({ success: false, error: 'Saldo insuficiente en HubPay' }, { status: 400 });
+    if (balance < totalCharge) return NextResponse.json({ success: false, error: 'Saldo insuficiente en HubPay' }, { status: 400 });
 
     await adjustBalance({
       discordId: me.id,
-      delta: -listing.price,
+      delta: -totalCharge,
       type: 'expense',
       description: giftRecipient ? `Regalo para @${giftRecipient.username}: ${listing.name}` : `Propiedad: ${listing.name}`,
       counterpartyId: giftRecipient?.discordId,
+      metadata: transferTax > 0 ? { transferTax } : undefined,
     });
+    if (transferTax > 0) {
+      await adjustTreasury({
+        delta: transferTax, type: 'tax_revenue', description: `Property Tax (transferencia) — ${listing.name}`,
+        actorId: 'system', actorName: 'Tienda de propiedades automática',
+      });
+    }
     await listingsCol.updateOne({ id: listingId }, { $inc: { stock: -1 } });
 
     const propsCol = await playerPropertiesCollection();
@@ -52,7 +70,7 @@ export async function POST(request: NextRequest) {
       await notifyUser(me.id, { title: 'Regalo enviado', message: `Le regalaste ${listing.name} a ${giftRecipient.displayName}`, type: 'success', appId: 'properties' });
       await notifyUser(giftRecipient.discordId, { title: '🎁 Recibiste un regalo', message: `${me.displayName} te regaló la propiedad ${listing.name}`, type: 'success', appId: 'properties' });
     } else {
-      await notifyUser(me.id, { title: 'Compra realizada', message: `Compraste la propiedad ${listing.name} por $${listing.price.toLocaleString('es-CO')}`, type: 'success', appId: 'properties' });
+      await notifyUser(me.id, { title: 'Compra realizada', message: `Compraste la propiedad ${listing.name} por $${totalCharge.toLocaleString('es-CO')}${transferTax > 0 ? ` (incluye $${transferTax.toLocaleString('es-CO')} de impuesto)` : ''}`, type: 'success', appId: 'properties' });
     }
 
     return NextResponse.json({ success: true, property: doc });

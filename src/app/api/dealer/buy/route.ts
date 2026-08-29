@@ -4,6 +4,8 @@ import { currentDealerUser, dealerVehiclesCollection, playerVehiclesCollection }
 import { getBalance, adjustBalance } from '@/lib/hubPayServer';
 import { notifyUser } from '@/lib/notificationsServer';
 import { socialProfilesCollection } from '@/lib/socialServer';
+import { economyTaxRates } from '@/lib/staffServer';
+import { adjustTreasury } from '@/lib/treasuryServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,7 +39,15 @@ export async function POST(request: NextRequest) {
     }
     const ownerId = giftRecipient?.discordId || me.id;
 
-    const chargeNow = financed ? Math.round(vehicle.price * DOWN_PAYMENT_RATE) : vehicle.price;
+    // El Vehicle Registration Tax se cobra sobre el valor total del vehículo (es un impuesto de
+    // matrícula, no de la financiación), sin importar si se paga de contado o con enganche.
+    const taxCol = await economyTaxRates();
+    const taxDoc = await taxCol.findOne({ category: 'vehicle' });
+    const taxRate = (taxDoc?.percentage ?? 0) / 100;
+    const registrationTax = Math.round(vehicle.price * taxRate * 100) / 100;
+
+    const principalNow = financed ? Math.round(vehicle.price * DOWN_PAYMENT_RATE) : vehicle.price;
+    const chargeNow = principalNow + registrationTax;
     const balance = await getBalance(me.id);
     if (balance < chargeNow) return NextResponse.json({ success: false, error: 'Saldo insuficiente en HubPay' }, { status: 400 });
 
@@ -49,7 +59,14 @@ export async function POST(request: NextRequest) {
         ? `Regalo para @${giftRecipient.username}: ${vehicle.name}`
         : financed ? `Enganche - ${vehicle.name}` : `Compra - ${vehicle.name}`,
       counterpartyId: giftRecipient?.discordId,
+      metadata: registrationTax > 0 ? { registrationTax } : undefined,
     });
+    if (registrationTax > 0) {
+      await adjustTreasury({
+        delta: registrationTax, type: 'tax_revenue', description: `Vehicle Registration Tax — ${vehicle.name}`,
+        actorId: 'system', actorName: 'Concesionario automático',
+      });
+    }
 
     await vehiclesCol.updateOne({ id: vehicleId }, { $inc: { stock: -1 } });
 
@@ -65,7 +82,7 @@ export async function POST(request: NextRequest) {
       plate: randomPlate(),
       color: color || '#1f2937',
       financed: Boolean(financed),
-      loanRemaining: financed ? vehicle.price - chargeNow : undefined,
+      loanRemaining: financed ? vehicle.price - principalNow : undefined,
       giftedBy: giftRecipient ? me.id : undefined,
       purchasedAt: new Date(),
     };
@@ -75,7 +92,7 @@ export async function POST(request: NextRequest) {
       await notifyUser(me.id, { title: 'Regalo enviado', message: `Le regalaste ${vehicle.name} a ${giftRecipient.displayName}`, type: 'success', appId: 'dealer' });
       await notifyUser(giftRecipient.discordId, { title: '🎁 Recibiste un regalo', message: `${me.displayName} te regaló ${vehicle.name} en el Concesionario`, type: 'success', appId: 'dealer' });
     } else {
-      await notifyUser(me.id, { title: 'Compra realizada', message: `Compraste ${vehicle.name} por $${chargeNow.toLocaleString('es-CO')}`, type: 'success', appId: 'dealer' });
+      await notifyUser(me.id, { title: 'Compra realizada', message: `Compraste ${vehicle.name} por $${chargeNow.toLocaleString('es-CO')}${registrationTax > 0 ? ` (incluye $${registrationTax.toLocaleString('es-CO')} de matrícula)` : ''}`, type: 'success', appId: 'dealer' });
     }
 
     return NextResponse.json({ success: true, vehicle: doc });
