@@ -1,7 +1,7 @@
 "use client";
 
 import { LICENSE_LAYOUTS, RESIDENCE_CARD_LAYOUT } from "@/lib/documentLayouts";
-import type { City, DocumentType } from "@/lib/whitelistTypes";
+import { CITIES, type City, type DocumentType } from "@/lib/whitelistTypes";
 import type { DocumentFieldValues } from "./buildDocumentTexture";
 import DocumentCard2D from "./DocumentCard2D";
 import PassportBook2D from "./PassportBook2D";
@@ -16,7 +16,6 @@ export interface DocumentViewer3DProps {
   gender: "male" | "female" | "other" | "";
   height: string;
   nationality: string;
-  group: string;
   robloxUsername: string;
   documentNumber: string;
   issueDate: string;
@@ -45,18 +44,21 @@ export default function DocumentViewer3D(props: DocumentViewer3DProps) {
   // la residencia y el pasaporte separan "EMITIDO EL" / "EXPIRA EL" / "LUGAR DE EXPEDICIÓN".
   const isCombinedIssueRow = !isPassport && props.documentType !== "residence_card";
 
+  // El documento lo expide la ciudad que el jugador eligió (donde tramitó la licencia),
+  // no necesariamente donde nació el personaje — son dos datos distintos.
+  const issuingCity = CITIES.find((c) => c.id === props.city)?.name || props.birthPlace;
+
   const values: DocumentFieldValues = {
     firstName: props.firstName,
     lastName: props.lastName,
     birthPlace: props.birthPlace,
     sex: genderLabel(props.gender),
     height: props.height,
-    group: props.group,
     birthDate: formatDate(props.birthDate),
     issuedAt: isCombinedIssueRow
-      ? (props.issueDate ? `${props.issueDate} · ${props.birthPlace}` : props.birthPlace)
+      ? (props.issueDate ? `${props.issueDate} · ${issuingCity}` : issuingCity)
       : props.issueDate,
-    issuePlace: props.birthPlace,
+    issuePlace: issuingCity,
     expiryDate: props.expiryDate,
     robloxUsername: props.robloxUsername ? `@${props.robloxUsername}` : "",
     nationality: props.nationality,

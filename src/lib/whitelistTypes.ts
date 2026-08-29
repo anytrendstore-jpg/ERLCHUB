@@ -83,7 +83,6 @@ export interface CharacterData {
   height: string;
   nationality: string;
   city: City;
-  group: string;
   avatar: string;
 }
 
@@ -439,16 +438,4 @@ export const BIRTHPLACE_OPTIONS = [
   "Vice City",
   "Las Venturas",
   "Países Hispanos"
-];
-
-export const GROUP_OPTIONS = [
-  "Ciudadano",
-  "LSPD - Policía",
-  "LSFD - Bomberos",
-  "EMS - Servicios Médicos",
-  "Mecánico",
-  "Taxista",
-  "Empresario",
-  "Criminal",
-  "Sin afiliación"
 ];

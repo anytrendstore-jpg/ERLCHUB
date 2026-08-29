@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight, ArrowLeft, Loader2, CreditCard,
-  User, Calendar, MapPin, Users, Flag,
+  User, Calendar, MapPin,
   Check, Download, Eye, Lock, X,
   Sparkles, AlertCircle, ChevronDown
 } from "lucide-react";
@@ -19,7 +19,7 @@ import WhitelistLoadingState from "@/components/whitelist/WhitelistLoadingState"
 import WhitelistCard from "@/components/whitelist/WhitelistCard";
 import { useCardTilt } from "@/hooks/useCardTilt";
 import {
-  CITIES, HEIGHT_OPTIONS, NATIONALITY_OPTIONS, BIRTHPLACE_OPTIONS, GROUP_OPTIONS,
+  CITIES, HEIGHT_OPTIONS, BIRTHPLACE_OPTIONS,
   type City, type CityInfo, type DocumentType
 } from "@/lib/whitelistTypes";
 
@@ -64,10 +64,7 @@ function CityCard({ city, traveling, receded, onClick }: { city: CityInfo; trave
             <Image src={city.logo} alt={`Logo de ${city.name}`} width={56} height={56} className="w-full h-full object-contain" />
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-base drop-shadow">{city.flag}</span>
-              <div className="text-lg font-bold text-white drop-shadow">{city.name}</div>
-            </div>
+            <div className="text-lg font-bold text-white drop-shadow">{city.name}</div>
             <div className="text-sm text-white/80">{city.state} · {city.country}</div>
           </div>
         </div>
@@ -247,8 +244,9 @@ export default function DNIPage() {
     birthPlace: "",
     gender: "" as "male" | "female" | "other" | "",
     height: "",
-    nationality: "",
-    group: "",
+    // La licencia es de un servidor estadounidense — no tiene sentido preguntarle
+    // al jugador su nacionalidad para este documento, así que va fija.
+    nationality: "Estadounidense",
     robloxUsername: ""
   });
 
@@ -304,8 +302,6 @@ export default function DNIPage() {
             birthPlace: draft.birthPlace || prev.birthPlace,
             gender: (draft.gender || prev.gender) as typeof prev.gender,
             height: draft.height || prev.height,
-            nationality: draft.nationality || prev.nationality,
-            group: draft.group || prev.group
           }
         : {})
     }));
@@ -382,9 +378,7 @@ export default function DNIPage() {
       !isUnderage &&
       formData.birthPlace.trim() &&
       formData.gender &&
-      formData.height &&
-      formData.nationality &&
-      formData.group
+      formData.height
     );
   };
 
@@ -404,7 +398,6 @@ export default function DNIPage() {
           gender: formData.gender,
           height: formData.height,
           nationality: formData.nationality,
-          group: formData.group,
           city: selectedCity,
           photoUrl: photoUrl || undefined
         }
@@ -505,9 +498,17 @@ export default function DNIPage() {
                 <div className="flex-1 min-w-0 space-y-6">
                   <div className="flex items-center justify-between p-4 bg-[var(--background)] rounded-xl">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">
-                        {CITIES.find(c => c.id === selectedCity)?.flag}
-                      </span>
+                      {CITIES.find(c => c.id === selectedCity)?.logo && (
+                        <div className="w-9 h-9 rounded-lg bg-black/20 p-1 flex-shrink-0">
+                          <Image
+                            src={CITIES.find(c => c.id === selectedCity)!.logo}
+                            alt=""
+                            width={36}
+                            height={36}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      )}
                       <div>
                         <div className="font-medium text-[var(--foreground)]">
                           {CITIES.find(c => c.id === selectedCity)?.name}
@@ -705,43 +706,6 @@ export default function DNIPage() {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-2">
-                        Nacionalidad <span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <Flag className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--text-faint)]" />
-                        <select
-                          value={formData.nationality}
-                          onChange={(e) => handleFormChange("nationality", e.target.value)}
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
-                        >
-                          <option value="">Seleccionar...</option>
-                          {NATIONALITY_OPTIONS.map((n) => (
-                            <option key={n} value={n}>{n}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-2">
-                        Grupo/Facción <span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--text-faint)]" />
-                        <select
-                          value={formData.group}
-                          onChange={(e) => handleFormChange("group", e.target.value)}
-                          className="w-full h-12 pl-12 pr-4 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#8e00f7] transition-colors appearance-none cursor-pointer"
-                        >
-                          <option value="">Seleccionar...</option>
-                          {GROUP_OPTIONS.map((g) => (
-                            <option key={g} value={g}>{g}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
                   </div>
 
                   <div className="p-4 bg-[var(--background)] rounded-xl border border-[var(--card-border)] flex items-center gap-4">
@@ -809,7 +773,6 @@ export default function DNIPage() {
                     gender={formData.gender}
                     height={formData.height}
                     nationality={formData.nationality}
-                    group={formData.group}
                     robloxUsername={formData.robloxUsername}
                     documentNumber=""
                     issueDate=""
@@ -843,7 +806,6 @@ export default function DNIPage() {
                       gender={formData.gender}
                       height={formData.height}
                       nationality={formData.nationality}
-                      group={formData.group}
                       robloxUsername={formData.robloxUsername}
                       documentNumber={documentData.number}
                       issueDate={documentData.issueDate}
@@ -900,7 +862,6 @@ export default function DNIPage() {
                       gender={formData.gender}
                       height={formData.height}
                       nationality={formData.nationality}
-                      group={formData.group}
                       robloxUsername={formData.robloxUsername}
                       documentNumber={documentData.number}
                       issueDate={documentData.issueDate}
@@ -992,7 +953,6 @@ export default function DNIPage() {
                 gender={formData.gender}
                 height={formData.height}
                 nationality={formData.nationality}
-                group={formData.group}
                 robloxUsername={formData.robloxUsername}
                 documentNumber={documentData.number}
                 issueDate={documentData.issueDate}

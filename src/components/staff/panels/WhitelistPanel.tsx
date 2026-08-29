@@ -27,7 +27,7 @@ interface StaffApplication {
   roblox?: { username: string; displayName?: string; avatar?: string; verificationCode: string; verified: boolean; verifiedMode?: "api" | "offline" | "oauth" };
   character?: {
     firstName: string; lastName: string; birthDate: string; birthPlace: string;
-    gender: "male" | "female" | "other"; height: string; nationality: string; group: string;
+    gender: "male" | "female" | "other"; height: string; nationality: string;
     city: City; photoUrl?: string;
   };
   document?: { type: DocumentType; number: string; issueDate: string; expiryDate: string };
@@ -323,7 +323,6 @@ export default function WhitelistPanel({ onChanged }: { onChanged?: () => void }
                         <div className="flex justify-between gap-4"><dt className="text-slate-500">Nombre</dt><dd className="text-slate-300">{selected.character.firstName} {selected.character.lastName}</dd></div>
                         <div className="flex justify-between gap-4"><dt className="text-slate-500">Ciudad</dt><dd className="text-slate-300">{selected.character.city}</dd></div>
                         <div className="flex justify-between gap-4"><dt className="text-slate-500">Nacionalidad</dt><dd className="text-slate-300">{selected.character.nationality}</dd></div>
-                        <div className="flex justify-between gap-4"><dt className="text-slate-500">Grupo</dt><dd className="text-slate-300">{selected.character.group}</dd></div>
                       </>
                     )}
                     {selected.document && (
@@ -346,7 +345,6 @@ export default function WhitelistPanel({ onChanged }: { onChanged?: () => void }
                         gender={selected.character.gender}
                         height={selected.character.height}
                         nationality={selected.character.nationality}
-                        group={selected.character.group}
                         robloxUsername={selected.roblox?.username || ""}
                         documentNumber={selected.document.number}
                         issueDate={selected.document.issueDate}

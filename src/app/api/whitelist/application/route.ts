@@ -3,7 +3,7 @@ import {
   applications,
   betaMode,
   currentApplication,
-  generateCityDocumentId,
+  generateCitizenId,
   generateDocumentNumber,
   generateRobloxCode,
   nextMemberNumber,
@@ -278,7 +278,7 @@ export async function PATCH(request: NextRequest) {
         }
 
         const character = data.character || {};
-        const required = ['firstName', 'lastName', 'birthDate', 'birthPlace', 'gender', 'height', 'nationality', 'group', 'city'];
+        const required = ['firstName', 'lastName', 'birthDate', 'birthPlace', 'gender', 'height', 'nationality', 'city'];
         const missing = required.filter((field) => !String(character[field] || '').trim());
         if (missing.length) {
           return NextResponse.json(
@@ -309,7 +309,7 @@ export async function PATCH(request: NextRequest) {
         const issue = now;
         const expiry = new Date(now);
         expiry.setFullYear(expiry.getFullYear() + 5);
-        const number = generateCityDocumentId(character.city);
+        const number = await generateCitizenId(character.city);
 
         const memberNumber = application.memberNumber ?? (await nextMemberNumber());
 
@@ -402,7 +402,7 @@ export async function PATCH(request: NextRequest) {
         if (phase === 'completed') {
           const expiry = new Date(now);
           expiry.setFullYear(expiry.getFullYear() + 5);
-          const number = application.document?.number || generateCityDocumentId(application.character?.city || 'los_santos');
+          const number = application.document?.number || await generateCitizenId(application.character?.city || 'los_santos');
 
           update.character = application.character || {
             firstName: 'Beta',
@@ -411,8 +411,7 @@ export async function PATCH(request: NextRequest) {
             birthPlace: 'Los Santos',
             gender: 'other',
             height: '1.71m - 1.75m',
-            nationality: 'Mexicano',
-            group: 'Ciudadano',
+            nationality: 'Estadounidense',
             city: 'los_santos',
           };
           update.document = application.document || {

@@ -11,7 +11,7 @@ export const LABEL_GAP = 0.038;
 
 export type DocumentField = {
   key:
-    | 'firstName' | 'lastName' | 'birthPlace' | 'sex' | 'height' | 'group'
+    | 'firstName' | 'lastName' | 'birthPlace' | 'sex' | 'height'
     | 'birthDate' | 'issuedAt' | 'issuePlace' | 'expiryDate' | 'robloxUsername'
     | 'nationality' | 'documentNumber';
   /** Posición del VALOR como fracción del ancho/alto de la imagen (0-1). */
@@ -59,7 +59,6 @@ function licenseFields(): DocumentField[] {
     field('birthPlace', 0.335, 0.573, { maxWidth: 130 }),
     field('sex', 0.335, 0.648),
     field('height', 0.45, 0.648),
-    field('group', 0.60, 0.648, { maxWidth: 100 }),
     field('birthDate', 0.335, 0.723),
     field('issuedAt', 0.335, 0.805, { maxWidth: 190 }),
   ];
@@ -75,17 +74,17 @@ function licenseFields(): DocumentField[] {
 function losSantosFields(): DocumentField[] {
   const idCol = 0.335; // columna de identidad — arranca justo después de la foto
   const idColWidth = 300; // ancho disponible en px (sobre un lienzo de 500px) para esa columna
-  const row3 = [idCol, idCol + 0.19, idCol + 0.38]; // sexo / altura / grupo, tres columnas iguales
+  const row2 = [idCol, idCol + 0.19]; // sexo / altura, dos columnas iguales
   return [
-    field('firstName', idCol, 0.335, { label: 'NOMBRE COMPLETO', size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    field('lastName', idCol, 0.395, { size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
-    field('birthDate', idCol, 0.485, { label: 'FECHA DE NACIMIENTO' }),
-    field('sex', row3[0], 0.585, { label: 'SEXO' }),
-    field('height', row3[1], 0.585, { label: 'ALTURA' }),
-    field('group', row3[2], 0.585, { label: 'GRUPO', maxWidth: 110 }),
-    field('issuedAt', idCol, 0.685, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
-    field('documentNumber', idCol, 0.79, { label: 'DOCUMENT No.', size: 11, weight: '700' }),
-    field('robloxUsername', idCol, 0.875, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 9, weight: '600', maxWidth: idColWidth }),
+    field('firstName', idCol, 0.325, { label: 'NOMBRE COMPLETO', size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    field('lastName', idCol, 0.385, { size: 13, weight: '700', uppercase: true, maxWidth: idColWidth }),
+    // El ID de ciudadano es el dato que más debe resaltar en la tarjeta después del nombre.
+    field('documentNumber', idCol, 0.478, { label: 'ID DE CIUDADANO', size: 17, weight: '800', color: '#0f4c81' }),
+    field('birthDate', idCol, 0.575, { label: 'FECHA DE NACIMIENTO' }),
+    field('sex', row2[0], 0.665, { label: 'SEXO' }),
+    field('height', row2[1], 0.665, { label: 'ALTURA' }),
+    field('issuedAt', idCol, 0.755, { label: 'FECHA Y LUGAR DE EXPEDICIÓN', maxWidth: idColWidth }),
+    field('robloxUsername', idCol, 0.835, { label: 'USUARIO DEL SISTEMA', color: '#7c3aed', size: 9, weight: '600', maxWidth: idColWidth }),
   ];
 }
 
@@ -94,9 +93,10 @@ export const LICENSE_LAYOUTS: Record<City, DocumentLayout> = {
     // Sin panel: el texto se apoya directo sobre la ilustración real de la plantilla (igual
     // que el encabezado "CALIFORNIA / DRIVER LICENSE" que ya viene impreso en la imagen), con
     // un halo claro por CSS para legibilidad — nunca una placa blanca fabricada por encima.
-    // La foto ocupa toda la columna izquierda, de justo debajo del encabezado hasta abajo.
+    // La foto ocupa la columna izquierda de arriba a abajo, dejando una franja libre justo
+    // debajo para la firma (ver DocumentCard2D.tsx).
     image: '/documents/license-los_santos.png', artKey: 'los_santos', fields: losSantosFields(),
-    photo: { x: 0.155, y: 0.615, w: 0.25, h: 0.66, shape: 'rect' },
+    photo: { x: 0.155, y: 0.545, w: 0.25, h: 0.52, shape: 'rect' },
   },
   liberty_city: {
     image: '/documents/license-liberty_city.png', artKey: 'liberty_city', fields: licenseFields(),
@@ -122,7 +122,6 @@ export const RESIDENCE_CARD_LAYOUT: DocumentLayout = {
     field('lastName', 0.39, 0.388, { weight: '700', uppercase: true }),
     field('height', 0.72, 0.388),
     field('firstName', 0.39, 0.487, { weight: '700', uppercase: true }),
-    field('group', 0.72, 0.487, { maxWidth: 100 }),
     field('sex', 0.39, 0.578),
     field('birthDate', 0.52, 0.578),
     field('issuePlace', 0.39, 0.645, { maxWidth: 100 }),
@@ -145,7 +144,6 @@ export const PASSPORT_DATA_LAYOUT: DocumentLayout = {
     field('lastName', 0.39, 0.388, { weight: '700', uppercase: true }),
     field('height', 0.72, 0.388),
     field('firstName', 0.39, 0.487, { weight: '700', uppercase: true }),
-    field('group', 0.72, 0.487, { maxWidth: 90 }),
     field('sex', 0.39, 0.578),
     field('birthDate', 0.52, 0.578),
     field('issuePlace', 0.39, 0.645, { maxWidth: 90 }),

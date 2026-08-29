@@ -73,7 +73,18 @@ export default function DocumentCard2D({
             style={{ backfaceVisibility: "hidden" }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={layout.image} alt="Documento" className="absolute inset-0 w-full h-full object-cover select-none" draggable={false} />
+            {/* La plantilla de Los Santos trae un margen blanco de fábrica alrededor de la
+                tarjeta (medido en píxeles reales: ~9% arriba, ~6-7% en los otros lados) — se
+                recorta agrandando la imagen para que la tarjeta llene el marco entero, sin
+                ningún borde blanco visible. Las otras plantillas ya vienen a sangre y tienen
+                texto propio impreso en coordenadas fijas, así que no se tocan. */}
+            <img
+              src={layout.image}
+              alt="Documento"
+              className="absolute inset-0 w-full h-full object-cover select-none"
+              style={layout.artKey === "los_santos" ? { transform: "scale(1.22)", transformOrigin: "center" } : undefined}
+              draggable={false}
+            />
 
             {layout.panel && (
               <div
@@ -103,7 +114,7 @@ export default function DocumentCard2D({
               >
                 {photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+                  <img src={photoUrl} alt="" className="w-full h-full object-contain" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-1">
                     <svg viewBox="0 0 24 24" className="w-[26%] h-[26%] text-black/25" fill="currentColor">
@@ -119,6 +130,45 @@ export default function DocumentCard2D({
                 )}
               </div>
             )}
+
+            {layout.artKey === "los_santos" && layout.photo && (values_.firstName || values_.lastName) && (() => {
+              const sigLeft = (layout.photo!.x - layout.photo!.w / 2) * 100;
+              const sigWidth = layout.photo!.w * 100;
+              return (
+                <>
+                  <span
+                    className="absolute whitespace-nowrap overflow-hidden text-ellipsis text-center"
+                    style={{
+                      left: `${sigLeft}%`,
+                      width: `${sigWidth}%`,
+                      top: `${(layout.photo!.y + layout.photo!.h / 2) * 100 + 5.5}%`,
+                      transform: "translateY(-50%)",
+                      fontFamily: "var(--font-signature), cursive",
+                      fontSize: "3.3cqw",
+                      color: "#1a1a2e",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {`${values_.firstName || ""} ${values_.lastName || ""}`.trim()}
+                  </span>
+                  <span
+                    className="absolute whitespace-nowrap uppercase tracking-wide text-center"
+                    style={{
+                      left: `${sigLeft}%`,
+                      width: `${sigWidth}%`,
+                      top: `${(layout.photo!.y + layout.photo!.h / 2) * 100 + 11}%`,
+                      transform: "translateY(-50%)",
+                      fontFamily: "Arial, sans-serif",
+                      fontSize: "2.6cqw",
+                      color: "#4b5563",
+                      opacity: 0.8,
+                    }}
+                  >
+                    Firma del titular
+                  </span>
+                </>
+              );
+            })()}
 
             {layout.fields.map((f) => {
               const raw = values_[f.key];
