@@ -9,6 +9,7 @@ import {
   Gamepad2, FileText, CreditCard, Zap
 } from "lucide-react";
 import ParticlesBackground from "@/components/ParticlesBackground";
+import CountUpStat from "@/components/CountUpStat";
 import WhitelistHeader from "@/components/whitelist/WhitelistHeader";
 import WhitelistCard from "@/components/whitelist/WhitelistCard";
 import WhitelistStepper from "@/components/WhitelistStepper";
@@ -152,7 +153,9 @@ export default function WhitelistPage() {
 
               <div className="grid grid-cols-3 gap-4 pt-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#8e00f7]">5K+</div>
+                  <div className="text-2xl font-bold text-[#8e00f7]">
+                    <CountUpStat target={13000} />
+                  </div>
                   <div className="text-[var(--text-faint)] text-xs">Jugadores Activos</div>
                 </div>
                 <div className="text-center">
