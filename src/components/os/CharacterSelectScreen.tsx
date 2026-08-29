@@ -6,7 +6,7 @@ import { useOS } from '@/contexts/OSContext';
 import type { DepartmentConfig } from '@/lib/departments';
 import { bootFont } from '@/lib/bootFont';
 import { useCardTilt } from '@/hooks/useCardTilt';
-import { Plus, Star, X, Loader2, Clock, Briefcase, MapPin, ShieldCheck, Lock } from 'lucide-react';
+import { Plus, Star, X, Loader2, Clock, Briefcase, MapPin, ShieldCheck, Lock, CalendarDays } from 'lucide-react';
 
 interface CharacterRow {
   id: string;
@@ -17,6 +17,7 @@ interface CharacterRow {
   department?: string;
   isPrimary: boolean;
   lastSessionAt: string;
+  createdAt?: string;
 }
 
 function timeAgo(iso: string): string {
@@ -28,6 +29,11 @@ function timeAgo(iso: string): string {
   if (hours < 24) return `Hace ${hours} h`;
   const days = Math.floor(hours / 24);
   return `Hace ${days} d`;
+}
+
+function memberSince(iso?: string): string {
+  if (!iso) return 'Fecha desconocida';
+  return new Date(iso).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function StatRow({ icon: Icon, label, accent }: { icon: typeof Clock; label: string; accent?: boolean }) {
@@ -165,7 +171,7 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
             CARGANDO PERSONAJES
           </div>
         ) : (
-          <div className="flex flex-wrap items-start justify-center gap-6 [perspective:1200px]">
+          <div className="flex flex-wrap items-stretch justify-center gap-6 [perspective:1200px]">
             {rows.map((c, i) => (
               <CharacterCard
                 key={c.id}
@@ -183,7 +189,7 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
                 onClick={() => setShowCreate(true)}
                 disabled={entering !== null}
                 style={{ animationDelay: `${rows.length * 80}ms` }}
-                className={`${CARD_SHELL} card-enter border-dashed hover:border-white/30 disabled:opacity-40 hover:-translate-y-1`}
+                className={`${CARD_SHELL} card-enter h-full flex flex-col border-dashed hover:border-white/30 disabled:opacity-40 hover:-translate-y-1`}
               >
                 <div className="aspect-[4/5] flex items-center justify-center relative">
                   <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay" style={{ backgroundImage: NOISE_BG }} />
@@ -193,8 +199,8 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
                   <span className="w-1.5 h-1.5 rounded-full bg-white/25" />
                   <span className="text-[10px] text-white/35 uppercase tracking-wide font-mono">Slot libre</span>
                 </div>
-                <div className="px-3.5 py-2.5">
-                  <p className="text-white/45 text-[11px] leading-relaxed">Nuevo personaje con su propio escritorio, apps y configuración.</p>
+                <div className="flex-1 px-3.5 py-2.5">
+                  <p className="text-white/45 text-[11px] leading-relaxed">Nuevo personaje con su propio escritorio, apps y configuración — completamente separado de los que ya tenés.</p>
                 </div>
                 <div className="w-full py-2.5 text-[11px] text-center font-bold tracking-wide uppercase bg-white/10 text-white/80 group-hover:bg-white/15 transition-colors">
                   Crear personaje
@@ -205,7 +211,7 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
             {showLockedSlot && (
               <div
                 style={{ animationDelay: `${(rows.length + (canCreate ? 1 : 0)) * 80}ms` }}
-                className={`${CARD_SHELL} card-enter opacity-80 hover:opacity-100`}
+                className={`${CARD_SHELL} card-enter h-full flex flex-col opacity-80 hover:opacity-100`}
               >
                 <div className="relative aspect-[4/5] bg-white/[0.03] flex items-center justify-center grayscale">
                   <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay" style={{ backgroundImage: NOISE_BG }} />
@@ -215,9 +221,9 @@ export default function CharacterSelectScreen({ onDone, institutionalDept }: Cha
                   <span className="w-1.5 h-1.5 rounded-full bg-red-400/70" />
                   <span className="text-[10px] text-white/35 uppercase tracking-wide font-mono">Slot premium</span>
                 </div>
-                <div className="px-3.5 py-2.5">
+                <div className="flex-1 px-3.5 py-2.5">
                   <p className="text-white/45 text-[11px] leading-relaxed">
-                    Desbloqueá otro personaje con el <span className="text-white/70">Kit Personajes</span>, o subiendo a una <span className="text-white/70">membresía</span> VIP, Elite o Leyenda.
+                    Desbloqueá otro personaje con el <span className="text-white/70">Kit Personajes</span>, o subiendo a una <span className="text-white/70">membresía</span> VIP, Elite o Leyenda. Cada personaje tiene su propio escritorio y progreso.
                   </p>
                 </div>
                 <div className="flex flex-col">
@@ -322,7 +328,7 @@ function CharacterCard({ character: c, index: i, isActive, entering, disabled, o
         animationDelay: `${i * 80}ms`,
         transform: 'rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))',
       }}
-      className={`${CARD_SHELL} card-enter text-left disabled:opacity-40 disabled:hover:scale-100 hover:-translate-y-1 ${isActive ? 'border-blue-500/50 shadow-[0_25px_60px_-20px_rgba(59,130,246,0.5)]' : 'hover:border-blue-500/40 hover:shadow-[0_25px_60px_-20px_rgba(59,130,246,0.4)]'}`}
+      className={`${CARD_SHELL} card-enter h-full flex flex-col text-left disabled:opacity-40 disabled:hover:scale-100 hover:-translate-y-1 ${isActive ? 'border-blue-500/50 shadow-[0_25px_60px_-20px_rgba(59,130,246,0.5)]' : 'hover:border-blue-500/40 hover:shadow-[0_25px_60px_-20px_rgba(59,130,246,0.4)]'}`}
     >
       <div className="relative aspect-[4/5] bg-white/5 overflow-hidden">
         {c.avatar ? (
@@ -352,10 +358,16 @@ function CharacterCard({ character: c, index: i, isActive, entering, disabled, o
       <div className="flex items-center gap-1.5 px-3.5 py-2 border-b border-white/5">
         <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-white/25'}`} />
         <span className="text-[10px] text-white/35 uppercase tracking-wide font-mono">{isActive ? 'Sesión activa' : 'Disponible'}</span>
+        {c.isPrimary && (
+          <span className="ml-auto text-[9px] text-amber-300/80 uppercase tracking-wide font-mono flex items-center gap-1">
+            <Star className="w-2.5 h-2.5 fill-amber-300/80" /> Principal
+          </span>
+        )}
       </div>
 
-      <div className="px-3.5 py-2.5 space-y-1.5">
+      <div className="flex-1 px-3.5 py-2.5 space-y-1.5">
         <StatRow icon={Clock} label={timeAgo(c.lastSessionAt)} />
+        <StatRow icon={CalendarDays} label={`Desde el ${memberSince(c.createdAt)}`} />
         <StatRow icon={Briefcase} label={c.job || 'Sin oficio asignado'} />
         <StatRow icon={MapPin} label={c.city || 'Sin ciudad asignada'} />
         {c.department && <StatRow icon={ShieldCheck} label={c.department} accent />}
