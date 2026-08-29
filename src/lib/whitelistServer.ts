@@ -336,23 +336,20 @@ const CITY_DOCUMENT_PREFIX: Record<string, string> = {
   las_venturas: '9',
 };
 
-/** Sin O/0 ni I/1 — se pueden confundir al leer el documento a mano. */
-const CITIZEN_ID_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-
 function randomCitizenIdCandidate(city: string): string {
   const prefix = CITY_DOCUMENT_PREFIX[city] || '5';
   let rest = '';
-  for (let i = 0; i < 6; i++) {
-    rest += CITIZEN_ID_CHARS.charAt(crypto.randomInt(CITIZEN_ID_CHARS.length));
+  for (let i = 0; i < 8; i++) {
+    rest += crypto.randomInt(10).toString();
   }
   return prefix + rest;
 }
 
 /**
- * Genera el ID de ciudadano del personaje: 1 dígito de ciudad + 6 caracteres
- * alfanuméricos = 7 caracteres en total, único de verdad — se revisa contra
- * `whitelist_applications` (no alcanza con confiar en la aleatoriedad) y se
- * reintenta con otro candidato si por casualidad ya existe.
+ * Genera el ID de ciudadano del personaje: 1 dígito de ciudad + 8 dígitos
+ * aleatorios = 9 dígitos en total, solo números, único de verdad — se revisa
+ * contra `whitelist_applications` (no alcanza con confiar en la aleatoriedad)
+ * y se reintenta con otro candidato si por casualidad ya existe.
  */
 export async function generateCitizenId(city: string): Promise<string> {
   const col = await applications();
