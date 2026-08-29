@@ -5,7 +5,9 @@ import { requirePermission } from '@/lib/permissions/engine';
 
 export const dynamic = 'force-dynamic';
 
-/** Distribución manual del Tesoro a los presupuestos departamentales según las tasas configuradas (el ciclo automático es una fase posterior). */
+/** Distribución manual del Tesoro a los presupuestos departamentales según las tasas configuradas.
+ * También corre solo, cada semana, vía /api/cron/treasury-distribution — este botón sirve para
+ * forzar una distribución fuera de ciclo o con un monto puntual distinto al balance completo. */
 export async function POST(request: NextRequest) {
   const denied = await requirePermission('economy.manage');
   if (denied) return denied;

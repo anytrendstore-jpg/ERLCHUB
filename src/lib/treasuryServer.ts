@@ -4,6 +4,7 @@ import { connectToDatabase, getMongoClient, supportsTransactions } from '@/lib/m
 import { recordDepartmentBudgetEntry } from '@/lib/departmentBudgetServer';
 import { fdBudgetCollection } from '@/lib/fdServer';
 import type { FDBudgetEntry } from '@/lib/fdTypes';
+import { isoWeekKey } from '@/lib/payrollServer';
 
 /** Tesoro del gobierno — mismo patrón que hubPayServer.ts/cashServer.ts: un balance + un ledger, un único camino de escritura. */
 export interface TreasuryLedgerEntry {
@@ -127,13 +128,12 @@ export async function removeDistributionRate(departmentCode: string): Promise<vo
 }
 
 /**
- * Distribución manual del tesoro (el ciclo semanal automático es una fase posterior). Reparte
- * `amount` (por defecto: todo el balance actual) proporcional a las tasas configuradas,
+ * Reparte `amount` (por defecto: todo el balance actual) proporcional a las tasas configuradas,
  * normalizando hacia abajo si la suma de porcentajes excede 100 — nunca reparte más de lo que
  * hay. LSFD es un caso especial: su parte se acredita en la colección `fd_budget` ya existente
  * (no en la nueva `department_budgets`), así FDBudget.tsx sigue funcionando sin tocarlo.
  */
-export async function distributeTreasuryFunds(input: { amount?: number; actorId: string; actorName: string }): Promise<{
+export async function distributeTreasuryFunds(input: { amount?: number; actorId: string; actorName: string; periodKey?: string }): Promise<{
   totalDistributed: number;
   perDepartment: { departmentCode: string; amount: number }[];
 }> {
@@ -158,6 +158,7 @@ export async function distributeTreasuryFunds(input: { amount?: number; actorId:
     await adjustTreasury({
       delta: -totalDistributed, type: 'distribution', description: 'Distribución fiscal a departamentos',
       actorId: input.actorId, actorName: input.actorName,
+      metadata: input.periodKey ? { periodKey: input.periodKey } : undefined,
     }, session);
 
     for (const dep of perDepartment) {
@@ -192,4 +193,33 @@ export async function distributeTreasuryFunds(input: { amount?: number; actorId:
   }
 
   return { totalDistributed, perDepartment: perDepartment.map(({ departmentCode, amount }) => ({ departmentCode, amount })) };
+}
+
+/**
+ * Ciclo fiscal semanal automático — cierra el hueco que dejaba distributeTreasuryFunds() como
+ * "fase posterior". Mismo criterio de idempotencia que runFullPayroll(): un trigger='cron' que ya
+ * distribuyó en esta semana ISO no vuelve a hacerlo (se detecta buscando en el propio ledger un
+ * movimiento 'distribution' con ese periodKey, así no hace falta una colección nueva solo para
+ * esto). trigger='manual' (el botón "Distribuir ahora" del panel) nunca queda bloqueado.
+ */
+export async function runAutomaticTreasuryDistribution(trigger: 'cron' | 'manual', actor?: { id: string; name: string }): Promise<{
+  ran: boolean;
+  totalDistributed: number;
+  perDepartment: { departmentCode: string; amount: number }[];
+  periodKey: string;
+}> {
+  const periodKey = isoWeekKey(new Date());
+
+  if (trigger === 'cron') {
+    const ledgerCol = await treasuryLedgerCollection();
+    const already = await ledgerCol.findOne({ type: 'distribution', 'metadata.periodKey': periodKey });
+    if (already) return { ran: false, totalDistributed: 0, perDepartment: [], periodKey };
+  }
+
+  const result = await distributeTreasuryFunds({
+    actorId: actor?.id || 'system',
+    actorName: actor?.name || 'Distribución fiscal automática',
+    periodKey,
+  });
+  return { ran: true, ...result, periodKey };
 }

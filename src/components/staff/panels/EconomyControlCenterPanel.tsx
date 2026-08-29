@@ -288,7 +288,9 @@ function TreasurySection({ canManage }: { canManage: boolean }) {
       {canManage && (
         <Card className="p-5">
           <h3 className="text-sm font-semibold text-white mb-3">Distribuir ahora</h3>
-          <p className="text-xs text-slate-500 mb-3">Reparte según las tasas de arriba. Dejá el monto vacío para distribuir todo el balance actual.</p>
+          <p className="text-xs text-slate-500 mb-3">
+            Ya corre solo cada semana (lunes, 30 min después de la nómina) — usá este botón solo para forzar una distribución fuera de ciclo o con un monto puntual distinto al balance completo.
+          </p>
           <div className="flex items-end gap-3">
             <div>
               <label className="text-xs text-slate-400 block mb-1.5">Monto (opcional)</label>

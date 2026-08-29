@@ -65,7 +65,9 @@ export async function payrollEntriesCollection(): Promise<Collection<PayrollEntr
 }
 
 /** ISO semana UTC (ej. '2026-W35') — clave de idempotencia para no pagar dos veces la misma semana por cron. */
-function isoWeekKey(date: Date): string {
+/** Semana ISO en UTC (ej. '2026-W35') — se exporta para que treasuryServer.ts use el mismo
+ * calendario fiscal semanal al guardar contra doble distribución automática. */
+export function isoWeekKey(date: Date): string {
   const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   const dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
