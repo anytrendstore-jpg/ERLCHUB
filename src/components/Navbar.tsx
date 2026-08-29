@@ -10,6 +10,7 @@ import { useDiscordAuth } from "@/hooks/useDiscordAuth";
 import { useHubCoins } from "@/hooks/useHubCoins";
 import { useWhitelistStatus } from "@/hooks/useWhitelistStatus";
 import UserProfile from "@/components/UserProfile";
+import NotificationBell from "@/components/NotificationBell";
 
 const navLinks = [
   { label: "Inicio", href: "/" },
@@ -240,6 +241,9 @@ export default function Navbar() {
               </div>
             )}
 
+            {/* Notificaciones */}
+            {isAuthenticated && <NotificationBell />}
+
             {/* Cart Button */}
             <Link
               href="/tienda/carrito"
@@ -278,6 +282,9 @@ export default function Navbar() {
 
           {/* Mobile - Cart + Menu Button */}
           <div className="md:hidden flex items-center gap-1 z-50">
+            {/* Mobile Notifications */}
+            {isAuthenticated && <NotificationBell />}
+
             {/* Mobile Cart Button */}
             <button
               type="button"

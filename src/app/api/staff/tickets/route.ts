@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { logStaffAction, nextTicketNumber, staffIdentity, staffTickets, ticketCategories, type TicketAttachment, type TicketStatus, type TicketPriority } from '@/lib/staffServer';
 import { requirePermission } from '@/lib/permissions/engine';
 import { isValidAttachment, MAX_ATTACHMENTS_PER_MESSAGE } from '@/lib/ticketAttachments';
+import { notifyUser } from '@/lib/notificationsServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -115,6 +116,14 @@ export async function PATCH(request: NextRequest) {
           $set: { updatedAt: now, lastMessageFrom: 'staff', status: ticket.status === 'open' ? 'in_progress' : ticket.status },
         }
       );
+      if (ticket.playerId) {
+        await notifyUser(ticket.playerId, {
+          type: 'info',
+          title: 'Nueva respuesta en tu ticket',
+          message: `${identity?.name || 'Staff'} respondió tu ticket "${ticket.subject}".`,
+          link: '/soporte',
+        }).catch((err) => console.error('Error notificando respuesta de ticket:', err));
+      }
     } else if (action === 'note') {
       if (!body?.trim()) return NextResponse.json({ success: false, error: 'Escribe una nota' }, { status: 400 });
       await col.updateOne(

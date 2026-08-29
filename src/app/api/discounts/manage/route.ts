@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import { notifyAllUsers } from '@/lib/notificationsServer';
 
 interface DiscountCode {
   code: string;
@@ -122,6 +123,13 @@ async function createDiscountCode(data: DiscountCode, db: any) {
     await db.collection('discount_codes').insertOne(discountCode);
 
     console.log(`Discount code created: ${code.toUpperCase()} - ${discountPercentage}% - Expires: ${expiresAt}`);
+
+    await notifyAllUsers({
+      type: 'success',
+      title: `¡${discountPercentage}% de descuento disponible!`,
+      message: description?.trim() || `Usá el código ${code.toUpperCase()} en la tienda.`,
+      link: '/tienda',
+    }).catch((err) => console.error('Error notificando nuevo descuento:', err));
 
     return NextResponse.json({
       success: true,

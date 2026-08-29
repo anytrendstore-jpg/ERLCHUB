@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applications, isStaffSession, nextMemberNumber, toPublicApplication } from '@/lib/whitelistServer';
 import { logStaffAction, staffIdentity, type StaffActionType } from '@/lib/staffServer';
+import { notifyUser } from '@/lib/notificationsServer';
 import type { ApplicationStatus } from '@/lib/whitelistTypes';
 
 export const dynamic = 'force-dynamic';
@@ -170,6 +171,20 @@ export async function PATCH(request: NextRequest) {
       targetId: application.applicationId,
       description: `${identity?.name || reviewedBy || 'Staff'} ${labelByStatus[status as ApplicationStatus]} ${isDniReview ? 'el documento de identidad de' : 'la solicitud de'} ${application.fullName}`,
     });
+
+    if (application.discord?.id && (status === 'approved' || status === 'rejected')) {
+      const approved = status === 'approved';
+      await notifyUser(application.discord.id, {
+        type: approved ? 'success' : 'error',
+        title: approved
+          ? (isDniReview ? '¡Tu documento fue aprobado!' : '¡Tu whitelist fue aprobada!')
+          : (isDniReview ? 'Tu documento necesita correcciones' : 'Tu whitelist fue rechazada'),
+        message: approved
+          ? (isDniReview ? 'Tu DNI ya está listo — ya sos parte de ERLCHUB.' : 'Ya podés continuar con el siguiente paso del proceso.')
+          : (isDniReview ? 'Revisá el motivo y volvé a generar tu documento.' : 'Revisá el motivo del rechazo en tu solicitud.'),
+        link: '/whitelist/espera',
+      }).catch((err) => console.error('Error notificando resultado de whitelist:', err));
+    }
 
     return NextResponse.json({ success: true, application: toPublicApplication(fresh!) });
   } catch (error) {
