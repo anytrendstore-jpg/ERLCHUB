@@ -143,7 +143,7 @@ export default function TiendaPage() {
         </div>
       </nav>
 
-      <div className="pt-8 pb-16 px-4 sm:px-6 lg:px-8">
+      <div className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
 
           {firstPurchaseEligible !== false && (
@@ -162,7 +162,7 @@ export default function TiendaPage() {
             </div>
           )}
 
-          <section id="hubcoins" className="mb-12 scroll-mt-24">
+          <section id="hubcoins" className="mb-12 scroll-mt-[250px]">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#8e00f7]/20 via-[#8e00f7]/10 to-[#a64dfa]/20 border border-[#8e00f7]/30">
               {/* Background pattern */}
               <div className="absolute inset-0 opacity-10">
@@ -235,7 +235,7 @@ export default function TiendaPage() {
             </div>
           </section>
 
-          <section id="membresias" className="mb-12 scroll-mt-24">
+          <section id="membresias" className="mb-12 scroll-mt-[145px]">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#fbbf24]/20 flex items-center justify-center">
@@ -277,7 +277,7 @@ export default function TiendaPage() {
             </div>
           </section>
 
-          <section id="whitelist-fast" className="mb-12 scroll-mt-24">
+          <section id="whitelist-fast" className="mb-12 scroll-mt-[145px]">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#8e00f7]/20 via-[#8e00f7]/10 to-[#a64dfa]/20 border border-[#8e00f7]/30">
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-[#8e00f7] blur-3xl" />
@@ -373,7 +373,7 @@ export default function TiendaPage() {
             </div>
           </section>
 
-          <section id="kits" className="mb-12 scroll-mt-24">
+          <section id="kits" className="mb-12 scroll-mt-[145px]">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#22c55e]/20 flex items-center justify-center">
